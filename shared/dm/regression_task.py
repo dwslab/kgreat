@@ -1,33 +1,32 @@
 from typing import List, Tuple, Type
 import numpy as np
 from sklearn.base import BaseEstimator
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import cross_validate
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
 from utils.enums import TaskMode
 from base_task import BaseTask
 
 
-class ClassificationTask(BaseTask):
+class RegressionTask(BaseTask):
     @classmethod
     def get_mode(cls) -> TaskMode:
-        return TaskMode.CLASSIFICATION
+        return TaskMode.REGRESSION
 
-    METRICS = ['accuracy']
+    METRICS = ['neg_root_mean_squared_error']
     N_SPLITS = 10
 
     @staticmethod
     def _get_estimators() -> List[Tuple[Type[BaseEstimator], dict]]:
         return [
-            (GaussianNB, {}),
-            (KNeighborsClassifier, {'n_neighbors': 1}),
-            (KNeighborsClassifier, {'n_neighbors': 3}),
-            (KNeighborsClassifier, {'n_neighbors': 5}),
-            (SVC, {'kernel': 'rbf', 'C': 1}),
-            (SVC, {'kernel': 'rbf', 'C': 0.1}),
-            (SVC, {'kernel': 'linear', 'C': 1}),
-            (SVC, {'kernel': 'linear', 'C': 0.1}),
+            (LinearRegression, {}),
+            (KNeighborsRegressor, {'n_neighbors': 1}),
+            (KNeighborsRegressor, {'n_neighbors': 3}),
+            (KNeighborsRegressor, {'n_neighbors': 5}),
+            (DecisionTreeRegressor, {}),
+            (DecisionTreeRegressor, {'max_depth': 5}),
+            (DecisionTreeRegressor, {'max_depth': 10}),
         ]
 
     def run(self):

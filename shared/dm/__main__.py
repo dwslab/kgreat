@@ -6,15 +6,16 @@ from utils.enums import TaskMode
 from utils.report import TaskReport
 from base_task import BaseTask
 from utils.io import load_entity_embeddings, load_entity_mapping
-from utils.dataset import load_dataset, Dataset
+from utils.dataset import load_dataset
 from classification_task import ClassificationTask
+from regression_task import RegressionTask
 
 
 # TODO: logging
 
 
 class TaskManager:
-    AVAILABLE_TASKS = [ClassificationTask]
+    AVAILABLE_TASKS = [ClassificationTask, RegressionTask]
 
     def __init__(self, task_id: str, dataset_config: dict):
         self.task_id = task_id

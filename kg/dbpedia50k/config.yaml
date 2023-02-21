@@ -8,3 +8,6 @@ tasks:
   'dm-AAUP_classification':
     type: dm-AAUP
     mode: classification
+  'dm-AAUP_regression':
+    type: dm-AAUP
+    mode: regression
