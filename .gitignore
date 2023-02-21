@@ -1,3 +1,4 @@
 /.idea
 /kg/dbpedia50k/embeddings/
 /kg/dbpedia50k/result/
+entities_to_map.tsv
