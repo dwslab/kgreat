@@ -35,3 +35,15 @@ tasks:  # list of all tasks to be run; check the documentation in the respective
   'dm-MetacriticMovies_regression':
     type: dm-MetacriticMovies
     mode: regression
+  'dm-Cities2000AndCountries_clustering':
+    type: dm-Cities2000AndCountries
+    mode: clustering
+  'dm-CitiesAndCountries_clustering':
+    type: dm-CitiesAndCountries
+    mode: clustering
+  'dm-CitiesMoviesAlbumsCompaniesUni_clustering':
+    type: dm-CitiesMoviesAlbumsCompaniesUni
+    mode: clustering
+  'dm-Teams_clustering':
+    type: dm-Teams
+    mode: clustering

@@ -2,10 +2,11 @@ from abc import ABC, abstractmethod
 import pandas as pd
 from utils.enums import TaskMode
 from utils.report import TaskReport
+from utils.dataset import Dataset
 
 
 class BaseTask(ABC):
-    def __init__(self, config: dict, entity_embeddings: pd.DataFrame, dataset, report: TaskReport):
+    def __init__(self, config: dict, entity_embeddings: pd.DataFrame, dataset: Dataset, report: TaskReport):
         self.config = config
         self.entity_embeddings = entity_embeddings
         self.dataset = dataset
