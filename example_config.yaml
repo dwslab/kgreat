@@ -11,3 +11,27 @@ tasks:  # list of all tasks to be run; check the documentation in the respective
   'dm-AAUP_regression':
     type: dm-AAUP
     mode: regression
+  'dm-Cities_classification':
+    type: dm-Cities
+    mode: classification
+  'dm-Cities_regression':
+    type: dm-Cities
+    mode: regression
+  'dm-Forbes_classification':
+    type: dm-Forbes
+    mode: classification
+  'dm-Forbes_regression':
+    type: dm-Forbes
+    mode: regression
+  'dm-MetacriticAlbums_classification':
+    type: dm-MetacriticAlbums
+    mode: classification
+  'dm-MetacriticAlbums_regression':
+    type: dm-MetacriticAlbums
+    mode: regression
+  'dm-MetacriticMovies_classification':
+    type: dm-MetacriticMovies
+    mode: classification
+  'dm-MetacriticMovies_regression':
+    type: dm-MetacriticMovies
+    mode: regression
