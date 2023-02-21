@@ -1,5 +1,9 @@
 run_id: 0  # ID used for the collective run of all tasks; is used as name for the result folder
 
+kg:  # information necessary to correctly parse the provided knowledge graph
+  format: tsv  # file input format (one of: "tsv", ..)
+  input_files: ['dbpedia50k_train.tsv']  # names of the files used as inputs (e.g. for computing entity embeddings)
+
 tasks:  # list of all tasks to be run; check the documentation in the respective task folder (./tasks/*) for details
   'dm-AAUP_classification':
     type: dm-AAUP

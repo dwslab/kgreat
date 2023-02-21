@@ -1,11 +1,9 @@
 def get_torchbiggraph_config():
     return dict(  # noqa
         # I/O data
-        entity_path="./kg",
-        edge_paths=[
-            "./kg/embeddings",
-        ],
-        checkpoint_path="./kg/embeddings/model",
+        entity_path='',  # filled via script
+        edge_paths=[''],  # filled via script
+        checkpoint_path='',  # filled via script
         # Graph structure
         entities={"all": {"num_partitions": 1}},
         relations=[

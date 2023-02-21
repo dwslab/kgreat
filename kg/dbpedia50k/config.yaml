@@ -1,5 +1,9 @@
 run_id: 0
 
+kg:
+  format: tsv
+  input_files: ['dbpedia50k_train.tsv']
+
 tasks:
   'dm-AAUP_classification':
     type: dm-AAUP
