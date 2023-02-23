@@ -5,10 +5,11 @@ class TaskMode(Enum):
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
     CLUSTERING = 'clustering'
-    DOCUMENT_SIMILARITY = 'document_similarity'
-    ENTITY_RELATEDNESS = 'entity_relatedness'
-    SEMANTIC_ANALOGIES = 'semantic_analogies'
+    DOCUMENT_SIMILARITY = 'documentSimilarity'
+    ENTITY_RELATEDNESS = 'entityRelatedness'
+    SEMANTIC_ANALOGIES = 'semanticAnalogies'
 
 
 class DatasetFormat(Enum):
     TSV = 'tsv'
+    DOCUMENT_SIMILARITY = 'documentSimilarity'

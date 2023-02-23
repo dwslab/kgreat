@@ -36,7 +36,6 @@ http://www.wikidata.org/entity/Q579611	http://dbpedia.org/resource/Haverford_Col
 http://www.wikidata.org/entity/Q1951942	http://dbpedia.org/resource/Muhlenberg_College	http://dbpedia.org/resource/Muhlenberg_College	Muhlenberg_College
 http://www.wikidata.org/entity/Q6665223	http://dbpedia.org/resource/Lock_Haven_University_of_Pennsylvania	http://dbpedia.org/resource/Lock_Haven_University_of_Pennsylvania	Lock_Haven_University_of_Pennsylvania
 http://www.wikidata.org/entity/Q5166453	http://dbpedia.org/resource/Converse_College	http://dbpedia.org/resource/Converse_College	Converse_College
-http://www.wikidata.org/entity/Q3298337	http://dbpedia.org/resource/Augustana_College_(Illinois)	http://dbpedia.org/resource/Augustana_College_(Illinois)	Augustana_College_(Illinois)
 http://www.wikidata.org/entity/Q1798619	http://dbpedia.org/resource/Lipscomb_University	http://dbpedia.org/resource/Lipscomb_University	Lipscomb_University
 http://www.wikidata.org/entity/Q7458159	http://dbpedia.org/resource/Sewanee:_The_University_of_the_South	http://dbpedia.org/resource/Sewanee:_The_University_of_the_South	Sewanee:_The_University_of_the_South
 http://www.wikidata.org/entity/Q49212	http://dbpedia.org/resource/Texas_A&M_University	http://dbpedia.org/resource/Texas_A&M_University	Texas_A&M_University
@@ -117,7 +116,6 @@ http://www.wikidata.org/entity/Q5652346	http://dbpedia.org/resource/Happiness_Lt
 http://www.wikidata.org/entity/Q3280946	http://dbpedia.org/resource/Kids_in_the_Street	http://dbpedia.org/resource/Kids_in_the_Street	Kids_in_the_Street
 http://www.wikidata.org/entity/Q1066402	http://dbpedia.org/resource/R.O.O.T.S.	http://dbpedia.org/resource/R.O.O.T.S.	R.O.O.T.S.
 http://www.wikidata.org/entity/Q5436644	http://dbpedia.org/resource/Fasciinatiion	http://dbpedia.org/resource/Fasciinatiion	Fasciinatiion
-http://www.wikidata.org/entity/Q629989	http://dbpedia.org/resource/The_Open_Door	http://dbpedia.org/resource/The_Open_Door	The_Open_Door
 http://www.wikidata.org/entity/Q525847	http://dbpedia.org/resource/Back_on_My_B.S.	http://dbpedia.org/resource/Back_on_My_B.S.	Back_on_My_B.S.
 http://www.wikidata.org/entity/Q2556831	http://dbpedia.org/resource/Shaman_(album)	http://dbpedia.org/resource/Shaman_(album)	Shaman_(album)
 http://www.wikidata.org/entity/Q4827119	http://dbpedia.org/resource/Autumn,_Again	http://dbpedia.org/resource/Autumn,_Again	Autumn,_Again
@@ -497,7 +495,6 @@ http://www.wikidata.org/entity/Q372299	http://dbpedia.org/resource/Billy_Madison
 		http://dbpedia.org/resource/Muhlenberg_College	Muhlenberg_College
 		http://dbpedia.org/resource/Lock_Haven_University_of_Pennsylvania	Lock_Haven_University_of_Pennsylvania
 		http://dbpedia.org/resource/Converse_College	Converse_College
-		http://dbpedia.org/resource/Augustana_College_(Illinois)	Augustana_College_(Illinois)
 		http://dbpedia.org/resource/Lipscomb_University	Lipscomb_University
 		http://dbpedia.org/resource/Sewanee:_The_University_of_the_South	Sewanee:_The_University_of_the_South
 		http://dbpedia.org/resource/Texas_A&M_University	Texas_A&M_University
@@ -530,7 +527,6 @@ http://www.wikidata.org/entity/Q372299	http://dbpedia.org/resource/Billy_Madison
 		http://dbpedia.org/resource/Kids_in_the_Street	Kids_in_the_Street
 		http://dbpedia.org/resource/R.O.O.T.S.	R.O.O.T.S.
 		http://dbpedia.org/resource/Fasciinatiion	Fasciinatiion
-		http://dbpedia.org/resource/The_Open_Door	The_Open_Door
 		http://dbpedia.org/resource/Back_on_My_B.S.	Back_on_My_B.S.
 		http://dbpedia.org/resource/Shaman_(album)	Shaman_(album)
 		http://dbpedia.org/resource/Autumn,_Again	Autumn,_Again
@@ -685,3 +681,16 @@ http://www.wikidata.org/entity/Q372299	http://dbpedia.org/resource/Billy_Madison
 		http://dbpedia.org/resource/England_national_football_team	England_national_football_team
 		http://dbpedia.org/resource/Montserrat_national_football_team	Montserrat_national_football_team
 		http://dbpedia.org/resource/Poland_national_under-20_football_team	Poland_national_under-20_football_team
+		http://dbpedia.org/resource/George_W._Bush	George_W._Bush
+		http://dbpedia.org/resource/Iran	Iran
+		http://dbpedia.org/resource/Syria	Syria
+		http://dbpedia.org/resource/Washington_(state)	Washington_(state)
+		http://dbpedia.org/resource/Georgia_(U.S._state)	Georgia_(U.S._state)
+		http://dbpedia.org/resource/Korea	Korea
+		http://dbpedia.org/resource/Malawi	Malawi
+		http://dbpedia.org/resource/Africa	Africa
+		http://dbpedia.org/resource/Sharia	Sharia
+		http://dbpedia.org/resource/South_Africa	South_Africa
+		http://dbpedia.org/resource/Batasuna	Batasuna
+		http://dbpedia.org/resource/Basque_language	Basque_language
+		http://dbpedia.org/resource/Basque_nationalism	Basque_nationalism

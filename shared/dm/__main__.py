@@ -10,15 +10,16 @@ from utils.dataset import load_dataset
 from classification_task import ClassificationTask
 from regression_task import RegressionTask
 from clustering_task import ClusteringTask
+from documentsimilarity_task import DocumentSimilarityTask
 
 
 # TODO: logging
 # TODO: improvements through standard scaler?
-# TODO: count unmapped entities as errors? (e.g. see Clustering in GEval
+# TODO: count unmapped entities as errors? (e.g. see Clustering in GEval)
 
 
 class TaskManager:
-    AVAILABLE_TASKS = [ClassificationTask, RegressionTask, ClusteringTask]
+    AVAILABLE_TASKS = [ClassificationTask, RegressionTask, ClusteringTask, DocumentSimilarityTask]
 
     def __init__(self, task_id: str, dataset_config: dict):
         self.task_id = task_id

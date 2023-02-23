@@ -1,5 +1,7 @@
-import pandas as pd
+from typing import List, Dict, Tuple
 from abc import ABC, abstractmethod
+import json
+import pandas as pd
 from utils.enums import DatasetFormat
 
 
@@ -69,6 +71,54 @@ class TsvDataset(Dataset):
 
     def get_entity_labels(self) -> pd.Series:
         return self.mapped_data
+
+
+class DocumentSimilarityDataset(Dataset):
+    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(config, entity_mapping)
+        self.entity_file = config['entity_file']
+        self.docsim_file = config['docsim_file']
+        self.document_entities = {}
+        self.mapped_document_entities = {}
+        self.document_similarities = {}
+
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.DOCUMENT_SIMILARITY
+
+    def load(self):
+        # load document entities
+        with open(self.entity_file) as f:
+            doc_entities_data = json.load(f)
+        for i, doc_data in enumerate(doc_entities_data, start=1):
+            self.document_entities[i] = {ent_data['entity']: ent_data['weight'] for ent_data in doc_data['annotations']}
+        # load document similarities
+        for doc1, doc2, sim in pd.read_csv(self.docsim_file, sep=',', header=0).itertuples(index=False):
+            docs_key = tuple(sorted((doc1, doc2)))
+            self.document_similarities[docs_key] = sim
+        # apply mapping to entities
+        for doc_id, ents in self.document_entities.items():
+            mapped_doc_ents = {self.entity_mapping[e]: w for e, w in ents.items() if e in self.entity_mapping}
+            self.mapped_document_entities[doc_id] = mapped_doc_ents
+
+    def get_entities(self) -> pd.DataFrame:
+        return pd.DataFrame({k: [e for ents in self.document_entities.values() for e in ents] for k in self.entity_keys}).drop_duplicates()
+
+    def get_mapped_entities(self) -> set:
+        return {e for ents in self.mapped_document_entities.values() for e in ents}
+
+    def get_entity_labels(self) -> pd.Series:
+        raise NotImplementedError('Method not implemented for DocumentSimilarity task.')
+
+    def get_document_ids(self) -> List[int]:
+        return list(self.document_entities)
+
+    def get_mapped_entities_for_document(self, document_id: int) -> Tuple[List[str], List[float]]:
+        entities_with_weights = self.mapped_document_entities[document_id]
+        return list(entities_with_weights), list(entities_with_weights.values())
+
+    def get_document_similarities(self) -> Dict[Tuple[int, int], float]:
+        return self.document_similarities
 
 
 def load_dataset(config: dict, entity_mapping: pd.DataFrame) -> Dataset:

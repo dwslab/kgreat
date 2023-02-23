@@ -47,3 +47,6 @@ tasks:  # list of all tasks to be run; check the documentation in the respective
   'dm-Teams_clustering':
     type: dm-Teams
     mode: clustering
+  'dm-LP50_documentSimilarity':
+    type: dm-LP50
+    mode: documentSimilarity
