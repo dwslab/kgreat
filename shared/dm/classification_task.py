@@ -6,10 +6,13 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from utils.enums import TaskMode
+from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
 class ClassificationTask(BaseTask):
+    dataset: TsvDataset
+
     @classmethod
     def get_mode(cls) -> TaskMode:
         return TaskMode.CLASSIFICATION

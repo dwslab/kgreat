@@ -5,10 +5,13 @@ from sklearn.base import BaseEstimator
 from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans
 from utils.enums import TaskMode
+from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
 class ClusteringTask(BaseTask):
+    dataset: TsvDataset
+
     @classmethod
     def get_mode(cls) -> TaskMode:
         return TaskMode.CLUSTERING
@@ -22,11 +25,12 @@ class ClusteringTask(BaseTask):
             (AgglomerativeClustering, {'n_clusters': n_clusters, 'linkage': 'average'}),
         ]
 
-    def _get_metrics(self) -> Dict[str, Callable]:
+    @staticmethod
+    def _get_metrics() -> Dict[str, Callable]:
         return {
             'ARI': metrics.adjusted_rand_score,
             'NMI': metrics.normalized_mutual_info_score,
-            'accuracy': self._compute_clustering_accuracy
+            'accuracy': ClusteringTask._compute_clustering_accuracy
         }
 
     @staticmethod

@@ -6,10 +6,13 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import cross_validate
 from utils.enums import TaskMode
+from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
 class RegressionTask(BaseTask):
+    dataset: TsvDataset
+
     @classmethod
     def get_mode(cls) -> TaskMode:
         return TaskMode.REGRESSION
