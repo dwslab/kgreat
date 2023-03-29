@@ -50,3 +50,6 @@ tasks:
   'dm-LP50_documentSimilarity':
     type: dm-LP50
     mode: documentSimilarity
+  'dm-KORE_entityRelatedness':
+    type: dm-KORE
+    mode: entityRelatedness

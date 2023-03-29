@@ -50,3 +50,6 @@ tasks:  # list of all tasks to be run; check the documentation in the respective
   'dm-LP50_documentSimilarity':
     type: dm-LP50
     mode: documentSimilarity
+  'dm-KORE_entityRelatedness':
+    type: dm-KORE
+    mode: entityRelatedness

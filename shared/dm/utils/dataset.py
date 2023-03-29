@@ -1,5 +1,6 @@
 from typing import List, Dict, Tuple
 from abc import ABC, abstractmethod
+from collections import defaultdict
 import json
 import pandas as pd
 from utils.enums import DatasetFormat
@@ -31,10 +32,6 @@ class Dataset(ABC):
 
     @abstractmethod
     def get_mapped_entities(self) -> set:
-        pass
-
-    @abstractmethod
-    def get_entity_labels(self) -> pd.Series:
         pass
 
 
@@ -73,6 +70,45 @@ class TsvDataset(Dataset):
         return self.mapped_data
 
 
+class EntityRelatednessDataset(Dataset):
+    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(config, entity_mapping)
+        self.data_file = config['data_file']
+        self.data = defaultdict(list)
+        self.mapped_data = {}
+
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.ENTITY_RELATEDNESS
+
+    def load(self):
+        # load entities and their related entities
+        current_main_ent = None
+        for main_ent, related_ent in pd.read_csv(self.data_file, sep='\t', header=0).itertuples(index=False):
+            if isinstance(main_ent, str):
+                current_main_ent = main_ent
+            elif isinstance(related_ent, str):
+                self.data[current_main_ent].append(related_ent)
+        # assign explicit indices to related entities
+        self.data = {me: {re: idx for idx, re in enumerate(related_ents)} for me, related_ents in self.data.items()}
+        # apply mapping to entities
+        for ent, rel_ents in self.data.items():
+            mapped_rel_ents = {}
+            if ent in self.entity_mapping:
+                mapped_rel_ents = {self.entity_mapping[e]: idx for idx, e in rel_ents.item() if e in self.entity_mapping}
+            self.mapped_data[self.entity_mapping[ent]] = mapped_rel_ents
+
+    def get_entities(self) -> pd.DataFrame:
+        ents = set(self.data) | {e for ents in self.data.values() for e in ents}
+        return pd.DataFrame({k: list(ents) for k in self.entity_keys})
+
+    def get_mapped_entities(self) -> set:
+        return set(self.mapped_data) | {e for ents in self.mapped_data.values() for e in ents}
+
+    def get_entities_with_related_entities(self, mapped: bool) -> Dict[str, Dict[str, int]]:
+        return self.mapped_data if mapped else self.data
+
+
 class DocumentSimilarityDataset(Dataset):
     def __init__(self, config: dict, entity_mapping: pd.DataFrame):
         super().__init__(config, entity_mapping)
@@ -106,9 +142,6 @@ class DocumentSimilarityDataset(Dataset):
 
     def get_mapped_entities(self) -> set:
         return {e for ents in self.mapped_document_entities.values() for e in ents}
-
-    def get_entity_labels(self) -> pd.Series:
-        raise NotImplementedError('Method not implemented for DocumentSimilarity task.')
 
     def get_document_ids(self) -> List[int]:
         return list(self.document_entities)

@@ -11,6 +11,7 @@ from classification_task import ClassificationTask
 from regression_task import RegressionTask
 from clustering_task import ClusteringTask
 from documentsimilarity_task import DocumentSimilarityTask
+from entityrelatedness_task import EntityRelatednessTask
 
 
 # TODO: logging
@@ -19,7 +20,9 @@ from documentsimilarity_task import DocumentSimilarityTask
 
 
 class TaskManager:
-    AVAILABLE_TASKS = [ClassificationTask, RegressionTask, ClusteringTask, DocumentSimilarityTask]
+    AVAILABLE_TASKS = [
+        ClassificationTask, RegressionTask, ClusteringTask, DocumentSimilarityTask, EntityRelatednessTask
+    ]
 
     def __init__(self, task_id: str, dataset_config: dict):
         self.task_id = task_id

@@ -1,11 +1,11 @@
 from collections import namedtuple
 import csv
 from utils.io import get_kg_result_path
-from utils.enums import TaskMode
+from utils.enums import TaskMode, EntityMode
 from utils.dataset import Dataset
 
 
-TaskResult = namedtuple('TaskResult', ['estimator', 'estimator_config', 'metric', 'score'])
+TaskResult = namedtuple('TaskResult', ['entity_mode', 'estimator', 'estimator_config', 'metric', 'score'])
 
 
 class TaskReport:
@@ -15,14 +15,14 @@ class TaskReport:
         self.dataset = dataset
         self.results = []
 
-    def add_result(self, estimator: str, estimator_config: dict, metric: str, score: float):
-        self.results.append(TaskResult(estimator, estimator_config, metric, score))
+    def add_result(self, entity_mode: EntityMode, estimator: str, estimator_config: dict, metric: str, score: float):
+        self.results.append(TaskResult(entity_mode.value, estimator, estimator_config, metric, score))
 
     def store(self, run_id: str):
-        columns = ['id', 'mode', 'dataset', 'entities_total', 'entities_missing', 'estimator', 'estimator_config', 'metric', 'score']
+        columns = ['id', 'task_mode', 'dataset', 'entities_total', 'entities_missing', 'entity_mode', 'estimator', 'estimator_config', 'metric', 'score']
         entities_total = len(self.dataset.get_entities())
         entities_missing = entities_total - len(self.dataset.get_mapped_entities())
-        fixed_values = (self.task_id, self.task_mode, self.dataset.name, entities_total, entities_missing)
+        fixed_values = (self.task_id, self.task_mode.value, self.dataset.name, entities_total, entities_missing)
 
         filepath = get_kg_result_path(run_id) / f'{self.task_id}.tsv'
         with open(filepath, mode='w', newline='') as f:

@@ -10,6 +10,12 @@ class TaskMode(Enum):
     SEMANTIC_ANALOGIES = 'semanticAnalogies'
 
 
+class EntityMode(Enum):
+    ALL_ENTITIES = 'ALL'
+    KNOWN_ENTITIES = 'KNOWN'
+
+
 class DatasetFormat(Enum):
     TSV = 'tsv'
     DOCUMENT_SIMILARITY = 'documentSimilarity'
+    ENTITY_RELATEDNESS = 'entityRelatedness'
