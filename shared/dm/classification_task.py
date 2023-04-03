@@ -5,11 +5,12 @@ from sklearn.model_selection import cross_validate
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from utils.enums import TaskMode
+from utils.enums import TaskMode, EntityMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
+# TODO: implement score for EntityMode.ALL_ENTITIES
 class ClassificationTask(BaseTask):
     dataset: TsvDataset
 
@@ -43,4 +44,4 @@ class ClassificationTask(BaseTask):
             results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS)
             for metric in self.METRICS:
                 score = np.mean(results[f'test_{metric}'])
-                self.report.add_result(est.__name__, params, metric, score)
+                self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, metric, score)

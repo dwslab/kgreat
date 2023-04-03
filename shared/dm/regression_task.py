@@ -5,11 +5,12 @@ from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import cross_validate
-from utils.enums import TaskMode
+from utils.enums import TaskMode, EntityMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
+# TODO: implement score for EntityMode.ALL_ENTITIES
 class RegressionTask(BaseTask):
     dataset: TsvDataset
 
@@ -42,4 +43,4 @@ class RegressionTask(BaseTask):
             results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS)
             for metric in self.METRICS:
                 score = np.mean(results[f'test_{metric}'])
-                self.report.add_result(est.__name__, params, metric, score)
+                self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, metric, score)

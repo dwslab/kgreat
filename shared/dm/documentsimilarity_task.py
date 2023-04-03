@@ -3,11 +3,12 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 from scipy.stats import pearsonr
-from utils.enums import TaskMode
+from utils.enums import TaskMode, EntityMode
 from utils.dataset import DocumentSimilarityDataset
 from base_task import BaseTask
 
 
+# TODO: implement score for EntityMode.ALL_ENTITIES
 class DocumentSimilarityTask(BaseTask):
     dataset: DocumentSimilarityDataset
 
@@ -54,7 +55,7 @@ class DocumentSimilarityTask(BaseTask):
             docsim_pred = {docs: self._compute_document_similarity(docs, sim_func, params) for docs in docsim_gold}
             for metric, metric_scorer in self._get_metrics().items():
                 score = metric_scorer(list(docsim_gold.values()), list(docsim_pred.values()))
-                self.report.add_result(sim_func.__name__, params, metric, score)
+                self.report.add_result(EntityMode.KNOWN_ENTITIES, sim_func.__name__, params, metric, score)
 
     def _compute_document_similarity(self, docs: Tuple[int, int], sim_func: Callable, params: dict) -> float:
         doc1, doc2 = docs

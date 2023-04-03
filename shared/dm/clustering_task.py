@@ -4,11 +4,12 @@ from scipy.optimize import linear_sum_assignment
 from sklearn.base import BaseEstimator
 from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans
-from utils.enums import TaskMode
+from utils.enums import TaskMode, EntityMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
+# TODO: implement score for EntityMode.ALL_ENTITIES
 class ClusteringTask(BaseTask):
     dataset: TsvDataset
 
@@ -61,4 +62,4 @@ class ClusteringTask(BaseTask):
             # compute and report metrics
             for metric, metric_scorer in self._get_metrics().items():
                 score = metric_scorer(entity_labels.values, entity_clusters)
-                self.report.add_result(est.__name__, params, metric, score)
+                self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, metric, score)
