@@ -53,3 +53,15 @@ tasks:
   'dm-KORE_entityRelatedness':
     type: dm-KORE
     mode: entityRelatedness
+  'dm-AllCapitalCountryEntities_semanticAnalogies':
+    type: dm-AllCapitalCountryEntities
+    mode: semanticAnalogies
+  'dm-CapitalCountryEntities_semanticAnalogies':
+    type: dm-CapitalCountryEntities
+    mode: semanticAnalogies
+  'dm-CityStateEntities_semanticAnalogies':
+    type: dm-CityStateEntitiesEntities
+    mode: semanticAnalogies
+  'dm-CurrencyEntities_semanticAnalogies':
+    type: dm-CurrencyEntities
+    mode: semanticAnalogies

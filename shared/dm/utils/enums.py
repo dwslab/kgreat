@@ -19,3 +19,4 @@ class DatasetFormat(Enum):
     TSV = 'tsv'
     DOCUMENT_SIMILARITY = 'documentSimilarity'
     ENTITY_RELATEDNESS = 'entityRelatedness'
+    SEMANTIC_ANALOGIES = 'semanticAnalogies'

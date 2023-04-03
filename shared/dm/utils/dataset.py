@@ -27,6 +27,10 @@ class Dataset(ABC):
         pass
 
     @abstractmethod
+    def apply_mapping(self):
+        pass
+
+    @abstractmethod
     def get_entities(self) -> pd.DataFrame:
         pass
 
@@ -50,7 +54,8 @@ class TsvDataset(Dataset):
     def load(self):
         valid_columns = self.entity_keys + [self.label_column]
         self.data = pd.read_csv(self.data_file, sep='\t', header=0, index_col=None, usecols=valid_columns)
-        # apply mapping to entities
+
+    def apply_mapping(self):
         mapped_data = {}
         for _, row in self.data.iterrows():
             for key in self.entity_keys:
@@ -68,45 +73,6 @@ class TsvDataset(Dataset):
 
     def get_entity_labels(self) -> pd.Series:
         return self.mapped_data
-
-
-class EntityRelatednessDataset(Dataset):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.data_file = config['data_file']
-        self.data = defaultdict(list)
-        self.mapped_data = {}
-
-    @classmethod
-    def get_format(cls) -> DatasetFormat:
-        return DatasetFormat.ENTITY_RELATEDNESS
-
-    def load(self):
-        # load entities and their related entities
-        current_main_ent = None
-        for main_ent, related_ent in pd.read_csv(self.data_file, sep='\t', header=0).itertuples(index=False):
-            if isinstance(main_ent, str):
-                current_main_ent = main_ent
-            elif isinstance(related_ent, str):
-                self.data[current_main_ent].append(related_ent)
-        # assign explicit indices to related entities
-        self.data = {me: {re: idx for idx, re in enumerate(related_ents)} for me, related_ents in self.data.items()}
-        # apply mapping to entities
-        for ent, rel_ents in self.data.items():
-            mapped_rel_ents = {}
-            if ent in self.entity_mapping:
-                mapped_rel_ents = {self.entity_mapping[e]: idx for idx, e in rel_ents.item() if e in self.entity_mapping}
-            self.mapped_data[self.entity_mapping[ent]] = mapped_rel_ents
-
-    def get_entities(self) -> pd.DataFrame:
-        ents = set(self.data) | {e for ents in self.data.values() for e in ents}
-        return pd.DataFrame({k: list(ents) for k in self.entity_keys})
-
-    def get_mapped_entities(self) -> set:
-        return set(self.mapped_data) | {e for ents in self.mapped_data.values() for e in ents}
-
-    def get_entities_with_related_entities(self, mapped: bool) -> Dict[str, Dict[str, int]]:
-        return self.mapped_data if mapped else self.data
 
 
 class DocumentSimilarityDataset(Dataset):
@@ -132,7 +98,8 @@ class DocumentSimilarityDataset(Dataset):
         for doc1, doc2, sim in pd.read_csv(self.docsim_file, sep=',', header=0).itertuples(index=False):
             docs_key = tuple(sorted((doc1, doc2)))
             self.document_similarities[docs_key] = sim
-        # apply mapping to entities
+
+    def apply_mapping(self):
         for doc_id, ents in self.document_entities.items():
             mapped_doc_ents = {self.entity_mapping[e]: w for e, w in ents.items() if e in self.entity_mapping}
             self.mapped_document_entities[doc_id] = mapped_doc_ents
@@ -154,9 +121,80 @@ class DocumentSimilarityDataset(Dataset):
         return self.document_similarities
 
 
+class EntityRelatednessDataset(Dataset):
+    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(config, entity_mapping)
+        self.data_file = config['data_file']
+        self.data = defaultdict(list)
+        self.mapped_data = {}
+
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.ENTITY_RELATEDNESS
+
+    def load(self):
+        # load entities and their related entities
+        current_main_ent = None
+        for main_ent, related_ent in pd.read_csv(self.data_file, sep='\t', header=0).itertuples(index=False):
+            if isinstance(main_ent, str):
+                current_main_ent = main_ent
+            elif isinstance(related_ent, str):
+                self.data[current_main_ent].append(related_ent)
+        # assign explicit indices to related entities
+        self.data = {me: {re: idx for idx, re in enumerate(related_ents)} for me, related_ents in self.data.items()}
+
+    def apply_mapping(self):
+        for ent, rel_ents in self.data.items():
+            mapped_rel_ents = {}
+            if ent in self.entity_mapping:
+                mapped_rel_ents = {self.entity_mapping[e]: idx for idx, e in rel_ents.item() if e in self.entity_mapping}
+            self.mapped_data[self.entity_mapping[ent]] = mapped_rel_ents
+
+    def get_entities(self) -> pd.DataFrame:
+        ents = set(self.data) | {e for ents in self.data.values() for e in ents}
+        return pd.DataFrame({k: list(ents) for k in self.entity_keys})
+
+    def get_mapped_entities(self) -> set:
+        return set(self.mapped_data) | {e for ents in self.mapped_data.values() for e in ents}
+
+    def get_entities_with_related_entities(self, mapped: bool) -> Dict[str, Dict[str, int]]:
+        return self.mapped_data if mapped else self.data
+
+
+class SemanticAnalogiesDataset(Dataset):
+    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(config, entity_mapping)
+        self.data_file = config['data_file']
+        self.data = None
+        self.mapped_data = None
+
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.SEMANTIC_ANALOGIES
+
+    def load(self):
+        self.data = pd.read_csv(self.data_file, sep='\t', header=None, index_col=None, names=['a', 'b', 'c', 'd'])
+
+    def apply_mapping(self):
+        # remove any quadruple if at least one entity can't be mapped
+        self.mapped_data = self.data.applymap(lambda x: self.entity_mapping.get(x)).dropna(how='any', axis=0)
+
+    def get_entities(self) -> pd.DataFrame:
+        ents = list(set().union(*[self.data[col] for col in self.data]))
+        return pd.DataFrame({k: ents for k in self.entity_keys}).drop_duplicates()
+
+    def get_mapped_entities(self) -> set:
+        return set().union(*[self.mapped_data[col] for col in self.mapped_data])
+
+    def get_entity_analogy_sets(self, mapped: bool) -> pd.DataFrame:
+        return self.mapped_data if mapped else self.data
+
+
 def load_dataset(config: dict, entity_mapping: pd.DataFrame) -> Dataset:
     dataset_by_format = {ds.get_format(): ds for ds in Dataset.__subclasses__()}
     dataset_format = DatasetFormat(config['format'])
     dataset = dataset_by_format[dataset_format](config, entity_mapping)
     dataset.load()
+    if len(entity_mapping):
+        dataset.apply_mapping()
     return dataset
