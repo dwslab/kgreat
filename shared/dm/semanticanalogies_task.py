@@ -18,7 +18,7 @@ class SemanticAnalogiesTask(BaseTask):
         mapped_analogy_sets = self.dataset.get_entity_analogy_sets(True)
         correct_predictions_by_k = defaultdict(int)
         for analogy_set in mapped_analogy_sets.itertuples(index=False):
-            a, b, c, d = self.entity_embeddings.index[analogy_set]  # retrieve entity indices for analogy set
+            a, b, c, d = (self.entity_embeddings.index.get_loc(ent) for ent in analogy_set)  # retrieve ent indices
             d_pred = self._predict_analogy(a, b, c)
             for k in self.TOP_K:
                 if d in d_pred[:k]:
