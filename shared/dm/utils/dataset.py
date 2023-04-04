@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from abc import ABC, abstractmethod
 from collections import defaultdict
 import json
@@ -125,8 +125,8 @@ class EntityRelatednessDataset(Dataset):
     def __init__(self, config: dict, entity_mapping: pd.DataFrame):
         super().__init__(config, entity_mapping)
         self.data_file = config['data_file']
-        self.data = defaultdict(list)
-        self.mapped_data = {}
+        self.data = []
+        self.mapped_data = []
 
     @classmethod
     def get_format(cls) -> DatasetFormat:
@@ -134,31 +134,33 @@ class EntityRelatednessDataset(Dataset):
 
     def load(self):
         # load entities and their related entities
+        entity_relations = defaultdict(list)
         current_main_ent = None
         for main_ent, related_ent in pd.read_csv(self.data_file, sep='\t', header=0).itertuples(index=False):
             if isinstance(main_ent, str):
                 current_main_ent = main_ent
             elif isinstance(related_ent, str):
-                self.data[current_main_ent].append(related_ent)
-        # assign explicit indices to related entities
-        self.data = {me: {re: idx for idx, re in enumerate(related_ents)} for me, related_ents in self.data.items()}
+                entity_relations[current_main_ent].append(related_ent)
+        self.data = [(main_ent, rel_ents) for main_ent, rel_ents in entity_relations.items()]
 
     def apply_mapping(self):
-        for ent, rel_ents in self.data.items():
-            mapped_rel_ents = {}
-            if ent in self.entity_mapping:
-                mapped_rel_ents = {self.entity_mapping[e]: idx for idx, e in rel_ents.item() if e in self.entity_mapping}
-            self.mapped_data[self.entity_mapping[ent]] = mapped_rel_ents
+        for ent, rel_ents in self.data:
+            mapped_main_ent = self.entity_mapping[ent] if ent in self.entity_mapping else None
+            mapped_rel_ents = {self.entity_mapping[e]: idx for idx, e in enumerate(rel_ents) if e in self.entity_mapping}
+            self.mapped_data.append((mapped_main_ent, mapped_rel_ents))
 
     def get_entities(self) -> pd.DataFrame:
-        ents = set(self.data) | {e for ents in self.data.values() for e in ents}
+        ents = {me for me, _ in self.data} | {re for _, rel_ents in self.data for re in rel_ents}
         return pd.DataFrame({k: list(ents) for k in self.entity_keys})
 
     def get_mapped_entities(self) -> set:
-        return set(self.mapped_data) | {e for ents in self.mapped_data.values() for e in ents}
+        return {me for me, _ in self.mapped_data if me is not None} | {re for _, rel_ents in self.data for re in rel_ents}
 
-    def get_entities_with_related_entities(self, mapped: bool) -> Dict[str, Dict[str, int]]:
-        return self.mapped_data if mapped else self.data
+    def get_entity_relations(self) -> List[Tuple[str, List[str]]]:
+        return self.data
+
+    def get_mapped_entity_relations(self) -> List[Tuple[Optional[str], Dict[str, int]]]:
+        return self.mapped_data
 
 
 class SemanticAnalogiesDataset(Dataset):
