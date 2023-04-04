@@ -1,0 +1,5 @@
+name: "LP50"
+format: documentSimilarity
+entity_file: "entities.json"
+docsim_file: "docsim.csv"
+entity_keys: ["DBpedia16_URI"]

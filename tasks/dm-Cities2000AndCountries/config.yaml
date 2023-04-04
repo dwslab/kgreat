@@ -1,0 +1,5 @@
+name: "Cities2000AndCountries"
+format: tsv
+data_file: "examples.tsv"
+entity_keys: ["DBpedia16_URI"]
+label: "cluster"

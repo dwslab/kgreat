@@ -4,8 +4,6 @@ WORKDIR /app
 ADD tasks/dm-CitiesAndCountries .
 ADD shared/dm .
 
-ENV KGREAT_DATASET='{"name": "CitiesAndCountries", "format": "tsv", "data_file": "examples.tsv", "entity_keys": ["DBpedia16_URI"], "label": "cluster"}'
-
 RUN pip3 install pyyaml pandas scikit-learn
 
 CMD ["python3", "."]

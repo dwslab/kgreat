@@ -1,5 +1,5 @@
 import os
-import json
+import yaml
 from typing import Type
 from utils.io import load_config
 from utils.enums import TaskMode
@@ -12,16 +12,16 @@ from regression_task import RegressionTask
 from clustering_task import ClusteringTask
 from documentsimilarity_task import DocumentSimilarityTask
 from entityrelatedness_task import EntityRelatednessTask
+from semanticanalogies_task import SemanticAnalogiesTask
 
 
 # TODO: logging
-# TODO: improvements through standard scaler?
-# TODO: count unmapped entities as errors? (e.g. see Clustering in GEval)
 
 
 class TaskManager:
     AVAILABLE_TASKS = [
-        ClassificationTask, RegressionTask, ClusteringTask, DocumentSimilarityTask, EntityRelatednessTask
+        ClassificationTask, RegressionTask, ClusteringTask,
+        DocumentSimilarityTask, EntityRelatednessTask, SemanticAnalogiesTask
     ]
 
     def __init__(self, task_id: str, dataset_config: dict):
@@ -37,7 +37,7 @@ class TaskManager:
         entity_mapping = load_entity_mapping()
         dataset = load_dataset(self.dataset_config, entity_mapping)
         # prepare and run task
-        report = TaskReport(self.task_id, self._get_task_class().get_mode().value, dataset)
+        report = TaskReport(self.task_id, self._get_task_class().get_mode(), dataset)
         task = self._get_task_class()(self.task_config, entity_embeddings, dataset, report)
         task.run()
         report.store(self.config['run_id'])
@@ -49,6 +49,7 @@ class TaskManager:
 
 if __name__ == "__main__":
     task_id = os.environ['KGREAT_TASK']
-    dataset_config = json.loads(os.environ['KGREAT_DATASET'])
+    with open('config.yaml', mode='r') as f:
+        dataset_config = yaml.safe_load(f)
     tm = TaskManager(task_id, dataset_config)
     tm.run_task()
