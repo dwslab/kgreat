@@ -12,21 +12,21 @@ All code should be executed from the project root.
 ## Running Embedding Generation
 First build the docker container:
 ```
-docker build -t kgreat.preprocessing.embeddings -f ./shared/preprocessing/embeddings/Dockerfile .
+docker build -t gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embeddings -f ./shared/preprocessing/embeddings/Dockerfile .
 ```
 
 Then run the docker container:
 ```
-docker run --mount type=bind,src="$(pwd)/kg/dbpedia50k",target="/app/kg" kgreat.preprocessing.embeddings
+docker run --mount type=bind,src="$(pwd)/kg/dbpedia50k",target="/app/kg" gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embeddings
 ```
 
 ## Running a Task
 First build the docker container (after making sure that your docker daemon is running):
 ```
-docker build -t kgreat.task.dm-aaup -f ./tasks/dm-AAUP/Dockerfile .
+docker build -t gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/task/dm-aaup -f ./tasks/dm-AAUP/Dockerfile .
 ```
 
 Then run the docker container:
 ```
-docker run --mount type=bind,src="$(pwd)/kg/dbpedia50k",target="/app/kg" -e KGREAT_TASK=dm-AAUP_classification kgreat.task.dm-aaup
+docker run --mount type=bind,src="$(pwd)/kg/dbpedia50k",target="/app/kg" -e KGREAT_TASK=dm-AAUP_classification gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/task/dm-aaup
 ```
