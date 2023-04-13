@@ -1,4 +1,9 @@
 /.idea
 /kg/dbpedia50k/embeddings/
 /kg/dbpedia50k/result/
+/kg/dbpedia2016/dbpedia_2016-10.nt
+/kg/dbpedia2016/instance_types_en.ttl.bz2
+/kg/dbpedia2016/mappingbased_objects_en.ttl.bz2
+/kg/dbpedia2016/embeddings/
+/kg/dbpedia2016/result/
 entities_to_map.tsv
