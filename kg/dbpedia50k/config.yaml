@@ -1,8 +1,9 @@
 run_id: 0
 
 kg:
+  name: DBpedia50k
   format: tsv
-  input_files: ['dbpedia50k_train.tsv']
+  embedding_models: ['TransE_l1', 'TransE_l2']
 
 tasks:
   'dm-AAUP_classification':

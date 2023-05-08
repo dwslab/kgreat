@@ -38,10 +38,11 @@ class ClassificationTask(BaseTask):
         entity_labels = self.dataset.get_entity_labels()
         if len(entity_labels) < self.N_SPLITS:
             return  # skip task if we have too few samples
-        entity_features = self.entity_embeddings.loc[entity_labels.index, :]
-        for est, params in self._get_estimators():
-            model = est(**params)
-            results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS)
-            for metric in self.METRICS:
-                score = np.mean(results[f'test_{metric}'])
-                self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, metric, score)
+        for embedding_type in self.embedding_models:
+            entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
+            for est, params in self._get_estimators():
+                model = est(**params)
+                results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS)
+                for metric in self.METRICS:
+                    score = float(np.mean(results[f'test_{metric}']))
+                    self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, score)

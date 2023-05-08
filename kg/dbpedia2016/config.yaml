@@ -1,8 +1,9 @@
 run_id: 0
 
 kg:
+  name: DBpedia2016
   format: nt
-  input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
+  embedding_models: ['TransE_l2']
 
 tasks:
   'dm-AAUP_classification':

@@ -3,8 +3,8 @@ import yaml
 from pathlib import Path
 
 
-def load_entity_embeddings() -> pd.DataFrame:
-    filepath = get_kg_path() / 'embeddings' / 'entity_embeddings.tsv'
+def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
+    filepath = get_kg_path() / 'embeddings' / f'{embedding_type}.tsv'
     return pd.read_csv(filepath, sep='\t', header=None, index_col=0)
 
 

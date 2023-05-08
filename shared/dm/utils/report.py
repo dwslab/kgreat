@@ -5,7 +5,7 @@ from utils.enums import TaskMode, EntityMode
 from utils.dataset import Dataset
 
 
-TaskResult = namedtuple('TaskResult', ['entity_mode', 'estimator', 'estimator_config', 'metric', 'score'])
+TaskResult = namedtuple('TaskResult', ['entity_mode', 'estimator', 'estimator_config', 'embedding_type', 'metric', 'score'])
 
 
 class TaskReport:
@@ -15,11 +15,11 @@ class TaskReport:
         self.dataset = dataset
         self.results = []
 
-    def add_result(self, entity_mode: EntityMode, estimator: str, estimator_config: dict, metric: str, score: float):
-        self.results.append(TaskResult(entity_mode.value, estimator, estimator_config, metric, score))
+    def add_result(self, entity_mode: EntityMode, estimator: str, estimator_config: dict, embedding_type: str, metric: str, score: float):
+        self.results.append(TaskResult(entity_mode.value, estimator, estimator_config, embedding_type, metric, score))
 
     def store(self, run_id: str):
-        columns = ['id', 'task_mode', 'dataset', 'entities_total', 'entities_missing', 'entity_mode', 'estimator', 'estimator_config', 'metric', 'score']
+        columns = ['id', 'task_mode', 'dataset', 'entities_total', 'entities_missing', 'entity_mode', 'estimator', 'estimator_config', 'embedding_type', 'metric', 'score']
         entities_total = len(self.dataset.get_entities())
         entities_missing = entities_total - len(self.dataset.get_mapped_entities())
         fixed_values = (self.task_id, self.task_mode.value, self.dataset.name, entities_total, entities_missing)

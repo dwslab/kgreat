@@ -4,12 +4,14 @@ import pandas as pd
 from utils.enums import TaskMode
 from utils.report import TaskReport
 from utils.dataset import Dataset
+from utils.io import load_entity_embeddings
 
 
 class BaseTask(ABC):
-    def __init__(self, config: dict, entity_embeddings: pd.DataFrame, dataset: Dataset, report: TaskReport):
-        self.config = config
-        self.entity_embeddings = entity_embeddings.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # unit vectors
+    def __init__(self, kg_config: dict, task_config: dict, dataset: Dataset, report: TaskReport):
+        self.kg_config = kg_config
+        self.embedding_models = self.kg_config['embedding_models']
+        self.task_config = task_config
         self.dataset = dataset
         self.report = report
 
@@ -21,3 +23,8 @@ class BaseTask(ABC):
     @abstractmethod
     def run(self):
         pass
+
+    @staticmethod
+    def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
+        embeddings = load_entity_embeddings(embedding_type)
+        return embeddings.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # normalize to unit vectors

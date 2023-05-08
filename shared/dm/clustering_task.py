@@ -50,16 +50,17 @@ class ClusteringTask(BaseTask):
         n_clusters = entity_labels.nunique()
         if n_clusters <= 1:
             return  # skip task if we have at most one cluster
-        entity_features = self.entity_embeddings.loc[entity_labels.index, :]
-        for est, params in self._get_estimators(n_clusters):
-            model = est(**params).fit(entity_features)
-            entity_clusters = model.labels_
-            # assign entities without cluster to a unique cluster each
-            for idx, cluster_id in enumerate(entity_clusters):
-                if cluster_id == -1:
-                    entity_clusters[idx] = n_clusters
-                    n_clusters += 1
-            # compute and report metrics
-            for metric, metric_scorer in self._get_metrics().items():
-                score = metric_scorer(entity_labels.values, entity_clusters)
-                self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, metric, score)
+        for embedding_type in self.embedding_models:
+            entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
+            for est, params in self._get_estimators(n_clusters):
+                model = est(**params).fit(entity_features)
+                entity_clusters = model.labels_
+                # assign entities without cluster to a unique cluster each
+                for idx, cluster_id in enumerate(entity_clusters):
+                    if cluster_id == -1:
+                        entity_clusters[idx] = n_clusters
+                        n_clusters += 1
+                # compute and report metrics
+                for metric, metric_scorer in self._get_metrics().items():
+                    score = metric_scorer(entity_labels.values, entity_clusters)
+                    self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, score)
