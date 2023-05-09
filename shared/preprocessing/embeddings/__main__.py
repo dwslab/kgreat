@@ -93,7 +93,7 @@ def _train_embeddings(config: dict):
                 command += ['--gpu', int(config['gpu']), '--mix_cpu_gpu']
             except ValueError:
                 continue  # ignore if no gpu index specified
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(command)
         print(process.communicate()[1])  # TODO: Logging!
         print(f'Finished training model {model_name}')
 
