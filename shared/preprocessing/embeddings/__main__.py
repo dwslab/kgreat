@@ -90,10 +90,11 @@ def _train_embeddings(config: dict):
         if 'gpu' in config:
             try:
                 # TODO: support multiple GPUs
-                command += ['--gpu', int(config['gpu']), '--mix_cpu_gpu']
+                gpu_idx = str(int(config['gpu']))  # first convert to int to check validity
+                command += ['--gpu', gpu_idx, '--mix_cpu_gpu']
             except ValueError:
                 continue  # ignore if no gpu index specified
-        process = subprocess.Popen(command)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(process.communicate()[1])  # TODO: Logging!
         print(f'Finished training model {model_name}')
 
