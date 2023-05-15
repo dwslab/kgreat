@@ -1,3 +1,4 @@
+from typing import List
 from pathlib import Path
 import yaml
 import subprocess
@@ -27,13 +28,18 @@ def make_embeddings():
         kg_config = yaml.safe_load(f)['kg']
     _convert_graph_data(kg_config)
     # check if all specified embedding models are supported
-    unsupported_models = set(kg_config['embedding_models']).difference(set(EMBEDDING_BASE_CONFIGS))
+    embedding_config = kg_config['embeddings']
+    unsupported_models = set(embedding_config['models']).difference(set(EMBEDDING_BASE_CONFIGS))
     if unsupported_models:
         print(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')  # TODO: logging!
-        kg_config['embedding_models'] = [m for m in kg_config['embedding_models'] if m not in unsupported_models]
+        embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
     # train and persist embeddings
-    _train_embeddings(kg_config)
-    _serialize_embeddings(kg_config)
+    kg_name = kg_config['name']
+    embedding_models = embedding_config['models']
+    _cleanup_temp_embedding_folders(kg_name, embedding_models)
+    _train_embeddings(kg_name, embedding_config)
+    _serialize_embeddings(kg_name, embedding_models)
+    _cleanup_temp_embedding_folders(kg_name, embedding_models)
 
 
 def _convert_graph_data(kg_config: dict):
@@ -68,47 +74,46 @@ def _write_dglke_file(data: list, separator: str, filename: str):
             f.write(f'{separator.join(vals)}\n')
 
 
-def _train_embeddings(config: dict):
-    for model_name in config['embedding_models']:
+def _train_embeddings(kg_name: str, embedding_config: dict):
+    for model_name in embedding_config['models']:
         command = [
             'dglke_train',
             '--model_name', model_name,
-            '--dataset', config['name'],
+            '--dataset', kg_name,
             '--data_path', str(EMBEDDINGS_DIR),
             '--save_path', str(KG_DIR),
             '--data_files', 'entities.dict', 'relations.dict', 'train.tsv',
             '--format', 'udd_hrt',
-            '--batch_size', '1000',
+            '--batch_size', str(embedding_config['batch_size']),
             '--neg_sample_size', '200',
             '--hidden_dim', '200',
-            '--gamma', '19.9',
-            '--lr', '0.25',
-            '--max_step', '100000',  # TODO: increase to 1M steps?
+            '--max_step', str(embedding_config['max_step']),
             '--log_interval', '1000',
             '-adv'
         ] + EMBEDDING_BASE_CONFIGS[model_name]
-        if 'gpu' in config:
-            try:
-                # TODO: support multiple GPUs
-                gpu_idx = str(int(config['gpu']))  # first convert to int to check validity
-                command += ['--gpu', gpu_idx, '--mix_cpu_gpu']
-            except ValueError:
-                continue  # ignore if no gpu index specified
+        if 'gpu' in embedding_config and embedding_config['gpu'] != 'None':
+            command += ['--gpu', str(embedding_config['gpu']), '--mix_cpu_gpu']
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(process.communicate()[1])  # TODO: Logging!
         print(f'Finished training model {model_name}')
 
 
-def _serialize_embeddings(config: dict):
+def _serialize_embeddings(kg_name: str, embedding_models: List[str]):
     # load vectors of the respective models and merge indices with actual entity names
     entity_dict = pd.read_csv(EMBEDDINGS_DIR / 'entities.dict', index_col=0, sep='\t', header=None, names=['entity'])
-    for model_name in config['embedding_models']:
-        embedding_folder = KG_DIR / '_'.join([model_name, config['name'], '0'])
-        embedding_file = embedding_folder / '_'.join([config['name'], model_name, 'entity.npy'])
+    for model_name in embedding_models:
+        embedding_folder = KG_DIR / '_'.join([model_name, kg_name, '0'])
+        embedding_file = embedding_folder / '_'.join([kg_name, model_name, 'entity.npy'])
         embedding_vecs = pd.DataFrame(data=np.load(str(embedding_file)), columns=range(200))
         entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True)
         entity_vecs.to_csv(EMBEDDINGS_DIR / f'{model_name}.tsv', sep='\t', header=False, index=False)
-        shutil.rmtree(embedding_folder)  # cleanup
+
+
+def _cleanup_temp_embedding_folders(kg_name: str, embedding_models: List[str]):
+    for model_name in embedding_models:
+        for dir in KG_DIR.glob(f'{model_name}_{kg_name}_*'):
+            if dir.is_dir():
+                shutil.rmtree(dir)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,11 @@ run_id: 0
 kg:
   name: DBpedia50k
   format: tsv
-  embedding_models: ['TransE_l1', 'TransE_l2']
+  embeddings:
+    gpu: None
+    models: ['TransE_l1']
+    batch_size: 1000
+    max_step: 100000
 
 tasks:
   'dm-AAUP_classification':
