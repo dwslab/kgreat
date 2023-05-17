@@ -69,7 +69,7 @@ class TsvDataset(Dataset):
         return self.data[self.entity_keys].drop_duplicates()
 
     def get_mapped_entities(self) -> set:
-        return set(self.mapped_data)
+        return set(self.mapped_data.index)
 
     def get_entity_labels(self) -> pd.Series:
         return self.mapped_data

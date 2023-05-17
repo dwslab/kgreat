@@ -5,7 +5,7 @@ from utils.io import load_config
 from utils.enums import TaskMode
 from utils.report import TaskReport
 from base_task import BaseTask
-from utils.io import load_entity_embeddings, load_entity_mapping
+from utils.io import load_entity_mapping
 from utils.dataset import load_dataset
 from classification_task import ClassificationTask
 from regression_task import RegressionTask
