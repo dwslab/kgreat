@@ -1,9 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9
-WORKDIR /app
-ADD tasks/dm-CapitalCountryEntities .
-ADD shared/dm .
-
 RUN pip3 install pyyaml pandas scikit-learn
-
+WORKDIR /app
+ADD shared/dm .
+ADD tasks/dm-CapitalCountryEntities .
 CMD ["python3", "."]
