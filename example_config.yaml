@@ -65,7 +65,7 @@ tasks:  # list of all tasks to be run; check the documentation in the respective
     type: dm-CapitalCountryEntities
     mode: semanticAnalogies
   'dm-CityStateEntities_semanticAnalogies':
-    type: dm-CityStateEntitiesEntities
+    type: dm-CityStateEntities
     mode: semanticAnalogies
   'dm-CurrencyEntities_semanticAnalogies':
     type: dm-CurrencyEntities

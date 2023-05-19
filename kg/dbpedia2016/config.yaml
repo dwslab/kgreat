@@ -65,7 +65,7 @@ tasks:
     type: dm-CapitalCountryEntities
     mode: semanticAnalogies
   'dm-CityStateEntities_semanticAnalogies':
-    type: dm-CityStateEntitiesEntities
+    type: dm-CityStateEntities
     mode: semanticAnalogies
   'dm-CurrencyEntities_semanticAnalogies':
     type: dm-CurrencyEntities

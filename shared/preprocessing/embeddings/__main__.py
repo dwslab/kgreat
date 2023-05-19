@@ -96,7 +96,7 @@ def _train_embeddings(embedding_config: dict, gpu: Optional[str]):
         if gpu != 'None':
             command += ['--gpu', gpu, '--mix_cpu_gpu']
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        _get_logger().debug(process.communicate()[1])
+        _get_logger().debug(process.communicate()[1].decode())
 
 
 def _serialize_embeddings(embedding_models: List[str]):
