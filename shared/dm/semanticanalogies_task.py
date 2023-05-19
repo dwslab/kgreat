@@ -2,6 +2,7 @@ from typing import List
 from collections import defaultdict
 import numpy as np
 import pandas as pd
+from utils.logging import get_logger
 from utils.enums import TaskMode, EntityMode
 from utils.dataset import SemanticAnalogiesDataset
 from base_task import BaseTask
@@ -20,6 +21,7 @@ class SemanticAnalogiesTask(BaseTask):
         for embedding_type in self.embedding_models:
             correct_predictions_by_k = defaultdict(int)
             entity_embeddings = self.load_entity_embeddings(embedding_type)
+            get_logger().debug(f'Evaluating semantic analogies via cosine distance for embedding type {embedding_type}')
             for analogy_set in mapped_analogy_sets.itertuples(index=False):
                 a, b, c, d = (entity_embeddings.index.get_loc(ent) for ent in analogy_set)  # retrieve ent indices
                 d_pred = self._predict_analogy(entity_embeddings, a, b, c)

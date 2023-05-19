@@ -1,4 +1,5 @@
 run_id: 0
+log_level: 'DEBUG'
 
 kg:
   name: DBpedia2016

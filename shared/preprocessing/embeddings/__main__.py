@@ -1,5 +1,7 @@
+import datetime
 from typing import List
 from pathlib import Path
+import logging
 import yaml
 import subprocess
 import shutil
@@ -22,16 +24,15 @@ EMBEDDING_BASE_CONFIGS = {
 }
 
 
-def make_embeddings():
-    # load and check KG config; create dgl-ke format
-    with open(KG_DIR / 'config.yaml') as f:
-        kg_config = yaml.safe_load(f)['kg']
+def make_embeddings(kg_config: dict):
+    _get_logger().info('Starting embedding generation')
+    # create data in dgl-ke input format
     _convert_graph_data(kg_config)
     # check if all specified embedding models are supported
     embedding_config = kg_config['embeddings']
     unsupported_models = set(embedding_config['models']).difference(set(EMBEDDING_BASE_CONFIGS))
     if unsupported_models:
-        print(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')  # TODO: logging!
+        _get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
         embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
     # train and persist embeddings
     kg_name = kg_config['name']
@@ -43,7 +44,9 @@ def make_embeddings():
 
 
 def _convert_graph_data(kg_config: dict):
-    reader = get_reader_for_format(kg_config['format'])
+    kg_format = kg_config['format']
+    _get_logger().info(f'Converting input of format {kg_format} to dgl-ke format')
+    reader = get_reader_for_format(kg_format)
     # gather entities, relations, triples
     entities, relations, triples = {}, {}, []
     for path in DATA_DIR.glob('*'):
@@ -76,6 +79,7 @@ def _write_dglke_file(data: list, separator: str, filename: str):
 
 def _train_embeddings(kg_name: str, embedding_config: dict):
     for model_name in embedding_config['models']:
+        _get_logger().info(f'Training embeddings of type {model_name}')
         command = [
             'dglke_train',
             '--model_name', model_name,
@@ -94,14 +98,14 @@ def _train_embeddings(kg_name: str, embedding_config: dict):
         if 'gpu' in embedding_config and embedding_config['gpu'] != 'None':
             command += ['--gpu', str(embedding_config['gpu']), '--mix_cpu_gpu']
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(process.communicate()[1])  # TODO: Logging!
-        print(f'Finished training model {model_name}')
+        _get_logger().debug(process.communicate()[1])
 
 
 def _serialize_embeddings(kg_name: str, embedding_models: List[str]):
     # load vectors of the respective models and merge indices with actual entity names
     entity_dict = pd.read_csv(EMBEDDINGS_DIR / 'entities.dict', index_col=0, sep='\t', header=None, names=['entity'])
     for model_name in embedding_models:
+        _get_logger().info(f'Serializing embeddings of type {model_name}')
         embedding_folder = KG_DIR / '_'.join([model_name, kg_name, '0'])
         embedding_file = embedding_folder / '_'.join([kg_name, model_name, 'entity.npy'])
         embedding_vecs = pd.DataFrame(data=np.load(str(embedding_file)), columns=range(200))
@@ -116,5 +120,22 @@ def _cleanup_temp_embedding_folders(kg_name: str, embedding_models: List[str]):
                 shutil.rmtree(dir)
 
 
+def _get_logger():
+    return logging.getLogger('embeddings')
+
+
+def _init_logger(log_level: str):
+    log_filepath = EMBEDDINGS_DIR / '{}_embedding-generation.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
+    log_handler = logging.FileHandler(log_filepath, 'a', 'utf-8')
+    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
+    log_handler.setLevel(log_level)
+    logger = _get_logger()
+    logger.addHandler(log_handler)
+    logger.setLevel(log_level)
+
+
 if __name__ == "__main__":
-    make_embeddings()
+    with open(KG_DIR / 'config.yaml') as f:
+        config = yaml.safe_load(f)
+    _init_logger(config['log_level'])
+    make_embeddings(config['kg'])

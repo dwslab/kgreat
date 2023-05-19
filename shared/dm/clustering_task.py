@@ -4,6 +4,7 @@ from scipy.optimize import linear_sum_assignment
 from sklearn.base import BaseEstimator
 from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans
+from utils.logging import get_logger
 from utils.enums import TaskMode, EntityMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
@@ -49,10 +50,12 @@ class ClusteringTask(BaseTask):
         entity_labels = self.dataset.get_entity_labels()
         n_clusters = entity_labels.nunique()
         if n_clusters <= 1:
-            return  # skip task if we have at most one cluster
+            get_logger().debug(f'Skipping clustering task due to low number of clusters ({n_clusters})')
+            return
         for embedding_type in self.embedding_models:
             entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
             for est, params in self._get_estimators(n_clusters):
+                get_logger().debug(f'Evaluating clustering {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params).fit(entity_features)
                 entity_clusters = model.labels_
                 # assign entities without cluster to a unique cluster each

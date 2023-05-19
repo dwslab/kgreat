@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 from scipy.stats import pearsonr
+from utils.logging import get_logger
 from utils.enums import TaskMode, EntityMode
 from utils.dataset import DocumentSimilarityDataset
 from base_task import BaseTask
@@ -55,6 +56,7 @@ class DocumentSimilarityTask(BaseTask):
         for embedding_type in self.embedding_models:
             entity_embeddings = self.load_entity_embeddings(embedding_type)
             for sim_func, params in self._get_estimators():
+                get_logger().debug(f'Evaluating similarity with {sim_func.__name__} ({params}) for embedding type {embedding_type}')
                 docsim_pred = {docs: self._compute_document_similarity(entity_embeddings, docs, sim_func, params) for docs in docsim_gold}
                 for metric, metric_scorer in self._get_metrics().items():
                     score = metric_scorer(list(docsim_gold.values()), list(docsim_pred.values()))

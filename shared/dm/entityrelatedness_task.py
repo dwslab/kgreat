@@ -4,6 +4,7 @@ import pandas as pd
 from scipy.spatial import distance
 from scipy.stats import kendalltau
 import random
+from utils.logging import get_logger
 from utils.enums import TaskMode, EntityMode
 from utils.dataset import EntityRelatednessDataset
 from base_task import BaseTask
@@ -21,6 +22,7 @@ class EntityRelatednessTask(BaseTask):
         known_ents = self.dataset.get_mapped_entity_relations()
         for embedding_type in self.embedding_models:
             entity_embeddings = self.load_entity_embeddings(embedding_type)
+            get_logger().debug(f'Evaluating entity relatedness via cosine distance for embedding type {embedding_type}')
             known_ents_rankings = [self._compute_entity_similarities(entity_embeddings, main_ent, rel_ents) for main_ent, rel_ents in known_ents]
             # append unknown entities in random order for similarities over all entities
             all_ents_indices = [set(range(len(rel_ents))) for _, rel_ents in self.dataset.get_entity_relations()]

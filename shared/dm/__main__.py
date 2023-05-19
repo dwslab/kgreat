@@ -1,21 +1,19 @@
+import datetime
 import os
 import yaml
 from typing import Type
-from utils.io import load_config
 from utils.enums import TaskMode
+from utils.io import load_config, load_entity_mapping
+from utils.logging import init_logger, get_logger
 from utils.report import TaskReport
-from base_task import BaseTask
-from utils.io import load_entity_mapping
 from utils.dataset import load_dataset
+from base_task import BaseTask
 from classification_task import ClassificationTask
 from regression_task import RegressionTask
 from clustering_task import ClusteringTask
 from documentsimilarity_task import DocumentSimilarityTask
 from entityrelatedness_task import EntityRelatednessTask
 from semanticanalogies_task import SemanticAnalogiesTask
-
-
-# TODO: logging
 
 
 class TaskManager:
@@ -33,6 +31,9 @@ class TaskManager:
         self.tasks_by_mode = {t.get_mode(): t for t in self.AVAILABLE_TASKS}
 
     def run_task(self):
+        start_time = datetime.datetime.now()
+        init_logger(self.config['run_id'], self.task_id, self.config['log_level'])
+        get_logger().info(f'Starting to run task {self.task_id}')
         # prepare mapping & dataset
         entity_mapping = load_entity_mapping()
         dataset = load_dataset(self.dataset_config, entity_mapping)
@@ -41,6 +42,8 @@ class TaskManager:
         task = self._get_task_class()(self.kg_config, self.task_config, dataset, report)
         task.run()
         report.store(self.config['run_id'])
+        runtime_in_seconds = (datetime.datetime.now() - start_time).seconds
+        get_logger().info(f'Finished task after {runtime_in_seconds} seconds')
 
     def _get_task_class(self) -> Type[BaseTask]:
         mode = TaskMode(self.task_config['mode'])
