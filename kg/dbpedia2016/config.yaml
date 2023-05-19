@@ -1,10 +1,7 @@
 run_id: 0
 log_level: 'DEBUG'
 gpu: None
-
-kg:
-  name: DBpedia2016
-  format: nt
+format: nt
 
 preprocessing:
   embeddings:

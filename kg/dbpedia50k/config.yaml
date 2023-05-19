@@ -1,10 +1,7 @@
 run_id: 0
 log_level: 'DEBUG'
 gpu: None
-
-kg:
-  name: DBpedia50k
-  format: tsv
+format: tsv
 
 preprocessing:
   embeddings:
