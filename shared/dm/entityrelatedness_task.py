@@ -27,7 +27,7 @@ class EntityRelatednessTask(BaseTask):
             # append unknown entities in random order for similarities over all entities
             all_ents_indices = [set(range(len(rel_ents))) for _, rel_ents in self.dataset.get_entity_relations()]
             unknown_ent_indices = [all_ents.difference(set(known_ents)) for all_ents, known_ents in zip(all_ents_indices, known_ents_rankings)]
-            all_ents_rankings = [known_ents + random.sample(unknown_ents, len(unknown_ents)) for known_ents, unknown_ents in zip(known_ents_rankings, unknown_ent_indices)]
+            all_ents_rankings = [np.append(known_ents, random.sample(unknown_ents, len(unknown_ents))) for known_ents, unknown_ents in zip(known_ents_rankings, unknown_ent_indices)]
             # evaluate similarities for all/known entities
             eval_scenarios = [
                 (EntityMode.ALL_ENTITIES, all_ents_rankings),
