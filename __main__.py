@@ -77,7 +77,7 @@ def _action_pull(container_manager: str, image_name: str):
 def _action_run(container_manager: str, image_name: str, kg_name: Optional[str], task_id: Optional[str]):
     if kg_name is None:
         raise ValueError('Parameter "kg_name" must be given for running a container!')
-    params = ['--mount', f'type=bind,src="$(pwd)/kg/{kg_name}",target="/app/kg"']
+    params = ['--mount', f'type=bind,src=./kg/{kg_name},target=/app/kg']
     if task_id is not None:
         params += ['-e', f'KGREAT_TASK={task_id}']
     params += [image_name]
