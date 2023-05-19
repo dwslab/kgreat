@@ -6,27 +6,26 @@ Every task has to define the following:
 - `README.md` README describing any deviations from the general task API, dataset format and key entities (from which graph they originate)
 
 # Running Stuff
-In the examples, we use the task `dm-AAUP` with the KG `dbpedia50k`. Adapt the paths/identifiers to run other tasks or KGs.
-All code should be executed from the project root.
+In the examples, we use the KG `dbpedia50k`. Adapt the identifier to run other KGs.
 
 ## Running Embedding Generation
-First build the docker container:
+First we need to build the docker image:
 ```
-docker build -t gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embeddings -f ./shared/preprocessing/embeddings/Dockerfile .
-```
-
-Then run the docker container:
-```
-docker run --mount type=bind,src="$(pwd)/kg/dbpedia50k",target="/app/kg" gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embeddings
+python . build preprocessing.embeddings
 ```
 
-## Running a Task
-First build the docker container (after making sure that your docker daemon is running):
+Then run the container:
 ```
-docker build -t gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/task/dm-aaup -f ./tasks/dm-AAUP/Dockerfile .
+python . run preprocessing.embeddings -k dbpedia50k
 ```
 
-Then run the docker container:
+## Running all Tasks
+First build the docker images (if you specify a knowledge graph, only the tasks in its config will be built):
 ```
-docker run --mount type=bind,src="$(pwd)/kg/dbpedia50k",target="/app/kg" -e KGREAT_TASK=dm-AAUP_classification gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/task/dm-aaup
+python . build tasks -k dbpedia50k
+```
+
+Then run the containers:
+```
+python . run tasks -k dbpedia50k
 ```
