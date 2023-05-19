@@ -34,9 +34,12 @@ class TaskManager:
         init_logger(self.kg_config['run_id'], self.task_id, self.kg_config['log_level'])
         get_logger().info(f'Starting to run task {self.task_id}')
         # prepare mapping & dataset
+        get_logger().info('Loading entity mapping')
         entity_mapping = load_entity_mapping()
+        get_logger().info('Loading dataset')
         dataset = load_dataset(self.dataset_config, entity_mapping)
         # prepare and run task
+        get_logger().info('Running task')
         report = TaskReport(self.task_id, self._get_task_class().get_mode(), dataset)
         task = self._get_task_class()(self.kg_config, self.task_config, dataset, report)
         task.run()

@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 import json
 import pandas as pd
-from utils.logging import get_logger
 from utils.enums import DatasetFormat
 
 
@@ -194,12 +193,10 @@ class SemanticAnalogiesDataset(Dataset):
 
 
 def load_dataset(config: dict, entity_mapping: pd.DataFrame) -> Dataset:
-    get_logger().info('Loading dataset')
     dataset_by_format = {ds.get_format(): ds for ds in Dataset.__subclasses__()}
     dataset_format = DatasetFormat(config['format'])
     dataset = dataset_by_format[dataset_format](config, entity_mapping)
     dataset.load()
     if len(entity_mapping):
-        get_logger().info('Applying entity mapping')
         dataset.apply_mapping()
     return dataset
