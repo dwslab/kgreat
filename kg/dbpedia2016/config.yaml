@@ -1,11 +1,13 @@
 run_id: 0
 log_level: 'DEBUG'
+gpu: None
 
 kg:
   name: DBpedia2016
   format: nt
+
+preprocessing:
   embeddings:
-    gpu: None
     models: ['TransE_l1']
     batch_size: 1000
     max_step: 1000000

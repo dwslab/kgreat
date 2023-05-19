@@ -10,7 +10,7 @@ from utils.io import load_entity_embeddings
 class BaseTask(ABC):
     def __init__(self, kg_config: dict, task_config: dict, dataset: Dataset, report: TaskReport):
         self.kg_config = kg_config
-        self.embedding_models = self.kg_config['embeddings']['models']
+        self.embedding_models = self.kg_config['preprocessing']['embeddings']['models']
         self.task_config = task_config
         self.dataset = dataset
         self.report = report

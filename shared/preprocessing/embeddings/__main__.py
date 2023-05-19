@@ -1,5 +1,5 @@
+from typing import List, Optional
 import datetime
-from typing import List
 from pathlib import Path
 import logging
 import yaml
@@ -27,24 +27,23 @@ EMBEDDING_BASE_CONFIGS = {
 def make_embeddings(kg_config: dict):
     _get_logger().info('Starting embedding generation')
     # create data in dgl-ke input format
-    _convert_graph_data(kg_config)
+    _convert_graph_data(kg_config['kg']['format'])
     # check if all specified embedding models are supported
-    embedding_config = kg_config['embeddings']
+    embedding_config = kg_config['preprocessing']['embeddings']
     unsupported_models = set(embedding_config['models']).difference(set(EMBEDDING_BASE_CONFIGS))
     if unsupported_models:
         _get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
         embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
     # train and persist embeddings
-    kg_name = kg_config['name']
+    kg_name = kg_config['kg']['name']
     embedding_models = embedding_config['models']
     _cleanup_temp_embedding_folders(kg_name, embedding_models)
-    _train_embeddings(kg_name, embedding_config)
+    _train_embeddings(kg_name, embedding_config, kg_config['gpu'])
     _serialize_embeddings(kg_name, embedding_models)
     _cleanup_temp_embedding_folders(kg_name, embedding_models)
 
 
-def _convert_graph_data(kg_config: dict):
-    kg_format = kg_config['format']
+def _convert_graph_data(kg_format: str):
     _get_logger().info(f'Converting input of format {kg_format} to dgl-ke format')
     reader = get_reader_for_format(kg_format)
     # gather entities, relations, triples
@@ -77,7 +76,7 @@ def _write_dglke_file(data: list, separator: str, filename: str):
             f.write(f'{separator.join(vals)}\n')
 
 
-def _train_embeddings(kg_name: str, embedding_config: dict):
+def _train_embeddings(kg_name: str, embedding_config: dict, gpu: Optional[str]):
     for model_name in embedding_config['models']:
         _get_logger().info(f'Training embeddings of type {model_name}')
         command = [
@@ -95,8 +94,8 @@ def _train_embeddings(kg_name: str, embedding_config: dict):
             '--log_interval', '1000',
             '-adv'
         ] + EMBEDDING_BASE_CONFIGS[model_name]
-        if 'gpu' in embedding_config and embedding_config['gpu'] != 'None':
-            command += ['--gpu', str(embedding_config['gpu']), '--mix_cpu_gpu']
+        if gpu != 'None':
+            command += ['--gpu', gpu, '--mix_cpu_gpu']
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         _get_logger().debug(process.communicate()[1])
 
@@ -136,6 +135,6 @@ def _init_logger(log_level: str):
 
 if __name__ == "__main__":
     with open(KG_DIR / 'config.yaml') as f:
-        config = yaml.safe_load(f)
-    _init_logger(config['log_level'])
-    make_embeddings(config['kg'])
+        kg_config = yaml.safe_load(f)
+    _init_logger(kg_config['log_level'])
+    make_embeddings(kg_config)

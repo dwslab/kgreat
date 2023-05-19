@@ -23,7 +23,7 @@ def get_kg_result_path(run_id: str) -> Path:
     return filepath
 
 
-def load_config() -> dict:
+def load_kg_config() -> dict:
     path_to_config = get_kg_path() / 'config.yaml'
     with open(path_to_config) as f:
         return yaml.safe_load(f)
