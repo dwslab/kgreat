@@ -38,7 +38,7 @@ class EntityRelatednessTask(BaseTask):
                 self.report.add_result(entity_mode, 'Cosine distance', {}, embedding_type, 'Kendall\'s tau', score)
 
     def _compute_entity_similarities(self, entity_embeddings: pd.DataFrame, main_ent: Optional[str], related_entities: Dict[str, int]) -> List[int]:
-        if not main_ent or not related_entities:
+        if main_ent is None or not related_entities:
             return []
         rel_ent_names, rel_ent_indices = list(related_entities), np.array(list(related_entities.values()))
         # find entity ranking through embedding distance
@@ -50,7 +50,7 @@ class EntityRelatednessTask(BaseTask):
     def _evaluate_entity_rankings(self, entity_rankings: List[List[int]]) -> float:
         scores_per_main_entity = []
         for entity_ranking in entity_rankings:
-            if not entity_ranking:
+            if len(entity_ranking) == 0:
                 continue  # skip empty rankings (e.g., in the case of completely unmapped sets of entities)
             scores_per_main_entity.append(kendalltau(sorted(entity_ranking), entity_ranking)[0])
         return np.average(scores_per_main_entity)
