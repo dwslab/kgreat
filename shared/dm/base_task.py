@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import numpy as np
 import pandas as pd
 from utils.logging import get_logger
 from utils.enums import TaskMode
@@ -28,5 +27,4 @@ class BaseTask(ABC):
     @staticmethod
     def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
         get_logger().info(f'Loading entity embeddings of type {embedding_type}')
-        embeddings = load_entity_embeddings(embedding_type)
-        return embeddings.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # normalize to unit vectors
+        return load_entity_embeddings(embedding_type)
