@@ -35,7 +35,7 @@ class SemanticAnalogiesTask(BaseTask):
             ]
             for entity_mode, total_entity_count in eval_scenarios:
                 for k in self.TOP_K:
-                    score = correct_predictions_by_k[k] / total_entity_count
+                    score = correct_predictions_by_k[k] / total_entity_count if total_entity_count > 0 else 0
                     self.report.add_result(entity_mode, 'Cosine similarity', {'top_k': k}, embedding_type, 'Accuracy', score)
 
     @staticmethod
