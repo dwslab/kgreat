@@ -68,7 +68,6 @@ def _get_or_create_idx(value: str, value_dict: dict) -> str:
 
 
 def _write_dglke_file(data: list, separator: str, filename: str):
-    EMBEDDINGS_DIR.mkdir(exist_ok=True)
     filepath = EMBEDDINGS_DIR / filename
     with open(filepath, mode='w') as f:
         for vals in data:
@@ -136,5 +135,6 @@ def _init_logger(log_level: str):
 if __name__ == "__main__":
     with open(KG_DIR / 'config.yaml') as f:
         kg_config = yaml.safe_load(f)
+    EMBEDDINGS_DIR.mkdir(exist_ok=True)
     _init_logger(kg_config['log_level'])
     make_embeddings(kg_config)
