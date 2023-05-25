@@ -106,9 +106,9 @@ def _serialize_embeddings(embedding_models: List[str]):
         embedding_folder = KG_DIR / '_'.join([model_name, 'kg', '0'])
         embedding_file = embedding_folder / '_'.join(['kg', model_name, 'entity.npy'])
         embedding_vecs = pd.DataFrame(data=np.load(str(embedding_file)), columns=range(200))
-        entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True)
+        entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True).set_index('entity')
         entity_vecs = entity_vecs.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # normalize to unit vectors
-        entity_vecs.to_csv(EMBEDDINGS_DIR / f'{model_name}.tsv', sep='\t', header=False, index=False)
+        entity_vecs.to_csv(EMBEDDINGS_DIR / f'{model_name}.tsv', sep='\t', header=False)
 
 
 def _cleanup_temp_embedding_folders(embedding_models: List[str]):
