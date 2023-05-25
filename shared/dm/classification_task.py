@@ -37,8 +37,8 @@ class ClassificationTask(BaseTask):
 
     def run(self):
         entity_labels = self.dataset.get_entity_labels()
-        if len(entity_labels) < self.N_SPLITS:
-            return  # skip task if we have too few samples
+        if entity_labels.value_counts().min() < self.N_SPLITS:
+            return  # skip task if we have too few samples for the split in any of the classes
         for embedding_type in self.embedding_models:
             entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
             for est, params in self._get_estimators():
