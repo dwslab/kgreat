@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 import json
 import pandas as pd
-from utils.enums import DatasetFormat
+from .enums import DatasetFormat
 
 
 class Dataset(ABC):
@@ -38,10 +38,14 @@ class Dataset(ABC):
     def get_mapped_entities(self) -> set:
         pass
 
+    def get_label_from_dbpedia_uri(self, dbpedia_uri: str) -> str:
+        return dbpedia_uri[len('http://dbpedia.org/resource/'):].replace('_', ' ')
+
 
 class TsvDataset(Dataset):
     def __init__(self, config: dict, entity_mapping: pd.DataFrame):
         super().__init__(config, entity_mapping)
+        self.entity_label = config['entity_label'] if 'entity_label' in config else None
         self.data_file = config['data_file']
         self.label_column = config['label']
         self.data = None
@@ -53,6 +57,8 @@ class TsvDataset(Dataset):
 
     def load(self):
         valid_columns = self.entity_keys + [self.label_column]
+        if self.entity_label:
+            valid_columns.append(self.entity_label)
         self.data = pd.read_csv(self.data_file, sep='\t', header=0, index_col=None, usecols=valid_columns)
 
     def apply_mapping(self):
@@ -66,7 +72,13 @@ class TsvDataset(Dataset):
         self.mapped_data = pd.Series(mapped_data)
 
     def get_entities(self) -> pd.DataFrame:
-        return self.data[self.entity_keys].drop_duplicates()
+        if self.entity_label:
+            all_keys = self.entity_keys + [self.entity_label]
+            df = self.data[all_keys].drop_duplicates(subset=self.entity_keys).rename(columns={self.entity_label: 'label'})
+        else:
+            df = self.data[self.entity_keys].drop_duplicates()
+            df['label'] = df['DBpedia16_URI'].apply(self.get_label_from_dbpedia_uri)
+        return df
 
     def get_mapped_entities(self) -> set:
         return set(self.mapped_data.index)
@@ -105,7 +117,9 @@ class DocumentSimilarityDataset(Dataset):
             self.mapped_document_entities[doc_id] = mapped_doc_ents
 
     def get_entities(self) -> pd.DataFrame:
-        return pd.DataFrame({k: [e for ents in self.document_entities.values() for e in ents] for k in self.entity_keys}).drop_duplicates()
+        df = pd.DataFrame({k: [e for ents in self.document_entities.values() for e in ents] for k in self.entity_keys}).drop_duplicates()
+        df['label'] = df['DBpedia16_URI'].apply(self.get_label_from_dbpedia_uri)
+        return df
 
     def get_mapped_entities(self) -> set:
         return {e for ents in self.mapped_document_entities.values() for e in ents}
@@ -151,7 +165,9 @@ class EntityRelatednessDataset(Dataset):
 
     def get_entities(self) -> pd.DataFrame:
         ents = {me for me, _ in self.data} | {re for _, rel_ents in self.data for re in rel_ents}
-        return pd.DataFrame({k: list(ents) for k in self.entity_keys})
+        df = pd.DataFrame({k: list(ents) for k in self.entity_keys}).drop_duplicates()
+        df['label'] = df['DBpedia16_URI'].apply(self.get_label_from_dbpedia_uri)
+        return df
 
     def get_mapped_entities(self) -> set:
         return {me for me, _ in self.mapped_data if me is not None} | {re for _, rel_ents in self.data for re in rel_ents}
@@ -183,7 +199,9 @@ class SemanticAnalogiesDataset(Dataset):
 
     def get_entities(self) -> pd.DataFrame:
         ents = list(set().union(*[self.data[col] for col in self.data]))
-        return pd.DataFrame({k: ents for k in self.entity_keys}).drop_duplicates()
+        df = pd.DataFrame({k: ents for k in self.entity_keys}).drop_duplicates()
+        df['label'] = df['DBpedia16_URI'].apply(self.get_label_from_dbpedia_uri)
+        return df
 
     def get_mapped_entities(self) -> set:
         return set().union(*[self.mapped_data[col] for col in self.mapped_data])

@@ -1,8 +1,8 @@
 from collections import namedtuple
 import csv
-from utils.io import get_kg_result_path
-from utils.enums import TaskMode, EntityMode
-from utils.dataset import Dataset
+from .io import get_kg_result_path
+from .enums import TaskMode, EntityMode
+from .dataset import Dataset
 
 
 TaskResult = namedtuple('TaskResult', ['entity_mode', 'estimator', 'estimator_config', 'embedding_type', 'metric', 'score'])

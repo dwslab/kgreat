@@ -1,5 +1,5 @@
 import logging
-from utils.io import get_kg_result_path
+from .io import get_kg_result_path
 
 
 def get_logger():

@@ -2,4 +2,5 @@ name: "AAUP"
 format: tsv
 data_file: "examples.tsv"
 entity_keys: ["Wikidata_URI", "DBpedia15_URI", "DBpedia16_URI"]
+entity_label: "College_name"
 label: "label"
