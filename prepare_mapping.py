@@ -3,13 +3,13 @@ import tempfile
 import pandas as pd
 import shutil
 from pathlib import Path
-from util import load_task_config, get_image_name, trigger_container_action
+from util import load_kg_config, get_image_name, trigger_container_action
 
 
 def collect_entities_to_map(kg_name: str, container_manager: str):
     temp_dir = Path(tempfile.mkdtemp())
     # find relevant tasks
-    task_config = load_task_config(kg_name)
+    task_config = load_kg_config(kg_name)['tasks']
     task_types = {task_entry['type'] for task_entry in task_config.values()}
     # retrieve entities to be mapped from task containers
     _fetch_entity_files(container_manager, temp_dir, task_types)

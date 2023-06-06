@@ -1,6 +1,5 @@
 /.idea
-/kg/dbpedia50k/embeddings/
-/kg/dbpedia50k/result/
-/kg/dbpedia2016/data/
-/kg/dbpedia2016/embeddings/
-/kg/dbpedia2016/result/
+/kg/*/entity_mapping.tsv
+/kg/*/data/
+/kg/*/embeddings/
+/kg/*/result/

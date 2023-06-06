@@ -3,6 +3,12 @@ log_level: 'DEBUG'
 gpu: None
 format: nt
 
+mapping:
+  'identity':
+    type: identity
+    target: 'DBpedia16_URI'
+
+
 preprocessing:
   embeddings:
     input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']

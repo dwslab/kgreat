@@ -53,7 +53,7 @@ class TaskManager:
 
 
 if __name__ == "__main__":
-    task_id = os.environ['KGREAT_TASK']
+    task_id = os.environ['KGREAT_STEP']
     with open('config.yaml', mode='r') as f:
         dataset_config = yaml.safe_load(f)
     tm = TaskManager(task_id, dataset_config)

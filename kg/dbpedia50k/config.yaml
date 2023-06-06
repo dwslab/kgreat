@@ -3,6 +3,13 @@ log_level: 'DEBUG'
 gpu: None
 format: tsv
 
+mapping:
+  'identity':
+    type: identity
+    target: 'DBpedia16_URI'
+    remove_prefix: 'http://dbpedia.org/resource/'
+    known_entity_file: 'dbpedia50k_train.tsv'
+
 preprocessing:
   embeddings:
     input_files: ['dbpedia50k_train.tsv']
