@@ -3,6 +3,12 @@ log_level: 'DEBUG'
 gpu: None
 format: nt
 
+mapping:
+  'sameAs-DBpedia':
+    type: sameAs
+    kg_prefix: 'http://caligraph.org/resource/'
+    input_files: ['caligraph-instances_dbpedia-mapping.nt.bz2']
+
 preprocessing:
   embeddings:
     input_files: ['caligraph-ontology.nt.bz2', 'caligraph-instances_types.nt.bz2', 'caligraph-instances_relations.nt.bz2']
