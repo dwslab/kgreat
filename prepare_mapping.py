@@ -35,7 +35,8 @@ def _merge_entity_files(kg_name: str, temp_dir: Path, task_types: Set[str]):
         ents = pd.read_csv(f'{temp_dir}/entities_{task_type}.tsv', header=0, sep='\t')
         _add_entities_to_mapping_dict(ents, mapped_ents, mapping_dict)
     df = pd.DataFrame(mapped_ents)
-    df.to_csv(f'./kg/{kg_name}/entities_to_map.tsv', sep='\t', index=False)
+    df['source'] = ''
+    df.to_csv(f'./kg/{kg_name}/entity_mapping.tsv', sep='\t', index=False)
 
 
 def _add_entities_to_mapping_dict(ents: pd.DataFrame, mapped_ents: list, mapping_dict: dict):
