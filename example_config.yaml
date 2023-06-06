@@ -5,6 +5,7 @@ format: tsv  # file input format (one of: "tsv", "nt")
 
 preprocessing:
   embeddings:
+    input_files: ['file_1.ttl', 'file_2.ttl']  # list files within the `data` folder that should be used to create embeddings
     models: ['TransE_l1', 'TransE_l2', 'TransR', 'DistMult', 'RESCAL', 'ComplEx']  # choose one or more
     batch_size: 1000
     max_step: 1000000

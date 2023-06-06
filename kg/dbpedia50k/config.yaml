@@ -5,6 +5,7 @@ format: tsv
 
 preprocessing:
   embeddings:
+    input_files: ['dbpedia50k_train.tsv']
     models: ['TransE_l1']
     batch_size: 1000
     max_step: 100000

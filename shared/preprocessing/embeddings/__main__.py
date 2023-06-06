@@ -26,14 +26,14 @@ EMBEDDING_BASE_CONFIGS = {
 
 def make_embeddings(kg_config: dict):
     _get_logger().info('Starting embedding generation')
-    # create data in dgl-ke input format
-    _convert_graph_data(kg_config['format'])
     # check if all specified embedding models are supported
     embedding_config = kg_config['preprocessing']['embeddings']
     unsupported_models = set(embedding_config['models']).difference(set(EMBEDDING_BASE_CONFIGS))
     if unsupported_models:
         _get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
         embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
+    # create data in dgl-ke input format
+    _convert_graph_data(kg_config['format'], embedding_config['input_files'])
     # train and persist embeddings
     embedding_models = embedding_config['models']
     _cleanup_temp_embedding_folders(embedding_models)
@@ -42,13 +42,15 @@ def make_embeddings(kg_config: dict):
     _cleanup_temp_embedding_folders(embedding_models)
 
 
-def _convert_graph_data(kg_format: str):
+def _convert_graph_data(kg_format: str, input_files: List[str]):
     _get_logger().info(f'Converting input of format {kg_format} to dgl-ke format')
     reader = get_reader_for_format(kg_format)
     # gather entities, relations, triples
     entities, relations, triples = {}, {}, []
-    for path in DATA_DIR.glob('*'):
+    for filename in input_files:
+        path = DATA_DIR / filename
         if not path.is_file():
+            _get_logger().info(f'Could not parse file "{filename}" as it is not contained in the data folder.')
             continue
         for s, r, o in reader.read(path):
             s_idx = _get_or_create_idx(s, entities)

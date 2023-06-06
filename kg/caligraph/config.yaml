@@ -5,6 +5,7 @@ format: nt
 
 preprocessing:
   embeddings:
+    input_files: ['caligraph-ontology.nt.bz2', 'caligraph-instances_types.nt.bz2', 'caligraph-instances_relations.nt.bz2']
     models: ['TransE_l1']
     batch_size: 1000
     max_step: 1000000
