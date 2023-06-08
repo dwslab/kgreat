@@ -8,7 +8,7 @@ mapping:
     type: identity
     target: 'DBpedia16_URI'
     remove_prefix: 'http://dbpedia.org/resource/'
-    known_entity_file: 'dbpedia50k_train.tsv'
+    known_entity_files: ['dbpedia50k_train.tsv']
 
 preprocessing:
   embeddings:

@@ -1,14 +1,9 @@
-from typing import Iterable, Tuple, Callable, Union
-from collections import namedtuple
+from typing import Iterable, Tuple, Callable
 from abc import ABC, abstractmethod
 import re
 import bz2
 import csv
 from pathlib import Path
-
-
-ObjectTriple = namedtuple('ObjectTriple', 'sub pred obj')
-LiteralTriple = namedtuple('LiteralTriple', 'sub pred obj')
 
 
 class EdgelistReader(ABC):
@@ -19,7 +14,7 @@ class EdgelistReader(ABC):
 
 
 class NTriplesEdgelistReader(EdgelistReader):
-    def read(self, path: Path) -> Iterable[Union[ObjectTriple, LiteralTriple]]:
+    def read(self, path: Path) -> Iterable[Tuple[str, str, str]]:
         object_pattern = re.compile(rb'<(.+)> <(.+)> <(.+)> \.\s*\n')
         literal_pattern = re.compile(rb'<(.+)> <(.+)> "(.+)"(?:\^\^.*|@en.*)? \.\s*\n')
         with _get_open_fct(path)(path, "rb") as tf:
@@ -36,7 +31,7 @@ class NTriplesEdgelistReader(EdgelistReader):
 
 
 class TSVEdgelistReader(EdgelistReader):
-    def read(self, path: Path) -> Iterable[Union[ObjectTriple, LiteralTriple]]:
+    def read(self, path: Path) -> Iterable[Tuple[str, str, str]]:
         with _get_open_fct(path)(path, newline='') as tf:
             for row in csv.reader(tf, delimiter='\t'):
                 if len(row) < 3:

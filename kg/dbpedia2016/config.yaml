@@ -7,7 +7,7 @@ mapping:
   'identity':
     type: identity
     target: 'DBpedia16_URI'
-    known_entity_file: 'labels_en.ttl.bz2'
+    known_entity_files: ['instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
 
 
 preprocessing:
