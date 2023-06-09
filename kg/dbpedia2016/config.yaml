@@ -14,7 +14,7 @@ preprocessing:
   embeddings:
     input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
     models: ['TransE_l1']
-    batch_size: 1000
+    batch_size: 5000
     max_step: 1000000
 
 tasks:
