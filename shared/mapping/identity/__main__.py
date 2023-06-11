@@ -23,7 +23,7 @@ def perform_identity_mapping(kg_config: dict, mapper_config: dict):
         for filename in mapper_config['known_entity_files']:
             for sub, _, _ in triple_reader.read(DATA_DIR / filename):
                 known_entities.add(sub)
-        entities_to_map[~entities_to_map['source'].isin(known_entities)]['source'] = ''
+        entities_to_map.loc[~entities_to_map['source'].isin(known_entities), 'source'] = ''
     entities_to_map.to_csv(path_to_entity_mapping, sep='\t', index=False)
 
 
