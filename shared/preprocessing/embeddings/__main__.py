@@ -33,11 +33,11 @@ def make_embeddings(kg_config: dict):
         _get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
         embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
     # create data in dgl-ke input format
-#    _convert_graph_data(kg_config['format'], embedding_config['input_files'])
+    _convert_graph_data(kg_config['format'], embedding_config['input_files'])
     # train and persist embeddings
     embedding_models = embedding_config['models']
-#    _cleanup_temp_embedding_folders(embedding_models)
-#    _train_embeddings(embedding_config, kg_config['gpu'])
+    _cleanup_temp_embedding_folders(embedding_models)
+    _train_embeddings(embedding_config, kg_config['gpu'])
     _serialize_embeddings(embedding_models)
     _cleanup_temp_embedding_folders(embedding_models)
 
