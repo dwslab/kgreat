@@ -1,0 +1,89 @@
+run_id: 0
+log_level: 'DEBUG'
+gpu: None
+format: nt
+
+mapping:
+  'identity':
+    type: identity
+    target: 'DBpedia16_URI'
+    known_entity_files: ['dbpedia-instance-types.nt.bz2', 'dbpedia-mappingbased-objects.nt.bz2']
+
+
+preprocessing:
+  embeddings:
+    input_files: ['dbpedia-ontology.nt', 'dbpedia-instance-types.nt.bz2', 'dbpedia-mappingbased-objects.nt.bz2']
+    models: ['TransE_l1']
+    batch_size: 5000
+    max_step: 1000000
+
+tasks:
+  'dm-AAUP_classification':
+    type: dm-AAUP
+    mode: classification
+  'dm-AAUP_regression':
+    type: dm-AAUP
+    mode: regression
+  'dm-Cities_classification':
+    type: dm-Cities
+    mode: classification
+  'dm-Cities_regression':
+    type: dm-Cities
+    mode: regression
+  'dm-Forbes_classification':
+    type: dm-Forbes
+    mode: classification
+  'dm-Forbes_regression':
+    type: dm-Forbes
+    mode: regression
+  'dm-MetacriticAlbums_classification':
+    type: dm-MetacriticAlbums
+    mode: classification
+  'dm-MetacriticAlbums_regression':
+    type: dm-MetacriticAlbums
+    mode: regression
+  'dm-MetacriticMovies_classification':
+    type: dm-MetacriticMovies
+    mode: classification
+  'dm-MetacriticMovies_regression':
+    type: dm-MetacriticMovies
+    mode: regression
+  'dm-Cities2000AndCountries_clustering':
+    type: dm-Cities2000AndCountries
+    mode: clustering
+  'dm-CitiesAndCountries_clustering':
+    type: dm-CitiesAndCountries
+    mode: clustering
+  'dm-CitiesMoviesAlbumsCompaniesUni_clustering':
+    type: dm-CitiesMoviesAlbumsCompaniesUni
+    mode: clustering
+  'dm-Teams_clustering':
+    type: dm-Teams
+    mode: clustering
+  'dm-LP50_documentSimilarity':
+    type: dm-LP50
+    mode: documentSimilarity
+  'dm-KORE_entityRelatedness':
+    type: dm-KORE
+    mode: entityRelatedness
+  'dm-AllCapitalCountryEntities_semanticAnalogies':
+    type: dm-AllCapitalCountryEntities
+    mode: semanticAnalogies
+  'dm-CapitalCountryEntities_semanticAnalogies':
+    type: dm-CapitalCountryEntities
+    mode: semanticAnalogies
+  'dm-CityStateEntities_semanticAnalogies':
+    type: dm-CityStateEntities
+    mode: semanticAnalogies
+  'dm-CurrencyEntities_semanticAnalogies':
+    type: dm-CurrencyEntities
+    mode: semanticAnalogies
+  'dm-MovieLens_recommendation':
+    type: dm-MovieLens
+    mode: recommendation
+  'dm-LastFm_recommendation':
+    type: dm-LastFm
+    mode: recommendation
+  'dm-LibraryThing_recommendation':
+    type: dm-LibraryThing
+    mode: recommendation
