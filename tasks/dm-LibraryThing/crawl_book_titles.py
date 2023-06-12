@@ -34,7 +34,10 @@ def _read_relevant_book_ids() -> list:
 def _crawl_book_title(lt_id: str) -> str:
     response = requests.get(f"https://www.librarything.com/work/{lt_id}")
     soup = BeautifulSoup(response.text, 'html.parser')
-    title_element = soup.find('div', class_='headsummary').find('h1')
+    headsummary_element = soup.find('div', class_='headsummary')
+    if headsummary_element is None:
+        return lt_id
+    title_element = headsummary_element.find('h1')
     return title_element.text.strip() if title_element else lt_id
 
 
