@@ -10,7 +10,6 @@ from utils.dataset import TsvDataset
 from base_task import BaseTask
 
 
-# TODO: implement score for EntityMode.ALL_ENTITIES
 class ClusteringTask(BaseTask):
     dataset: TsvDataset
 
@@ -47,7 +46,8 @@ class ClusteringTask(BaseTask):
         return sum([weights[i, j] for i, j in zip(row_indices, col_indices)]) / y_pred.size
 
     def run(self):
-        entity_labels = self.dataset.get_entity_labels()
+        entity_labels = self.dataset.get_entity_labels(mapped=True)
+        unmapped_labels = self.dataset.get_entity_labels(mapped=False)
         n_clusters = entity_labels.nunique()
         if n_clusters <= 1:
             get_logger().debug(f'Skipping clustering task due to low number of clusters ({n_clusters})')
@@ -57,13 +57,19 @@ class ClusteringTask(BaseTask):
             for est, params in self._get_estimators(n_clusters):
                 get_logger().debug(f'Evaluating clustering {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params).fit(entity_features)
-                entity_clusters = model.labels_
-                # assign entities without cluster to a unique cluster each
-                for idx, cluster_id in enumerate(entity_clusters):
-                    if cluster_id == -1:
-                        entity_clusters[idx] = n_clusters
-                        n_clusters += 1
-                # compute and report metrics
-                for metric, metric_scorer in self._get_metrics().items():
-                    score = metric_scorer(entity_labels.values, entity_clusters)
-                    self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, score)
+                for entity_mode in [EntityMode.KNOWN_ENTITIES, EntityMode.ALL_ENTITIES]:
+                    if entity_mode == EntityMode.KNOWN_ENTITIES:
+                        predictions = model.labels_
+                        true_labels = entity_labels.values
+                    else:
+                        predictions = list(model.labels_) + [-1] * len(unmapped_labels)
+                        true_labels = list(entity_labels.values) + unmapped_labels
+                    # assign entities without cluster to a unique cluster each
+                    for idx, cluster_id in enumerate(predictions):
+                        if cluster_id == -1:
+                            predictions[idx] = n_clusters
+                            n_clusters += 1
+                    # compute and report metrics
+                    for metric, metric_scorer in self._get_metrics().items():
+                        score = metric_scorer(true_labels, predictions)
+                        self.report.add_result(entity_mode, est.__name__, params, embedding_type, metric, score)

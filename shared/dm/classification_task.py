@@ -35,8 +35,8 @@ class ClassificationTask(BaseTask):
         ]
 
     def run(self):
-        fraction_of_known_entities = self.get_fraction_of_known_entities()
-        entity_labels = self.dataset.get_entity_labels()
+        entity_labels = self.dataset.get_entity_labels(mapped=True)
+        fraction_of_known_entities = len(entity_labels) / (len(entity_labels) + len(self.dataset.get_entity_labels(mapped=False)))
         least_label_freq = entity_labels.value_counts().min()
         if least_label_freq < self.N_SPLITS:
             get_logger().info(f'Skipping classification because there are less examples ({least_label_freq}) of a class than splits ({self.N_SPLITS}).')

@@ -1,4 +1,4 @@
-from typing import List, Tuple, Callable, Dict
+from typing import List, Tuple, Callable, Dict, Optional
 import numpy as np
 import pandas as pd
 from sklearn.metrics import pairwise_distances
@@ -10,7 +10,6 @@ from utils.dataset import DocumentSimilarityDataset
 from base_task import BaseTask
 
 
-# TODO: implement score for EntityMode.ALL_ENTITIES
 class DocumentSimilarityTask(BaseTask):
     dataset: DocumentSimilarityDataset
 
@@ -59,15 +58,23 @@ class DocumentSimilarityTask(BaseTask):
                 get_logger().debug(f'Evaluating similarity with {sim_func.__name__} ({params}) for embedding type {embedding_type}')
                 docsim_pred = {docs: self._compute_document_similarity(entity_embeddings, docs, sim_func, params) for docs in docsim_gold}
                 for metric, metric_scorer in self._get_metrics().items():
-                    score = metric_scorer(list(docsim_gold.values()), list(docsim_pred.values()))
-                    self.report.add_result(EntityMode.KNOWN_ENTITIES, sim_func.__name__, params, embedding_type, metric, score)
+                    for entity_mode in [EntityMode.KNOWN_ENTITIES, EntityMode.ALL_ENTITIES]:
+                        if entity_mode == EntityMode.KNOWN_ENTITIES:
+                            valid_preds = [val is not None for val in docsim_pred.values()]
+                            predictions = [val for val, is_valid in zip(docsim_pred.values(), valid_preds) if is_valid]
+                            true_labels = [val for val, is_valid in zip(docsim_gold.values(), valid_preds) if is_valid]
+                        else:  # entity_mode == EntityMode.ALL_ENTITIES
+                            predictions = [val or 0 for val in docsim_pred.values()]
+                            true_labels = list(docsim_gold.values())
+                        score = metric_scorer(true_labels, predictions)
+                        self.report.add_result(entity_mode, sim_func.__name__, params, embedding_type, metric, score)
 
-    def _compute_document_similarity(self, entity_embeddings: pd.DataFrame, docs: Tuple[int, int], sim_func: Callable, params: dict) -> float:
+    def _compute_document_similarity(self, entity_embeddings: pd.DataFrame, docs: Tuple[int, int], sim_func: Callable, params: dict) -> Optional[float]:
         doc1, doc2 = docs
         doc1_ents, doc1_weights = self.dataset.get_mapped_entities_for_document(doc1)
         doc2_ents, doc2_weights = self.dataset.get_mapped_entities_for_document(doc2)
         if not doc1_ents or not doc2_ents:
-            return 0
+            return None
         doc1_entity_embeddings = entity_embeddings.loc[doc1_ents, :]
         doc2_entity_embeddings = entity_embeddings.loc[doc2_ents, :]
         pairwise_similarities = sim_func(doc1_entity_embeddings, doc2_entity_embeddings)

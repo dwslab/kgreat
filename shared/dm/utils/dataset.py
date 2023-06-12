@@ -51,6 +51,7 @@ class TsvDataset(Dataset):
         self.label_column = config['label']
         self.data = None
         self.mapped_data = None
+        self.unmapped_labels = None
 
     @classmethod
     def get_format(cls) -> DatasetFormat:
@@ -64,13 +65,19 @@ class TsvDataset(Dataset):
 
     def apply_mapping(self):
         mapped_data = {}
+        unmapped_labels = []
         for _, row in self.data.iterrows():
+            row_mapped = False
             for key in self.entity_keys:
                 if key not in row or row[key] not in self.entity_mapping:
                     continue
                 source_key = self.entity_mapping[row[key]]
                 mapped_data[source_key] = row[self.label_column]
+                row_mapped = True
+            if not row_mapped:
+                unmapped_labels.append(row[self.label_column])
         self.mapped_data = pd.Series(mapped_data)
+        self.unmapped_labels = unmapped_labels
 
     def get_entities(self) -> pd.DataFrame:
         if self.entity_label:
@@ -84,8 +91,8 @@ class TsvDataset(Dataset):
     def get_mapped_entities(self) -> set:
         return set(self.mapped_data.index)
 
-    def get_entity_labels(self) -> pd.Series:
-        return self.mapped_data
+    def get_entity_labels(self, mapped: bool = True) -> pd.Series:
+        return self.mapped_data if mapped else self.unmapped_labels
 
 
 class DocumentSimilarityDataset(Dataset):
@@ -250,8 +257,8 @@ class RecommendationDataset(Dataset, ABC):
     def get_mapped_entities(self) -> set:
         return set(zip(self.mapped_items.index, self.mapped_items))
 
-    def get_actions(self) -> pd.DataFrame:
-        return self.actions
+    def get_actions(self, mapped: bool = True) -> pd.DataFrame:
+        return self.actions[self.actions['item_id'].isin(self.mapped_items)] if mapped else self.actions
 
 
 class MovieLensRecommendationDataset(RecommendationDataset):
