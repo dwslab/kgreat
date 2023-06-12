@@ -14,7 +14,7 @@ def perform_sameas_mapping(kg_config: dict, mapper_config: dict):
     path_to_entity_mapping = KG_DIR / 'entity_mapping.tsv'
     if not path_to_entity_mapping.is_file():
         raise FileNotFoundError('Could not find entity mapping file. Did you forget to `prepare` the mapping stage?')
-    entities_to_map = pd.read_csv(path_to_entity_mapping, sep='\t', header=0)
+    entities_to_map = pd.read_csv(path_to_entity_mapping, sep='\t', header=0, dtype=str)
     # parse sameas links and apply to entities
     sameas_mapping = _parse_sameas_links_from_files(kg_config, mapper_config)
     uri_columns = [col for col in entities_to_map.columns if col.endswith('_URI')]
