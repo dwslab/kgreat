@@ -1,4 +1,3 @@
-import numpy as np
 import os
 import yaml
 import pandas as pd
