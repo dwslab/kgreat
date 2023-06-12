@@ -28,3 +28,6 @@ class BaseTask(ABC):
     def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
         get_logger().info(f'Loading entity embeddings of type {embedding_type}')
         return load_entity_embeddings(embedding_type)
+
+    def get_fraction_of_known_entities(self) -> float:
+        return len(self.dataset.get_mapped_entities()) / len(self.dataset.get_entities())
