@@ -8,6 +8,7 @@ class TaskMode(Enum):
     DOCUMENT_SIMILARITY = 'documentSimilarity'
     ENTITY_RELATEDNESS = 'entityRelatedness'
     SEMANTIC_ANALOGIES = 'semanticAnalogies'
+    RECOMMENDATION = 'recommendation'
 
 
 class EntityMode(Enum):
@@ -20,3 +21,6 @@ class DatasetFormat(Enum):
     DOCUMENT_SIMILARITY = 'documentSimilarity'
     ENTITY_RELATEDNESS = 'entityRelatedness'
     SEMANTIC_ANALOGIES = 'semanticAnalogies'
+    MOVIELENS_RECOMMENDATION = 'movieLensRecommendation'
+    LASTFM_RECOMMENDATION = 'lastFmRecommendation'
+    LIBRARYTHING_RECOMMENDATION = 'libraryThingRecommendation'

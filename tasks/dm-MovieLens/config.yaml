@@ -1,0 +1,7 @@
+name: "MovieLens"
+format: movieLensRecommendation
+entity_keys: ['imdb_URI']
+item_file: './ml-20m/movies.csv'
+action_file: './ml-20m/ratings.csv'
+dbplink_file: 'dbpedia-links.tsv'
+link_file: './ml-20m/links.csv'

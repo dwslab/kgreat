@@ -1,0 +1,6 @@
+name: "LibraryThing"
+format: libraryThingRecommendation
+entity_keys: ['LibraryThing_URI']
+item_file: 'books.tsv'
+action_file: 'lthing_data/reviews.txt'
+dbplink_file: 'dbpedia-links.tsv'

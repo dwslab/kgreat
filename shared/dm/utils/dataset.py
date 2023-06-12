@@ -15,7 +15,8 @@ class Dataset(ABC):
         for key in self.entity_keys:
             if key not in entity_mapping:
                 continue
-            self.entity_mapping |= entity_mapping.set_index(key)['source'].to_dict()
+            for k, v in entity_mapping[[key, 'source']].itertuples(index=False, name=None):
+                self.entity_mapping[k] = v
 
     @classmethod
     @abstractmethod
@@ -210,11 +211,129 @@ class SemanticAnalogiesDataset(Dataset):
         return self.mapped_data if mapped else self.data
 
 
+class RecommendationDataset(Dataset, ABC):
+    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(config, entity_mapping)
+        self.item_file = config['item_file']
+        self.action_file = config['action_file']
+        self.dbplink_file = config['dbplink_file']
+        self.items = None
+        self.mapped_items = None
+        self.actions = None
+
+    def postprocess_data(self):
+        self.actions['item_count'] = self.actions['item_id'].map(self.actions['item_id'].value_counts())
+        self.actions['user_count'] = self.actions['user_id'].map(self.actions['user_id'].value_counts())
+        # remove most popular items (top 1%)
+        one_percent_of_items = int(self.actions['item_id'].nunique() * 0.01)
+        top_items = self.actions['item_id'].value_counts().nlargest(n=one_percent_of_items).index.values
+        self.actions = self.actions[~self.actions['item_id'].isin(top_items)]
+        # remove items and users with too few ratings (less than five)
+        self.actions = self.actions[(self.actions['item_count'] >= 5) & (self.actions['user_count'] >= 5)]
+        self.actions = self.actions.drop(columns=['item_count', 'user_count'])
+        # remove unrated items
+        self.items = self.items[self.items.index.isin(self.actions['item_id'].astype(int).unique())]
+
+    def apply_mapping(self):
+        mapped_items = {}
+        for item_id, row in self.items.iterrows():
+            for key in self.entity_keys:
+                if key not in row or row[key] not in self.entity_mapping:
+                    continue
+                source_key = self.entity_mapping[row[key]]
+                mapped_items[source_key] = item_id
+        self.mapped_items = pd.Series(mapped_items)
+
+    def get_entities(self) -> pd.DataFrame:
+        return self.items
+
+    def get_mapped_entities(self) -> set:
+        return set(zip(self.mapped_items.index, self.mapped_items))
+
+    def get_actions(self) -> pd.DataFrame:
+        return self.actions
+
+
+class MovieLensRecommendationDataset(RecommendationDataset):
+    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(config, entity_mapping)
+        self.link_file = config['link_file']
+
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.MOVIELENS_RECOMMENDATION
+
+    def load(self):
+        # initialize movies
+        movie_labels = pd.read_csv(self.item_file, sep=',', header=0, index_col=0)['title'].rename('label')
+        imdb_links = pd.read_csv(self.link_file, sep=',', header=0, index_col=0)
+        imdb_links['imdb_URI'] = imdb_links['imdbId'].apply(lambda imdb_id: f'https://www.imdb.com/title/tt{imdb_id:07}/')
+        movies = pd.merge(movie_labels, imdb_links[['imdb_URI']], how='left', left_index=True, right_index=True)
+        dbp_links = pd.read_csv(self.dbplink_file, sep='\t', index_col=0, names=['title', 'DBpedia16_URI'])
+        movies = pd.merge(movies, dbp_links['DBpedia16_URI'], how='left', left_index=True, right_index=True)
+        self.items = movies
+        # initialize movie ratings
+        ratings = pd.read_csv(self.action_file, sep=',', header=0, usecols=['userId', 'movieId', 'rating'])
+        self.actions = ratings.rename(columns={'userId': 'user_id', 'movieId': 'item_id'})
+        self.postprocess_data()
+
+
+class LastFmRecommendationDataset(RecommendationDataset):
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.LASTFM_RECOMMENDATION
+
+    def load(self):
+        # initialize artists
+        artists = pd.read_csv(self.item_file, sep='\t', header=0, index_col=0)
+        artists = artists.drop(columns='pictureURL').rename(columns={'name': 'label', 'url': 'lastfm_URI'})
+        dbp_links = pd.read_csv(self.dbplink_file, sep='\t', index_col=0, names=['title', 'DBpedia16_URI'])
+        artists = pd.merge(artists, dbp_links['DBpedia16_URI'], how='left', left_index=True, right_index=True)
+        self.items = artists
+        # initialize artist listening counts
+        listening_counts = pd.read_csv(self.action_file, sep='\t', header=0)
+        self.actions = listening_counts.rename(columns={'userID': 'user_id', 'artistID': 'item_id', 'weight': 'rating'})
+        self.postprocess_data()
+
+
+class LibraryThingRecommendationDataset(RecommendationDataset):
+    @classmethod
+    def get_format(cls) -> DatasetFormat:
+        return DatasetFormat.LIBRARYTHING_RECOMMENDATION
+
+    def load(self):
+        # initialize books
+        books = pd.read_csv(self.item_file, sep='\t', header=0)
+        books['LibraryThing_URI'] = books['item_id'].apply(lambda item_id: f'https://www.librarything.com/work/{item_id}')
+        books = books.set_index('item_id', drop=True)
+        dbp_links = pd.read_csv(self.dbplink_file, sep='\t', index_col=0, names=['title', 'DBpedia16_URI'])
+        self.items = pd.merge(books, dbp_links['DBpedia16_URI'], how='left', left_index=True, right_index=True)
+        # initialize user reviews
+        actions = {}
+        with open(self.action_file) as f:
+            for line in f:
+                data = eval(line[line.find(' = ') + 3:])
+                if 'user' not in data or 'work' not in data or 'stars' not in data:
+                    continue
+                actions[(data['user'], int(data['work']))] = float(data['stars'])
+        actions = [(user, work, rating) for (user, work), rating in actions.items()]
+        self.actions = pd.DataFrame(data=actions, columns=['user_id', 'item_id', 'rating'])
+        self.postprocess_data()
+
+
 def load_dataset(config: dict, entity_mapping: pd.DataFrame) -> Dataset:
-    dataset_by_format = {ds.get_format(): ds for ds in Dataset.__subclasses__()}
+    dataset_by_format = {ds.get_format(): ds for ds in _get_transitive_subclasses(Dataset)}
     dataset_format = DatasetFormat(config['format'])
     dataset = dataset_by_format[dataset_format](config, entity_mapping)
     dataset.load()
     if len(entity_mapping):
         dataset.apply_mapping()
     return dataset
+
+
+def _get_transitive_subclasses(cls):
+    for subcls in cls.__subclasses__():
+        if subcls.__subclasses__():
+            yield from _get_transitive_subclasses(subcls)
+        else:
+            yield subcls

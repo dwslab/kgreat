@@ -78,3 +78,12 @@ tasks:
   'dm-CurrencyEntities_semanticAnalogies':
     type: dm-CurrencyEntities
     mode: semanticAnalogies
+  'dm-MovieLens_recommendation':
+    type: dm-MovieLens
+    mode: recommendation
+  'dm-LastFm_recommendation':
+    type: dm-LastFm
+    mode: recommendation
+  'dm-LibraryThing_recommendation':
+    type: dm-LibraryThing
+    mode: recommendation

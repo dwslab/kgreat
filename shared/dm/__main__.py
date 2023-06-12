@@ -8,26 +8,14 @@ from utils.logging import init_logger, get_logger
 from utils.report import TaskReport
 from utils.dataset import load_dataset
 from base_task import BaseTask
-from classification_task import ClassificationTask
-from regression_task import RegressionTask
-from clustering_task import ClusteringTask
-from documentsimilarity_task import DocumentSimilarityTask
-from entityrelatedness_task import EntityRelatednessTask
-from semanticanalogies_task import SemanticAnalogiesTask
 
 
 class TaskManager:
-    AVAILABLE_TASKS = [
-        ClassificationTask, RegressionTask, ClusteringTask,
-        DocumentSimilarityTask, EntityRelatednessTask, SemanticAnalogiesTask
-    ]
-
     def __init__(self, task_id: str, dataset_config: dict):
         self.task_id = task_id
         self.dataset_config = dataset_config
         self.kg_config = load_kg_config()
         self.task_config = self.kg_config['tasks'][task_id]
-        self.tasks_by_mode = {t.get_mode(): t for t in self.AVAILABLE_TASKS}
 
     def run_task(self):
         start_time = datetime.datetime.now()
@@ -40,8 +28,9 @@ class TaskManager:
         dataset = load_dataset(self.dataset_config, entity_mapping)
         # prepare and run task
         get_logger().info('Running task')
-        report = TaskReport(self.task_id, self._get_task_class().get_mode(), dataset)
-        task = self._get_task_class()(self.kg_config, self.task_config, dataset, report)
+        Task = self._get_task_class()
+        report = TaskReport(self.task_id, Task.get_mode(), dataset)
+        task = Task(self.kg_config, self.task_config, dataset, report)
         task.run()
         report.store(self.kg_config['run_id'])
         runtime_in_seconds = (datetime.datetime.now() - start_time).seconds
@@ -49,7 +38,29 @@ class TaskManager:
 
     def _get_task_class(self) -> Type[BaseTask]:
         mode = TaskMode(self.task_config['mode'])
-        return self.tasks_by_mode[mode]
+        # import modules only on demand to keep dependencies separated
+        if mode == TaskMode.CLASSIFICATION:
+            from classification_task import ClassificationTask
+            return ClassificationTask
+        if mode == TaskMode.REGRESSION:
+            from regression_task import RegressionTask
+            return RegressionTask
+        if mode == TaskMode.CLUSTERING:
+            from clustering_task import ClusteringTask
+            return ClusteringTask
+        if mode == TaskMode.DOCUMENT_SIMILARITY:
+            from documentsimilarity_task import DocumentSimilarityTask
+            return DocumentSimilarityTask
+        if mode == TaskMode.ENTITY_RELATEDNESS:
+            from entityrelatedness_task import EntityRelatednessTask
+            return EntityRelatednessTask
+        if mode == TaskMode.SEMANTIC_ANALOGIES:
+            from semanticanalogies_task import SemanticAnalogiesTask
+            return SemanticAnalogiesTask
+        if mode == TaskMode.RECOMMENDATION:
+            from recommendation_task import RecommendationTask
+            return RecommendationTask
+        raise NotImplementedError(f'No task implemented for mode "{mode.value}"')
 
 
 if __name__ == "__main__":

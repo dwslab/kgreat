@@ -1,0 +1,6 @@
+name: "LastFm"
+format: lastFmRecommendation
+entity_keys: ['lastfm_URI']
+item_file: 'artists.dat'
+action_file: 'user_artists.dat'
+dbplink_file: 'dbpedia-links.tsv'

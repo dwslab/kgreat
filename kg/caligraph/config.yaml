@@ -13,7 +13,7 @@ preprocessing:
   embeddings:
     input_files: ['caligraph-ontology.nt.bz2', 'caligraph-instances_types.nt.bz2', 'caligraph-instances_relations.nt.bz2']
     models: ['TransE_l1']
-    batch_size: 5000
+    batch_size: 10000
     max_step: 2000000
 
 tasks:
@@ -77,3 +77,12 @@ tasks:
   'dm-CurrencyEntities_semanticAnalogies':
     type: dm-CurrencyEntities
     mode: semanticAnalogies
+  'dm-MovieLens_recommendation':
+    type: dm-MovieLens
+    mode: recommendation
+  'dm-LastFm_recommendation':
+    type: dm-LastFm
+    mode: recommendation
+  'dm-LibraryThing_recommendation':
+    type: dm-LibraryThing
+    mode: recommendation
