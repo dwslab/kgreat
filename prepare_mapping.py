@@ -41,8 +41,8 @@ def _merge_entity_files(kg_name: str, temp_dir: Path, task_types: Set[str]):
 
 def _add_entities_to_mapping_dict(ents: pd.DataFrame, mapped_ents: list, mapping_dict: dict):
     for _, row in ents.iterrows():
-        entity_ids = {k: v for k, v in row.items() if str(k).endswith('_URI') and v}
-        entity_labels = {k: v for k, v in row.items() if k not in entity_ids and v}
+        entity_ids = {k: v for k, v in row.items() if str(k).endswith('_URI') and pd.notnull(v)}
+        entity_labels = {k: v for k, v in row.items() if k not in entity_ids and pd.notnull(v)}
         # use existing mapping_dict entry (if existing), otherwise create new and add to mapped ents
         mapping_dict_entry = {}
         found_existing = False
@@ -54,7 +54,7 @@ def _add_entities_to_mapping_dict(ents: pd.DataFrame, mapped_ents: list, mapping
         if not found_existing:
             mapped_ents.append(mapping_dict_entry)
         # update and index mapping-dict entry
-        mapping_dict_entry |= entity_ids
-        mapping_dict_entry |= entity_labels
+        mapping_dict_entry.update(entity_ids)
+        mapping_dict_entry.update(entity_labels)
         for entity_id in entity_ids.values():
             mapping_dict[entity_id] = mapping_dict_entry

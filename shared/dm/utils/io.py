@@ -10,7 +10,7 @@ def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
 
 def load_entity_mapping() -> pd.DataFrame:
     filepath = get_kg_path() / 'entity_mapping.tsv'
-    df = pd.read_csv(filepath, sep='\t', header=0)
+    df = pd.read_csv(filepath, sep='\t', header=0, dtype=str)
     return df.dropna(subset=['source'])
 
 

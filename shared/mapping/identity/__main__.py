@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import yaml
 import pandas as pd
@@ -13,7 +14,7 @@ def perform_identity_mapping(kg_config: dict, mapper_config: dict):
     path_to_entity_mapping = KG_DIR / 'entity_mapping.tsv'
     if not path_to_entity_mapping.is_file():
         raise FileNotFoundError('Could not find entity mapping file. Did you forget to `prepare` the mapping stage?')
-    entities_to_map = pd.read_csv(path_to_entity_mapping, sep='\t', header=0)
+    entities_to_map = pd.read_csv(path_to_entity_mapping, sep='\t', header=0, dtype=str)
     entities_to_map['source'] = entities_to_map[mapper_config['target']]
     if 'remove_prefix' in mapper_config:
         entities_to_map['source'] = entities_to_map['source'].str.removeprefix(mapper_config['remove_prefix'])
