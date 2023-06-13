@@ -79,7 +79,7 @@ def _write_dglke_file(data: list, separator: str, filename: str):
 
 def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int):
     use_gpus = 0 if kg_config['gpu'] == 'None' else len(kg_config['gpu'].split(','))
-    max_cpus = use_gpus * 4 if use_gpus > 0 else int(kg_config['max_cpus'])
+    max_cpus = use_gpus * 3 if use_gpus > 0 else int(kg_config['max_cpus'])
     max_steps = int(embedding_config['epochs']) * min(10**7, num_triples // (10 * max_cpus))
 
     for model_name in embedding_config['models']:
