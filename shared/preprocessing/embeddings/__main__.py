@@ -78,11 +78,9 @@ def _write_dglke_file(data: list, separator: str, filename: str):
 
 
 def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int):
-    max_cpus = int(kg_config['max_cpus'])
     use_gpus = 0 if kg_config['gpu'] == 'None' else len(kg_config['gpu'].split(','))
-    if use_gpus > 1:
-        max_cpus -= max_cpus % use_gpus  # num of cpus has to be divisible by num of gpus
-    max_steps = int(embedding_config['epochs']) * num_triples // (10 * max_cpus)
+    max_cpus = use_gpus * 4 if use_gpus > 0 else int(kg_config['max_cpus'])
+    max_steps = int(embedding_config['epochs']) * min(10**7, num_triples // (10 * max_cpus))
 
     for model_name in embedding_config['models']:
         _get_logger().info(f'Training embeddings of type {model_name}')
@@ -94,7 +92,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int)
             '--save_path', str(KG_DIR),
             '--data_files', 'entities.dict', 'relations.dict', 'train.tsv',
             '--format', 'udd_hrt',
-            '--batch_size', '2000',
+            '--batch_size', '1000',
             '--neg_sample_size', '200',
             '--hidden_dim', '200',
             '--max_step', str(max_steps),
