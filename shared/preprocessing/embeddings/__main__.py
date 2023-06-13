@@ -79,7 +79,7 @@ def _write_dglke_file(data: list, separator: str, filename: str):
 
 def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int):
     max_cpus = int(kg_config['max_cpus'])
-    use_gpus = 0 if kg_config['gpu'] == 'None' else len(kg_config['gpu'].split(' '))
+    use_gpus = 0 if kg_config['gpu'] == 'None' else len(kg_config['gpu'].split(','))
     if use_gpus > 1:
         max_cpus -= max_cpus % use_gpus  # num of cpus has to be divisible by num of gpus
     max_steps = int(embedding_config['epochs']) * num_triples // (10 * max_cpus)
@@ -104,7 +104,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int)
             '-adv'
         ] + EMBEDDING_BASE_CONFIGS[model_name]
         if use_gpus:
-            command += ['--gpu', kg_config['gpu'], '--mix_cpu_gpu']
+            command += ['--mix_cpu_gpu', '--gpu'] + kg_config['gpu'].split(',')
             if use_gpus > 1:
                 command += ['--async_update']
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
