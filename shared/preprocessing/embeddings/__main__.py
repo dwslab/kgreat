@@ -7,6 +7,7 @@ import subprocess
 import shutil
 import numpy as np
 import pandas as pd
+import hnswlib
 from importer import get_reader_for_format
 
 
@@ -38,7 +39,7 @@ def make_embeddings(kg_config: dict):
     embedding_models = embedding_config['models']
     _cleanup_temp_embedding_folders(embedding_models)
     _train_embeddings(embedding_config, kg_config['gpu'])
-    _serialize_embeddings(embedding_models)
+    _serialize_embeddings_and_indices(embedding_models)
     _cleanup_temp_embedding_folders(embedding_models)
 
 
@@ -100,7 +101,7 @@ def _train_embeddings(embedding_config: dict, gpu: Optional[str]):
         _get_logger().debug(process.communicate()[1].decode())
 
 
-def _serialize_embeddings(embedding_models: List[str]):
+def _serialize_embeddings_and_indices(embedding_models: List[str]):
     # load vectors of the respective models and merge indices with actual entity names
     entity_dict = pd.read_csv(EMBEDDINGS_DIR / 'entities.dict', index_col=0, sep='\t', header=None, names=['entity'])
     for model_name in embedding_models:
@@ -111,6 +112,16 @@ def _serialize_embeddings(embedding_models: List[str]):
         entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True).set_index('entity')
         entity_vecs = entity_vecs.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # normalize to unit vectors
         entity_vecs.to_csv(EMBEDDINGS_DIR / f'{model_name}.tsv', sep='\t', header=False)
+        _get_logger().debug(f'Building and storing ANN index for entities of type {model_name}')
+        _build_ann_index(EMBEDDINGS_DIR / f'{model_name}_index.p', entity_vecs.values, 300, 32, 20)
+
+
+def _build_ann_index(filepath: Path, embeddings: np.ndarray, ef_construction: int, M: int, ef: int) -> hnswlib.Index:
+    index = hnswlib.Index(space='ip', dim=embeddings.shape[-1])
+    index.init_index(max_elements=len(embeddings), ef_construction=ef_construction, M=M)
+    index.add_items(embeddings, list(range(len(embeddings))))
+    index.set_ef(ef)
+    index.save_index(str(filepath))
 
 
 def _cleanup_temp_embedding_folders(embedding_models: List[str]):
