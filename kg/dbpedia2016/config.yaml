@@ -1,5 +1,6 @@
 run_id: 0
 log_level: 'DEBUG'
+max_cpus: 20
 gpu: None
 format: nt
 
@@ -14,8 +15,7 @@ preprocessing:
   embeddings:
     input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
     models: ['TransE_l1']
-    batch_size: 5000
-    max_step: 1000000
+    epochs: 1
 
 tasks:
   'dm-AAUP_classification':

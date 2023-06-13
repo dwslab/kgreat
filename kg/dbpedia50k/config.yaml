@@ -1,5 +1,6 @@
 run_id: 0
 log_level: 'DEBUG'
+max_cpus: 2
 gpu: None
 format: tsv
 
@@ -14,8 +15,7 @@ preprocessing:
   embeddings:
     input_files: ['dbpedia50k_train.tsv']
     models: ['TransE_l1']
-    batch_size: 5000
-    max_step: 100000
+    epochs: 1
 
 tasks:
   'dm-AAUP_classification':

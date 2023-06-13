@@ -1,14 +1,14 @@
 run_id: 0  # ID used for the collective run of all tasks; is used as name for the result folder
 log_level: 'INFO'  # log level (one of 'INFO', 'DEBUG', ..)
-gpu: None  # index of GPUs to use (0,1,2,..) or 'None' if no GPU should be used for embedding generation
+max_cpus: 1  # maximum number of CPUs to be used
+gpu: None  # index of GPUs to use (if multiple, separate by space) or 'None' if no GPU should be used
 format: tsv  # file input format (one of: "tsv", "nt")
 
 preprocessing:
   embeddings:
     input_files: ['file_1.ttl', 'file_2.ttl']  # list files within the `data` folder that should be used to create embeddings
     models: ['TransE_l1', 'TransE_l2', 'TransR', 'DistMult', 'RESCAL', 'ComplEx']  # choose one or more
-    batch_size: 1000
-    max_step: 1000000
+    epochs: 1
 
 tasks:  # list of all tasks to be run; check the documentation in the respective task folder (./tasks/*) for details
   'dm-AAUP_classification':

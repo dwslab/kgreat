@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 import datetime
 from pathlib import Path
 import logging
@@ -7,7 +7,6 @@ import subprocess
 import shutil
 import numpy as np
 import pandas as pd
-import hnswlib
 from importer import get_reader_for_format
 
 
@@ -34,16 +33,16 @@ def make_embeddings(kg_config: dict):
         _get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
         embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
     # create data in dgl-ke input format
-    _convert_graph_data(kg_config['format'], embedding_config['input_files'])
+    num_triples = _convert_graph_data(kg_config['format'], embedding_config['input_files'])
     # train and persist embeddings
     embedding_models = embedding_config['models']
     _cleanup_temp_embedding_folders(embedding_models)
-    _train_embeddings(embedding_config, kg_config['gpu'])
+    _train_embeddings(embedding_config, kg_config, num_triples)
     _serialize_embeddings_and_indices(embedding_models)
     _cleanup_temp_embedding_folders(embedding_models)
 
 
-def _convert_graph_data(kg_format: str, input_files: List[str]):
+def _convert_graph_data(kg_format: str, input_files: List[str]) -> int:
     _get_logger().info(f'Converting input of format {kg_format} to dgl-ke format')
     reader = get_reader_for_format(kg_format)
     # gather entities, relations, triples
@@ -62,6 +61,7 @@ def _convert_graph_data(kg_format: str, input_files: List[str]):
     _write_dglke_file([(idx, e) for e, idx in entities.items()], '\t', 'entities.dict')
     _write_dglke_file([(idx, r) for r, idx in relations.items()], '\t', 'relations.dict')
     _write_dglke_file(triples, '\t', 'train.tsv')
+    return len(triples)
 
 
 def _get_or_create_idx(value: str, value_dict: dict) -> str:
@@ -77,7 +77,13 @@ def _write_dglke_file(data: list, separator: str, filename: str):
             f.write(f'{separator.join(vals)}\n')
 
 
-def _train_embeddings(embedding_config: dict, gpu: Optional[str]):
+def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int):
+    max_cpus = int(kg_config['max_cpus'])
+    use_gpus = 0 if kg_config['gpu'] == 'None' else len(kg_config['gpu'].split(' '))
+    if use_gpus > 1:
+        max_cpus -= max_cpus % use_gpus  # num of cpus has to be divisible by num of gpus
+    max_steps = int(embedding_config['epochs']) * num_triples // (10 * max_cpus)
+
     for model_name in embedding_config['models']:
         _get_logger().info(f'Training embeddings of type {model_name}')
         command = [
@@ -88,15 +94,19 @@ def _train_embeddings(embedding_config: dict, gpu: Optional[str]):
             '--save_path', str(KG_DIR),
             '--data_files', 'entities.dict', 'relations.dict', 'train.tsv',
             '--format', 'udd_hrt',
-            '--batch_size', str(embedding_config['batch_size']),
+            '--batch_size', '2000',
             '--neg_sample_size', '200',
             '--hidden_dim', '200',
-            '--max_step', str(embedding_config['max_step']),
+            '--max_step', str(max_steps),
+            '--num_proc', str(max_cpus),
+            '--force_sync_interval', '10000',
             '--log_interval', '1000',
             '-adv'
         ] + EMBEDDING_BASE_CONFIGS[model_name]
-        if gpu != 'None':
-            command += ['--gpu', gpu, '--mix_cpu_gpu']
+        if use_gpus:
+            command += ['--gpu', kg_config['gpu'], '--mix_cpu_gpu']
+            if use_gpus > 1:
+                command += ['--async_update']
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         _get_logger().debug(process.communicate()[1].decode())
 
@@ -112,16 +122,6 @@ def _serialize_embeddings_and_indices(embedding_models: List[str]):
         entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True).set_index('entity')
         entity_vecs = entity_vecs.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # normalize to unit vectors
         entity_vecs.to_csv(EMBEDDINGS_DIR / f'{model_name}.tsv', sep='\t', header=False)
-        _get_logger().debug(f'Building and storing ANN index for entities of type {model_name}')
-        _build_ann_index(EMBEDDINGS_DIR / f'{model_name}_index.p', entity_vecs.values, 300, 32, 20)
-
-
-def _build_ann_index(filepath: Path, embeddings: np.ndarray, ef_construction: int, M: int, ef: int):
-    index = hnswlib.Index(space='ip', dim=embeddings.shape[-1])
-    index.init_index(max_elements=len(embeddings), ef_construction=ef_construction, M=M)
-    index.add_items(embeddings, list(range(len(embeddings))), num_threads=20)
-    index.set_ef(ef)
-    index.save_index(str(filepath))
 
 
 def _cleanup_temp_embedding_folders(embedding_models: List[str]):

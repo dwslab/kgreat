@@ -1,5 +1,6 @@
 run_id: 0
 log_level: 'DEBUG'
+max_cpus: 20
 gpu: None
 format: yago
 
@@ -15,8 +16,7 @@ preprocessing:
   embeddings:
     input_files: ['yagoTaxonomy.ttl', 'yagoFacts.ttl', 'yagoTypes.ttl']
     models: ['TransE_l1']
-    batch_size: 10000
-    max_step: 1000000
+    epochs: 1
 
 tasks:
   'dm-AAUP_classification':
