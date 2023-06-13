@@ -116,10 +116,10 @@ def _serialize_embeddings_and_indices(embedding_models: List[str]):
         _build_ann_index(EMBEDDINGS_DIR / f'{model_name}_index.p', entity_vecs.values, 300, 32, 20)
 
 
-def _build_ann_index(filepath: Path, embeddings: np.ndarray, ef_construction: int, M: int, ef: int) -> hnswlib.Index:
+def _build_ann_index(filepath: Path, embeddings: np.ndarray, ef_construction: int, M: int, ef: int):
     index = hnswlib.Index(space='ip', dim=embeddings.shape[-1])
     index.init_index(max_elements=len(embeddings), ef_construction=ef_construction, M=M)
-    index.add_items(embeddings, list(range(len(embeddings))))
+    index.add_items(embeddings, list(range(len(embeddings))), num_threads=20)
     index.set_ef(ef)
     index.save_index(str(filepath))
 
