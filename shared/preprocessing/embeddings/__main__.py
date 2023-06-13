@@ -105,6 +105,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int)
             command += ['--mix_cpu_gpu', '--gpu'] + kg_config['gpu'].split(',')
             if use_gpus > 1:
                 command += ['--async_update']
+        _get_logger().debug(f'Running command: {" ".join(command)}')
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         _get_logger().debug(process.communicate()[1].decode())
 
