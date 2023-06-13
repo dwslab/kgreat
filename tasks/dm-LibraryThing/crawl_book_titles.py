@@ -43,7 +43,5 @@ def _crawl_book_title(lt_id: str) -> str:
 
 if __name__ == '__main__':
     book_ids = _read_relevant_book_ids()
-#    book_titles = [_crawl_book_title(book_id) for book_id in tqdm(book_ids)]
-#    df = pd.DataFrame({'item_id': book_ids, 'label': book_titles})
-    df = pd.DataFrame({'item_id': book_ids})
-    df.to_csv('./books.tsv', sep='\t', index=False)
+    book_titles = [_crawl_book_title(book_id) for book_id in tqdm(book_ids)]
+    pd.DataFrame({'item_id': book_ids, 'label': book_titles}).to_csv('./books.tsv', sep='\t', index=False)
