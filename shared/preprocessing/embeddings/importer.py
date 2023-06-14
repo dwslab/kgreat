@@ -16,35 +16,25 @@ class EdgelistReader(ABC):
 class NTriplesEdgelistReader(EdgelistReader):
     def read(self, path: Path) -> Iterable[Tuple[str, str, str]]:
         object_pattern = re.compile(rb'<(.+)> <(.+)> <(.+)> \.\s*\n')
-        literal_pattern = re.compile(rb'<(.+)> <(.+)> "(.+)"(?:\^\^.*|@en.*)? \.\s*\n')
         with _get_open_fct(path)(path, "rb") as tf:
             for line_num, line in enumerate(tf, start=1):
                 object_triple = object_pattern.match(line)
-                if object_triple:
-                    yield tuple([x.decode('utf-8') for x in object_triple.groups()])
+                if not object_triple:
+                    # TODO: log skipped line
                     continue
-                literal_triple = literal_pattern.match(line)
-                if literal_triple:
-                    yield tuple([x.decode('utf-8') for x in literal_triple.groups()])
-                    continue
-                # TODO: log skipped line
+                yield tuple([x.decode('utf-8') for x in object_triple.groups()])
 
 
 class YagoEdgelistReader(EdgelistReader):
     def read(self, path: Path) -> Iterable[Tuple[str, str, str]]:
         object_pattern = re.compile(rb'<(.+)>\t(.+)\t<(.+)>\s+\.\s*\n')
-        literal_pattern = re.compile(rb'<(.+)>\t(.+)\t"(.+)"(?:\^\^.*|@en.*)?\s+\.\s*\n')
         with _get_open_fct(path)(path, "rb") as tf:
             for line_num, line in enumerate(tf, start=1):
                 object_triple = object_pattern.match(line)
-                if object_triple:
-                    yield tuple([x.decode('utf-8') for x in object_triple.groups()])
+                if not object_triple:
+                    # TODO: log skipped line
                     continue
-                literal_triple = literal_pattern.match(line)
-                if literal_triple:
-                    yield tuple([x.decode('utf-8') for x in literal_triple.groups()])
-                    continue
-                # TODO: log skipped line
+                yield tuple([x.decode('utf-8') for x in object_triple.groups()])
 
 
 class TSVEdgelistReader(EdgelistReader):
