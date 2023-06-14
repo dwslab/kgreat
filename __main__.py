@@ -9,6 +9,8 @@ def process_action(kg_name: str, action: str, stage: str, steps: List[str], cont
         _perform_mapping_action(kg_name, action, stage, steps, container_manager)
     elif stage == 'preprocessing/embeddings':
         _perform_embedding_action(kg_name, action, stage, steps, container_manager)
+    elif stage == 'preprocessing/ann':
+        _perform_ann_action(kg_name, action, stage, steps, container_manager)
     elif stage == 'tasks':
         _perform_task_action(kg_name, action, stage, steps, container_manager)
     else:
@@ -32,6 +34,11 @@ def _perform_mapping_action(kg_name: str, action: str, stage: str, steps: List[s
 
 def _perform_embedding_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
     path_to_dockerfile = './shared/preprocessing/embeddings/Dockerfile'
+    _perform_action(container_manager, action, get_image_name(stage), path_to_dockerfile, kg_name)
+
+
+def _perform_ann_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
+    path_to_dockerfile = './shared/preprocessing/ann/Dockerfile'
     _perform_action(container_manager, action, get_image_name(stage), path_to_dockerfile, kg_name)
 
 
@@ -84,7 +91,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Manage and run images for preprocessing or tasks.')
     parser.add_argument('kg_name', type=str, help='Name of the knowledge graph to use')
     parser.add_argument('action', type=str, help='Action to perform', choices=['build', 'push', 'pull', 'prepare', 'run'])
-    parser.add_argument('stage', type=str, help='Apply action to this stage', choices=['mapping', 'preprocessing/embeddings', 'tasks'])
+    parser.add_argument('stage', type=str, help='Apply action to this stage', choices=['mapping', 'preprocessing/embeddings', 'preprocessing/ann', 'tasks'])
     parser.add_argument('-s', '--step', type=str, nargs='*', help='ID of step(s) to perform action on (default is: all steps of stage)')
     parser.add_argument('-c', '--container_manager', type=str, help='Name of container manager', choices=['docker', 'podman'], default='docker')
     args = parser.parse_args()
