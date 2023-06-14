@@ -102,7 +102,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int)
         if kg_config['gpu'] != 'None':
             command += ['--gpu', kg_config['gpu'], '--mix_cpu_gpu']
         _get_logger().debug(f'Running command: {" ".join(command)}')
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         _get_logger().debug(process.communicate()[1].decode())
 
 
