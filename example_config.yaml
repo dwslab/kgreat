@@ -1,7 +1,7 @@
 run_id: 0  # ID used for the collective run of all tasks; is used as name for the result folder
 log_level: 'INFO'  # log level (one of 'INFO', 'DEBUG', ..)
 max_cpus: 1  # maximum number of CPUs to be used
-gpu: None  # index of GPUs to use (if multiple, separate by comma) or 'None' if no GPU should be used
+gpu: None  # index of GPU to use or 'None' if no GPU should be used
 format: tsv  # file input format (one of: "tsv", "nt")
 
 preprocessing:

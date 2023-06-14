@@ -78,9 +78,9 @@ def _write_dglke_file(data: list, separator: str, filename: str):
 
 
 def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int):
-    use_gpus = 0 if kg_config['gpu'] == 'None' else len(kg_config['gpu'].split(','))
-    max_cpus = use_gpus * 3 if use_gpus > 0 else int(kg_config['max_cpus'])
-    max_steps = int(embedding_config['epochs']) * min(10**7, num_triples // (10 * max_cpus))
+    batch_size = embedding_config['batch_size']
+    neg_sample_size = 200
+    max_steps = int(embedding_config['epochs']) * min(200000, num_triples * neg_sample_size // batch_size)
 
     for model_name in embedding_config['models']:
         _get_logger().info(f'Training embeddings of type {model_name}')
@@ -92,21 +92,17 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int)
             '--save_path', str(KG_DIR),
             '--data_files', 'entities.dict', 'relations.dict', 'train.tsv',
             '--format', 'udd_hrt',
-            '--batch_size', '1000',
-            '--neg_sample_size', '200',
+            '--batch_size', str(batch_size),
+            '--neg_sample_size', str(neg_sample_size),
             '--hidden_dim', '200',
             '--max_step', str(max_steps),
-            '--num_proc', str(max_cpus),
-            '--force_sync_interval', '10000',
             '--log_interval', '1000',
             '-adv'
         ] + EMBEDDING_BASE_CONFIGS[model_name]
-        if use_gpus:
-            command += ['--mix_cpu_gpu', '--gpu'] + kg_config['gpu'].split(',')
-            if use_gpus > 1:
-                command += ['--async_update']
+        if kg_config['gpu'] != 'None':
+            command += ['--gpu', kg_config['gpu'], '--mix_cpu_gpu']
         _get_logger().debug(f'Running command: {" ".join(command)}')
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         _get_logger().debug(process.communicate()[1].decode())
 
 
