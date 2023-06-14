@@ -28,7 +28,7 @@ preprocessing:
     input_files: ['file_1.ttl', 'file_2.ttl']  # list files within the `data` folder that should be used to create embeddings
     models: ['TransE_l1', 'TransE_l2', 'TransR', 'DistMult', 'RESCAL', 'ComplEx']  # choose one or more
     epochs: 1  # number of epochs to train the embedding model for
-    batch_size: 25000  # batch size to use on GPU
+    batch_size: 30000  # batch size to use on GPU
 
 tasks:  # list of all tasks to be run; check the documentation in the respective task folder (./tasks/*) for details
   'dm-AAUP_classification':
