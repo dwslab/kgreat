@@ -22,15 +22,15 @@ def make_ann_index(kg_config: dict):
             continue
         entity_vecs = pd.read_csv(path_to_embedding_file, sep='\t', header=None, index_col=0)
         _get_logger().debug(f'Building ANN index for embedding {model_name}')
-        index = _build_ann_index(entity_vecs.values, 300, 32, 20)
+        index = _build_ann_index(kg_config, entity_vecs.values, 300, 32, 20)
         _get_logger().debug(f'Persisting ANN index for embedding {model_name}')
         index.save_index(str(EMBEDDINGS_DIR / f'{model_name}_index.p'))
 
 
-def _build_ann_index(embeddings: np.ndarray, ef_construction: int, M: int, ef: int) -> hnswlib.Index:
+def _build_ann_index(kg_config: dict, embeddings: np.ndarray, ef_construction: int, M: int, ef: int) -> hnswlib.Index:
     index = hnswlib.Index(space='ip', dim=embeddings.shape[-1])
     index.init_index(max_elements=len(embeddings), ef_construction=ef_construction, M=M)
-    index.add_items(embeddings, list(range(len(embeddings))), num_threads=20)
+    index.add_items(embeddings, list(range(len(embeddings))), num_threads=kg_config['max_cpus'])
     index.set_ef(ef)
     return index
 
