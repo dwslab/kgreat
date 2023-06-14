@@ -2,13 +2,33 @@ run_id: 0  # ID used for the collective run of all tasks; is used as name for th
 log_level: 'INFO'  # log level (one of 'INFO', 'DEBUG', ..)
 max_cpus: 1  # maximum number of CPUs to be used
 gpu: None  # index of GPU to use or 'None' if no GPU should be used
-format: tsv  # file input format (one of: "tsv", "nt")
+format: tsv  # file input format (one of: "tsv", "nt", "yago")
+
+mapping:
+  'identity':
+    type: identity  # mapper type: identity
+    target: 'DBpedia16_URI'  # target column to map against
+    known_entity_files: ['file1', 'file2', 'file3']  # use subjects of the files' triples as sum of entities of KG
+    remove_prefix: 'target-prefix-to-be-removed'  # a prefix of the target column that should be removed before mapping
+  'sameAs':
+    type: sameAs  # mapper type: sameAs
+    kg_prefix: 'http://example.org/resource/'  # prefix of the source KG to be mapped against
+    input_files: ['file1', 'file2']  # files containing the same-as links
+    additional_predicates: ['pred1', 'pred2']  # additional predicates (other than owl:sameAs) to use
+  'label':
+    type: label  # mapper type: label
+    input_files: ['file1', 'file2']  # files containing labels
+    label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']  # predicates used to retrieve labels
+    definitive_matches_only:  False  # set to true if an entity should only be mapped if there is a single exact match to its label
+    similarity_threshold: 0.7  # lower threshold of acceptable similarity between labels (set to 1 for exact matches only)
+
 
 preprocessing:
   embeddings:
     input_files: ['file_1.ttl', 'file_2.ttl']  # list files within the `data` folder that should be used to create embeddings
     models: ['TransE_l1', 'TransE_l2', 'TransR', 'DistMult', 'RESCAL', 'ComplEx']  # choose one or more
-    epochs: 1
+    epochs: 1  # number of epochs to train the embedding model for
+    batch_size: 30000  # batch size to use on GPU
 
 tasks:  # list of all tasks to be run; check the documentation in the respective task folder (./tasks/*) for details
   'dm-AAUP_classification':
