@@ -22,7 +22,7 @@ preprocessing:
     input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
     models: ['TransE_l1']
     epochs: 1
-    batch_size: 30000
+    batch_size: 25000
 
 tasks:
   'dm-AAUP_classification':
