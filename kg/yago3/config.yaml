@@ -21,7 +21,7 @@ mapping:
 preprocessing:
   embeddings:
     input_files: ['yagoTaxonomy.ttl', 'yagoFacts.ttl', 'yagoTypes.ttl']
-    models: ['TransE_l1']
+    models: ['TransE_l1', 'DistMult', 'RESCAL']
     epochs: 1
     batch_size: 30000
 

@@ -19,7 +19,7 @@ mapping:
 preprocessing:
   embeddings:
     input_files: ['caligraph-ontology.nt.bz2', 'caligraph-instances_types.nt.bz2', 'caligraph-instances_relations.nt.bz2']
-    models: ['TransE_l1']
+    models: ['TransE_l1', 'DistMult', 'RESCAL']
     epochs: 1
     batch_size: 30000
 

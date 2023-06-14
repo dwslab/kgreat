@@ -20,7 +20,7 @@ mapping:
 preprocessing:
   embeddings:
     input_files: ['dbpedia-ontology.nt', 'dbpedia-instance-types.nt.bz2', 'dbpedia-mappingbased-objects.nt.bz2']
-    models: ['TransE_l1']
+    models: ['TransE_l1', 'DistMult', 'RESCAL']
     epochs: 1
     batch_size: 30000
 
