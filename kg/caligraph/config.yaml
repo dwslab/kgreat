@@ -9,6 +9,12 @@ mapping:
     type: sameAs
     kg_prefix: 'http://caligraph.org/resource/'
     input_files: ['caligraph-instances_dbpedia-mapping.nt.bz2']
+  'label':
+    type: label
+    input_files: ['caligraph-instances_labels.nt.bz2']
+    label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']
+    definitive_matches_only:  False
+    similarity_threshold: 0.7
 
 preprocessing:
   embeddings:

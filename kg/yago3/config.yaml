@@ -10,6 +10,12 @@ mapping:
     target: 'DBpedia16_URI'
     remove_prefix: 'http://dbpedia.org/resource/'
     known_entity_files: ['yagoFacts.ttl', 'yagoTypes.ttl']
+  'label':
+    type: label
+    input_files: ['yagoLabels.ttl']
+    label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label', 'rdfs:label']
+    definitive_matches_only:  False
+    similarity_threshold: 0.7
 
 
 preprocessing:
