@@ -15,7 +15,7 @@ preprocessing:
     input_files: ['caligraph-ontology.nt.bz2', 'caligraph-instances_types.nt.bz2', 'caligraph-instances_relations.nt.bz2']
     models: ['TransE_l1']
     epochs: 1
-    batch_size: 20000
+    batch_size: 30000
 
 tasks:
   'dm-AAUP_classification':

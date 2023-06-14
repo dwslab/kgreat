@@ -17,7 +17,7 @@ preprocessing:
     input_files: ['yagoTaxonomy.ttl', 'yagoFacts.ttl', 'yagoTypes.ttl']
     models: ['TransE_l1']
     epochs: 1
-    batch_size: 20000
+    batch_size: 30000
 
 tasks:
   'dm-AAUP_classification':
