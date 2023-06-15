@@ -82,7 +82,7 @@ def _find_fuzzy_matches(entities_with_label: pd.DataFrame, kg_entity_labels: dic
     _get_logger().debug(f'Computing token sort ratio: {len(entities_with_label)}x{len(kg_labels)}..')
     mapping_result = process.cdist(entities_with_label['label'].values, kg_labels, scorer=fuzz.token_sort_ratio, score_cutoff=similarity_threshold, workers=kg_config['max_cpus'])
     _get_logger().debug(f'Finding best-matching entities..')
-    for ent_idx, score, matched_entity_idx in zip(entities_with_label.index, np.max(mapping_result), np.argmax(mapping_result)):
+    for ent_idx, score, matched_entity_idx in zip(entities_with_label.index, mapping_result.max(axis=-1), mapping_result.argmax(axis=-1)):
         if score < similarity_threshold:
             continue
         mapped_entities[ent_idx] = list(kg_entities[matched_entity_idx])[0]
