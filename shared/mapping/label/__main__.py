@@ -42,7 +42,7 @@ def perform_label_mapping(kg_config: dict, mapper_config: dict):
         _get_logger().info(f'Looking for fuzzy matches with similarity > {similarity_threshold}..')
         entities_with_label = entities_with_label[~entities_with_label.index.isin(set(mapped_entities))]
         # process entities in chunks to limit memory consumption
-        chunk_size = 10000
+        chunk_size = mapper_config['chunk_size']
         num_chunks = math.ceil(len(entities_with_label) / chunk_size)
         for chunk in range(num_chunks):
             _get_logger().debug(f'Processing chunk {chunk+1} of {num_chunks}..')

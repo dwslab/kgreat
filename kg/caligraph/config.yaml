@@ -15,6 +15,7 @@ mapping:
     label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']
     definitive_matches_only:  False
     similarity_threshold: 0.7
+    chunk_size: 10000
 
 preprocessing:
   embeddings:
