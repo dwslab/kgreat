@@ -26,7 +26,7 @@ def perform_label_mapping(kg_config: dict, mapper_config: dict):
     mapped_entities = {}
     # find entities with exact match
     definitive_matches_only = 'definitive_matches_only' in mapper_config and mapper_config['definitive_matches_only']
-    for ent_idx, ent_label in entities_with_label['label'].iteritems():
+    for ent_idx, ent_label in entities_with_label['label'].items():
         if ent_label in kg_entity_labels:
             possible_ents = list(kg_entity_labels[ent_label])
             if definitive_matches_only and len(possible_ents) > 1:
