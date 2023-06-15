@@ -7,12 +7,13 @@ format: nt
 mapping:
   'sameAs-DBpedia':
     type: sameAs
-    kg_prefix: 'TODO'
-    input_files: ['TODO']
+    kg_prefix: 'http://www.wikidata.org/entity/'
+    input_files: ['wikidata_sameas.nt']
+    additional_predicates: ['http://www.wikidata.org/prop/direct/P2888']
   'label':
     type: label
-    input_files: ['TODO']
-    label_predicates: ['TODO']
+    input_files: ['wikidata_labels.nt']
+    label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']
     definitive_matches_only:  False
     similarity_threshold: 0.7
 
