@@ -6,3 +6,5 @@ wget -O wikidata_sameas_dbpedia.nt.bz2 https://downloads.dbpedia.org/repo/dbpedi
 sed -i 's|wikidata.dbpedia.org/resource|wikidata.org/entity|g' wikidata_sameas_dbpedia.nt
 cd .. && mkdir -p embeddings && cd embeddings
 wget -O TransE_l1.tsv.gz https://dl.fbaipublicfiles.com/torchbiggraph/wikidata_translation_v1.tsv.gz && gzip -d TransE_l1.tsv.gz
+grep -E '^<' TransE_l1.tsv | sed 's/[<>]//g' > TransE_l1_processed.tsv
+mv TransE_l1_processed.tsv TransE_l1.tsv
