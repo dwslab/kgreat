@@ -80,10 +80,9 @@ def _find_exact_matches(entities_with_label: pd.DataFrame, kg_entity_labels: dic
 def _find_fuzzy_matches(entities_with_label: pd.DataFrame, kg_entity_labels: dict, similarity_threshold: float, mapped_entities: dict):
     kg_labels, kg_entities = list(kg_entity_labels), list(kg_entity_labels.values())
     mapping_result = process.cdist(entities_with_label['label'].values, kg_labels, scorer=fuzz.token_sort_ratio, score_cutoff=similarity_threshold, workers=kg_config['max_cpus'])
-    for ent_idx, scores in zip(entities_with_label.index, mapping_result):
-        if max(scores) < similarity_threshold:
+    for ent_idx, score, matched_entity_idx in zip(entities_with_label.index, np.max(mapping_result), np.argmax(mapping_result)):
+        if score < similarity_threshold:
             continue
-        matched_entity_idx = np.argsort(-scores)[0]
         mapped_entities[ent_idx] = list(kg_entities[matched_entity_idx])[0]
 
 
