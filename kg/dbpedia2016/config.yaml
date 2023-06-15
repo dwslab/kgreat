@@ -15,12 +15,12 @@ mapping:
     label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']
     definitive_matches_only:  False
     similarity_threshold: 0.7
-    chunk_size: 10000
+    chunk_size: 1000
 
 preprocessing:
   embeddings:
     input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
-    models: ['TransE_l1', 'DistMult', 'RESCAL']
+    models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
     batch_size: 30000
 

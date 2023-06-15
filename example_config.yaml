@@ -21,7 +21,7 @@ mapping:
     label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']  # predicates used to retrieve labels
     definitive_matches_only: False  # set to true if an entity should only be mapped if there is a single exact match to its label
     similarity_threshold: 0.7  # lower threshold of acceptable similarity between labels (set to 1 for exact matches only)
-    chunk_size: 10000  # number of entities mapped at once; increase for better run time at the cost of more memory
+    chunk_size: 1000  # number of entities mapped at once; increase for better run time at the cost of more memory
 
 
 preprocessing:
