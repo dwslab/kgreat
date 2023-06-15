@@ -26,8 +26,9 @@ def perform_label_mapping(kg_config: dict, mapper_config: dict):
     # ignore entities that are either mapped already or have no valid label
     entities_with_label = entities_to_map[(entities_to_map['source'].isnull()) & (entities_to_map['label'].notnull())]
     _get_logger().info(f'Found {len(entities_with_label)} potential entities to map.')
-    _get_logger().info('Parsing labels from files..')
+    _get_logger().info('Parsing KG entities and labels from files..')
     kg_entity_labels = _parse_labels_from_files(kg_config, mapper_config)
+    _get_logger().info(f'Found {len(kg_entity_labels)} labels to map against.')
     mapped_entities = {}
     # find entities with exact match
     _get_logger().info('Looking for exact matches..')
@@ -41,7 +42,7 @@ def perform_label_mapping(kg_config: dict, mapper_config: dict):
         _get_logger().info(f'Looking for fuzzy matches with similarity > {similarity_threshold}..')
         entities_with_label = entities_with_label[~entities_with_label.index.isin(set(mapped_entities))]
         # process entities in chunks to limit memory consumption
-        chunk_size = 1000
+        chunk_size = 10000
         num_chunks = math.ceil(len(entities_with_label) / chunk_size)
         for chunk in range(num_chunks):
             _get_logger().debug(f'Processing chunk {chunk+1} of {num_chunks}..')

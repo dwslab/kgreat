@@ -26,7 +26,7 @@ def perform_identity_mapping(kg_config: dict, mapper_config: dict):
             for sub, _, _ in triple_reader.read(DATA_DIR / filename):
                 known_entities.add(sub)
         entities_to_map.loc[~entities_to_map['source'].isin(known_entities), 'source'] = ''
-    mapped_ents = len(entities_to_map[entities_to_map['source'].notnull()])
+    mapped_ents = len(entities_to_map[entities_to_map['source'] != ''])
     _get_logger().info(f'Found {mapped_ents} entities to map via identity.')
     entities_to_map.to_csv(path_to_entity_mapping, sep='\t', index=False)
 
