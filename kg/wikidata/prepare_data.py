@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+from tqdm import tqdm
 
 EMBEDDING_FILE = Path('./embeddings/TransE_l1.tsv')
 
@@ -8,7 +9,7 @@ if not EMBEDDING_FILE.is_file():
 
 data = []
 with open(EMBEDDING_FILE) as f:
-    for line in f:
+    for line in tqdm(f):
         if not line.startswith('<'):
             continue
         item = line.split('\t')
