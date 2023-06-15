@@ -8,7 +8,7 @@ mapping:
   'sameAs-DBpedia':
     type: sameAs
     kg_prefix: 'http://www.wikidata.org/entity/'
-    input_files: ['wikidata_sameas.nt']
+    input_files: ['wikidata_sameas.nt', 'wikidata_sameas_dbpedia.nt']
     additional_predicates: ['http://www.wikidata.org/prop/direct/P2888']
   'label':
     type: label
