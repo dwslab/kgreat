@@ -46,7 +46,7 @@ class SemanticAnalogiesTask(BaseTask):
         filepath = get_kg_path() / 'embeddings' / f'{embedding_type}_index.p'
         if not filepath.is_file():
             return None
-        return hnswlib.load_index(str(filepath))
+        return hnswlib.Index(space='ip', dim=200).load_index(str(filepath))
 
     @staticmethod
     def _predict_analogy(entity_embeddings: pd.DataFrame, entity_embedding_index: Optional[hnswlib.Index], max_k: int, a: int, b: int, c: int) -> List[int]:
