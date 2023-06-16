@@ -58,7 +58,7 @@ class ClusteringTask(BaseTask):
                 get_logger().debug(f'Evaluating clustering {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params).fit(entity_features)
                 for entity_mode in [EntityMode.KNOWN_ENTITIES, EntityMode.ALL_ENTITIES]:
-                    if entity_mode == EntityMode.KNOWN_ENTITIES:
+                    if entity_mode == EntityMode.KNOWN_ENTITIES or len(unmapped_labels) == 0:
                         predictions = model.labels_
                         true_labels = entity_labels.values
                     else:

@@ -4,19 +4,22 @@ from collections import defaultdict
 import json
 import pandas as pd
 from .enums import DatasetFormat
+from utils.io import load_entity_embeddings
 
 
 class Dataset(ABC):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        self.name = config['name']
-        self.entity_keys = config['entity_keys']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        self.name = dataset_config['name']
+        self.entity_keys = dataset_config['entity_keys']
         # create dict-like mapping from any possible URI in this dataset to the source
+        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embeddings']['models'][0]).index.values)
         self.entity_mapping = {}
         for key in self.entity_keys:
             if key not in entity_mapping:
                 continue
             for k, v in entity_mapping[[key, 'source']].itertuples(index=False, name=None):
-                self.entity_mapping[k] = v
+                if v in valid_entities:
+                    self.entity_mapping[k] = v
 
     @classmethod
     @abstractmethod
@@ -44,11 +47,11 @@ class Dataset(ABC):
 
 
 class TsvDataset(Dataset):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.entity_label = config['entity_label'] if 'entity_label' in config else None
-        self.data_file = config['data_file']
-        self.label_column = config['label']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(dataset_config, kg_config, entity_mapping)
+        self.entity_label = dataset_config['entity_label'] if 'entity_label' in dataset_config else None
+        self.data_file = dataset_config['data_file']
+        self.label_column = dataset_config['label']
         self.data = None
         self.mapped_data = None
         self.unmapped_labels = None
@@ -96,10 +99,10 @@ class TsvDataset(Dataset):
 
 
 class DocumentSimilarityDataset(Dataset):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.entity_file = config['entity_file']
-        self.docsim_file = config['docsim_file']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(dataset_config, kg_config, entity_mapping)
+        self.entity_file = dataset_config['entity_file']
+        self.docsim_file = dataset_config['docsim_file']
         self.document_entities = {}
         self.mapped_document_entities = {}
         self.document_similarities = {}
@@ -144,9 +147,9 @@ class DocumentSimilarityDataset(Dataset):
 
 
 class EntityRelatednessDataset(Dataset):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.data_file = config['data_file']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(dataset_config, kg_config, entity_mapping)
+        self.data_file = dataset_config['data_file']
         self.data = []
         self.mapped_data = []
 
@@ -188,9 +191,9 @@ class EntityRelatednessDataset(Dataset):
 
 
 class SemanticAnalogiesDataset(Dataset):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.data_file = config['data_file']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(dataset_config, kg_config, entity_mapping)
+        self.data_file = dataset_config['data_file']
         self.data = None
         self.mapped_data = None
 
@@ -219,11 +222,11 @@ class SemanticAnalogiesDataset(Dataset):
 
 
 class RecommendationDataset(Dataset, ABC):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.item_file = config['item_file']
-        self.action_file = config['action_file']
-        self.dbplink_file = config['dbplink_file']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(dataset_config, kg_config, entity_mapping)
+        self.item_file = dataset_config['item_file']
+        self.action_file = dataset_config['action_file']
+        self.dbplink_file = dataset_config['dbplink_file']
         self.items = None
         self.mapped_items = None
         self.actions = None
@@ -262,9 +265,9 @@ class RecommendationDataset(Dataset, ABC):
 
 
 class MovieLensRecommendationDataset(RecommendationDataset):
-    def __init__(self, config: dict, entity_mapping: pd.DataFrame):
-        super().__init__(config, entity_mapping)
-        self.link_file = config['link_file']
+    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+        super().__init__(dataset_config, kg_config, entity_mapping)
+        self.link_file = dataset_config['link_file']
 
     @classmethod
     def get_format(cls) -> DatasetFormat:
@@ -328,10 +331,10 @@ class LibraryThingRecommendationDataset(RecommendationDataset):
         self.postprocess_data()
 
 
-def load_dataset(config: dict, entity_mapping: pd.DataFrame) -> Dataset:
+def load_dataset(dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame) -> Dataset:
     dataset_by_format = {ds.get_format(): ds for ds in _get_transitive_subclasses(Dataset)}
-    dataset_format = DatasetFormat(config['format'])
-    dataset = dataset_by_format[dataset_format](config, entity_mapping)
+    dataset_format = DatasetFormat(dataset_config['format'])
+    dataset = dataset_by_format[dataset_format](dataset_config, kg_config, entity_mapping)
     dataset.load()
     if len(entity_mapping):
         dataset.apply_mapping()

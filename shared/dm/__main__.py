@@ -25,7 +25,7 @@ class TaskManager:
         get_logger().info('Loading entity mapping')
         entity_mapping = load_entity_mapping()
         get_logger().info('Loading dataset')
-        dataset = load_dataset(self.dataset_config, entity_mapping)
+        dataset = load_dataset(self.dataset_config, self.kg_config, entity_mapping)
         # prepare and run task
         get_logger().info('Running task')
         Task = self._get_task_class()

@@ -41,7 +41,10 @@ class RegressionTask(BaseTask):
             return  # skip task if we have too few samples
         # estimate error of unmapped entities by assuming a mean prediction for them -> then compute negative RMSE
         unmapped_labels = self.dataset.get_entity_labels(mapped=False)
-        unmapped_label_error = math.sqrt(mean_squared_error([float(entity_labels.mean())] * len(unmapped_labels), unmapped_labels)) * -1
+        if len(unmapped_labels):
+            unmapped_label_error = math.sqrt(mean_squared_error([float(entity_labels.mean())] * len(unmapped_labels), unmapped_labels)) * -1
+        else:
+            unmapped_label_error = 0
         # train models and evaluate
         for embedding_type in self.embedding_models:
             entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
