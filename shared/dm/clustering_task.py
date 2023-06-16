@@ -65,10 +65,11 @@ class ClusteringTask(BaseTask):
                         predictions = list(model.labels_) + [-1] * len(unmapped_labels)
                         true_labels = list(entity_labels.values) + unmapped_labels
                     # assign entities without cluster to a unique cluster each
+                    cluster_idx = n_clusters
                     for idx, cluster_id in enumerate(predictions):
                         if cluster_id == -1:
-                            predictions[idx] = n_clusters
-                            n_clusters += 1
+                            predictions[idx] = cluster_idx
+                            cluster_idx += 1
                     # compute and report metrics
                     for metric, metric_scorer in self._get_metrics().items():
                         score = metric_scorer(true_labels, predictions)
