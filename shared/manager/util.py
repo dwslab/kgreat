@@ -2,7 +2,7 @@ from typing import Optional, List
 import yaml
 
 
-IMAGE_PREFIX = 'ANONYMIZED'
+IMAGE_PREFIX = 'gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat'
 
 
 def get_image_name(step_id: str, suffix: Optional[str] = None) -> str:
