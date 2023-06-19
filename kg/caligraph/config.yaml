@@ -18,7 +18,7 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embeddings:
+  embedding:
     input_files: ['caligraph-ontology.nt.bz2', 'caligraph-instances_types.nt.bz2', 'caligraph-instances_relations.nt.bz2']
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1

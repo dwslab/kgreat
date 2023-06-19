@@ -3,10 +3,10 @@ from collections import defaultdict
 import numpy as np
 import pandas as pd
 import hnswlib
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import SemanticAnalogiesDataset
-from utils.io import get_kg_path
+from utils.io import get_embedding_path
 from base_task import BaseTask
 
 
@@ -43,7 +43,7 @@ class SemanticAnalogiesTask(BaseTask):
 
     @staticmethod
     def _load_entity_embedding_index(embedding_type: str) -> Optional[hnswlib.Index]:
-        filepath = get_kg_path() / 'embeddings' / f'{embedding_type}_index.p'
+        filepath = get_embedding_path() / f'{embedding_type}_index.p'
         if not filepath.is_file():
             return None
         return hnswlib.Index(space='ip', dim=200).load_index(str(filepath))

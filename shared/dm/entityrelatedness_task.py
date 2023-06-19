@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.spatial import distance
 from scipy.stats import kendalltau
 import random
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import EntityRelatednessDataset
 from base_task import BaseTask

@@ -19,7 +19,7 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embeddings:
+  embedding:
     input_files: []  # use precomputed
     models: ['TransE_l1']
     epochs: 1

@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 from scipy.stats import pearsonr
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import DocumentSimilarityDataset
 from base_task import BaseTask

@@ -4,7 +4,7 @@ import yaml
 from typing import Type
 from utils.enums import TaskType
 from utils.io import load_kg_config, load_entity_mapping
-from utils.logging import init_logger, get_logger
+from utils.logger import init_logger, get_logger
 from utils.report import TaskReport
 from utils.dataset import load_dataset
 from base_task import BaseTask

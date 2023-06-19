@@ -5,7 +5,7 @@ from sklearn.model_selection import cross_validate
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask

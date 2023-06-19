@@ -1,8 +1,7 @@
 import os
 import yaml
 import pandas as pd
-import logging
-import datetime
+from logger import init_logger, get_logger
 from pathlib import Path
 from importer import get_reader_for_format
 
@@ -27,28 +26,14 @@ def perform_identity_mapping(kg_config: dict, mapper_config: dict):
                 known_entities.add(sub)
         entities_to_map.loc[~entities_to_map['source'].isin(known_entities), 'source'] = ''
     mapped_ents = len(entities_to_map[entities_to_map['source'] != ''])
-    _get_logger().info(f'Found {mapped_ents} entities to map via identity.')
+    get_logger().info(f'Found {mapped_ents} entities to map via identity.')
     entities_to_map.to_csv(path_to_entity_mapping, sep='\t', index=False)
-
-
-def _get_logger():
-    return logging.getLogger('mapping/identity')
-
-
-def _init_logger(log_level: str):
-    log_filepath = KG_DIR / '{}_mapping-identity.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
-    log_handler = logging.FileHandler(log_filepath, 'a', 'utf-8')
-    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
-    log_handler.setLevel(log_level)
-    logger = _get_logger()
-    logger.addHandler(log_handler)
-    logger.setLevel(log_level)
 
 
 if __name__ == "__main__":
     mapper_id = os.environ['KGREAT_STEP']
     with open(KG_DIR / 'config.yaml') as f:
         kg_config = yaml.safe_load(f)
-    _init_logger(kg_config['log_level'])
+    init_logger(f'mapping-{mapper_id}', kg_config['log_level'])
     mapper_config = kg_config['mapping'][mapper_id]
     perform_identity_mapping(kg_config, mapper_config)

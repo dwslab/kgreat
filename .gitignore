@@ -1,5 +1,5 @@
 /.idea
 /kg/*/entity_mapping.tsv
 /kg/*/data/
-/kg/*/embeddings/
+/kg/*/embedding/
 /kg/*/result/

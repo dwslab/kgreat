@@ -7,7 +7,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import mean_squared_error
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask

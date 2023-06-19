@@ -16,7 +16,7 @@ In the following you will run steps of the three stages `Preprocessing`, `Mappin
 
 First, pull the docker images of the stages. Make sure that your `config.yaml` is already configured correctly, as the manager only pulls images of the steps defined in the config. In the root directory of the project, run the following commands:
 ```shell
-python . <your-kg-identifier> pull preprocessing/embeddings
+python . <your-kg-identifier> pull preprocessing/embedding
 python . <your-kg-identifier> pull preprocessing/ann
 python . <your-kg-identifier> pull mapping
 python . <your-kg-identifier> pull tasks
@@ -30,7 +30,7 @@ python . <your-kg-identifier> run mapping
 
 The preprocessing can be run with the following commands:
 ```shell
-python . <your-kg-identifier> run preprocessing/embeddings
+python . <your-kg-identifier> run preprocessing/embedding
 python . <your-kg-identifier> run preprocessing/ann  # optional step for speed-up
 ```
 

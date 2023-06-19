@@ -3,7 +3,7 @@ from sklearn.metrics import pairwise_distances
 import numpy as np
 import pandas as pd
 import turicreate as tc
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import RecommendationDataset
 from base_task import BaseTask

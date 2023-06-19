@@ -4,7 +4,7 @@ from scipy.optimize import linear_sum_assignment
 from sklearn.base import BaseEstimator
 from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans
-from utils.logging import get_logger
+from utils.logger import get_logger
 from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask

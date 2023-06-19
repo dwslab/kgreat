@@ -1,8 +1,7 @@
 import os
 import yaml
 import pandas as pd
-import logging
-import datetime
+from logger import init_logger, get_logger
 from pathlib import Path
 from importer import get_reader_for_format
 
@@ -18,9 +17,9 @@ def perform_sameas_mapping(kg_config: dict, mapper_config: dict):
         raise FileNotFoundError('Could not find entity mapping file. Did you forget to `prepare` the mapping stage?')
     entities_to_map = pd.read_csv(path_to_entity_mapping, sep='\t', header=0, dtype=str)
     # parse sameas links and apply to entities
-    _get_logger().info('Parsing sameAs links from files..')
+    get_logger().info('Parsing sameAs links from files..')
     sameas_mapping = _parse_sameas_links_from_files(kg_config, mapper_config)
-    _get_logger().info(f'Found {len(sameas_mapping)} sameAs links.')
+    get_logger().info(f'Found {len(sameas_mapping)} sameAs links.')
     uri_columns = [col for col in entities_to_map.columns if col.endswith('_URI')]
     mapped_ents = 0
     for idx, row in entities_to_map.iterrows():
@@ -31,10 +30,10 @@ def perform_sameas_mapping(kg_config: dict, mapper_config: dict):
                 entities_to_map.loc[idx, 'source'] = sameas_mapping[row[col]]
                 mapped_ents += 1
                 continue
-    _get_logger().info(f'Found {mapped_ents} entities to map via sameAs links.')
+    get_logger().info(f'Found {mapped_ents} entities to map via sameAs links.')
     # write updated entity mapping
     if mapped_ents > 0:
-        _get_logger().info('Writing updated entity mapping file..')
+        get_logger().info('Writing updated entity mapping file..')
         entities_to_map.to_csv(path_to_entity_mapping, sep='\t', index=False)
 
 
@@ -58,24 +57,10 @@ def _parse_sameas_links_from_files(kg_config: dict, mapper_config: dict) -> dict
     return sameas_mapping
 
 
-def _get_logger():
-    return logging.getLogger('mapping/sameAs')
-
-
-def _init_logger(log_level: str):
-    log_filepath = KG_DIR / '{}_mapping-sameAs.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
-    log_handler = logging.FileHandler(log_filepath, 'a', 'utf-8')
-    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
-    log_handler.setLevel(log_level)
-    logger = _get_logger()
-    logger.addHandler(log_handler)
-    logger.setLevel(log_level)
-
-
 if __name__ == "__main__":
     mapper_id = os.environ['KGREAT_STEP']
     with open(KG_DIR / 'config.yaml') as f:
         kg_config = yaml.safe_load(f)
-    _init_logger(kg_config['log_level'])
+    init_logger(f'mapping-{mapper_id}', kg_config['log_level'])
     mapper_config = kg_config['mapping'][mapper_id]
     perform_sameas_mapping(kg_config, mapper_config)

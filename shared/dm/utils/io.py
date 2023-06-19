@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
-    filepath = get_kg_path() / 'embeddings' / f'{embedding_type}.tsv'
+    filepath = get_embedding_path() / f'{embedding_type}.tsv'
     return pd.read_csv(filepath, sep='\t', header=None, index_col=0)
 
 
@@ -24,6 +24,10 @@ def load_kg_config() -> dict:
     path_to_config = get_kg_path() / 'config.yaml'
     with open(path_to_config) as f:
         return yaml.safe_load(f)
+
+
+def get_embedding_path() -> Path:
+    return get_kg_path() / 'embedding'
 
 
 def get_kg_path() -> Path:

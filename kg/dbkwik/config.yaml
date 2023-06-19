@@ -18,7 +18,7 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embeddings:
+  embedding:
     input_files: ['infobox-properties.ttl', 'infobox-template-type.ttl', 'template-type.ttl', 'article-categories.ttl', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2', 'dbpedia_2016-10.nt']  # list files within the `data` folder that should be used to create embeddings
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1  # number of epochs to train the embedding model for

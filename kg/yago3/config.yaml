@@ -19,7 +19,7 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embeddings:
+  embedding:
     input_files: ['yagoTaxonomy.ttl', 'yagoFacts.ttl', 'yagoTypes.ttl']
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1

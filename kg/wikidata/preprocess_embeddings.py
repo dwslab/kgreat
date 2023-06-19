@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-PATH_TO_EMBEDDINGS_FILE = './embeddings/TransE_l1.tsv'
+PATH_TO_EMBEDDINGS_FILE = './embedding/TransE_l1.tsv'
 
 
 df = pd.read_csv(PATH_TO_EMBEDDINGS_FILE, sep='\t', header=None, index_col=0)

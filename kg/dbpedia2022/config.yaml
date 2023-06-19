@@ -18,7 +18,7 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embeddings:
+  embedding:
     input_files: ['dbpedia-ontology.nt', 'dbpedia-instance-types.nt.bz2', 'dbpedia-mappingbased-objects.nt.bz2']
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
