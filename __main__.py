@@ -1,7 +1,8 @@
-from typing import List, Optional
+from typing import List
 import argparse
-from shared.manager.util import get_image_name, load_kg_config, get_one_step_per_attr, trigger_container_action
+from shared.manager.container import perform_action
 from shared.manager.prepare_mapping import collect_entities_to_map
+from shared.manager.util import get_image_name, load_kg_config, get_one_step_per_attr
 
 
 def process_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
@@ -29,17 +30,17 @@ def _perform_mapping_action(kg_name: str, action: str, stage: str, steps: List[s
         mapper_type = mapping_config[mapper_id]['type']
         image_name = get_image_name(stage, mapper_type)
         path_to_dockerfile = f'shared/mapping/{mapper_type}/Dockerfile'
-        _perform_action(container_manager, action, image_name, path_to_dockerfile, kg_name, mapper_id)
+        perform_action(container_manager, action, image_name, path_to_dockerfile, kg_name, mapper_id)
 
 
 def _perform_embedding_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
     path_to_dockerfile = 'shared/preprocessing/embedding/Dockerfile'
-    _perform_action(container_manager, action, get_image_name(stage), path_to_dockerfile, kg_name)
+    perform_action(container_manager, action, get_image_name(stage), path_to_dockerfile, kg_name)
 
 
 def _perform_ann_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
     path_to_dockerfile = './shared/preprocessing/ann/Dockerfile'
-    _perform_action(container_manager, action, get_image_name(stage), path_to_dockerfile, kg_name)
+    perform_action(container_manager, action, get_image_name(stage), path_to_dockerfile, kg_name)
 
 
 def _perform_task_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
@@ -51,40 +52,7 @@ def _perform_task_action(kg_name: str, action: str, stage: str, steps: List[str]
         dataset_id = task_config[task_id]['dataset']
         image_name = get_image_name(stage, dataset_id)
         path_to_dockerfile = f'datasets/{dataset_id}/Dockerfile'
-        _perform_action(container_manager, action, image_name, path_to_dockerfile, kg_name, task_id)
-
-
-def _perform_action(container_manager: str, action: str, image_name: str, path_to_dockerfile: str, kg_name: str, step_id: Optional[str] = None):
-    if action == 'build':
-        _action_build(container_manager, image_name, path_to_dockerfile)
-    elif action == 'push':
-        _action_push(container_manager, image_name)
-    elif action == 'pull':
-        _action_pull(container_manager, image_name)
-    elif action == 'prepare':
-        pass  # only implemented for mapping, handled separately there.
-    elif action == 'run':
-        _action_run(container_manager, image_name, kg_name, step_id)
-
-
-def _action_build(container_manager: str, image_name: str, path_to_dockerfile: str, ):
-    trigger_container_action(container_manager, 'build', ['-t', image_name, '-f', path_to_dockerfile, '.'])
-
-
-def _action_push(container_manager: str, image_name: str):
-    trigger_container_action(container_manager, 'push', [image_name])
-
-
-def _action_pull(container_manager: str, image_name: str):
-    trigger_container_action(container_manager, 'pull', [image_name])
-
-
-def _action_run(container_manager: str, image_name: str, kg_name: str, step_id: Optional[str]):
-    params = ['--mount', f'type=bind,src=./kg/{kg_name},target=/app/kg']
-    if step_id is not None:
-        params += ['-e', f'KGREAT_STEP={step_id}']
-    params += [image_name]
-    trigger_container_action(container_manager, 'run', params)
+        perform_action(container_manager, action, image_name, path_to_dockerfile, kg_name, task_id)
 
 
 if __name__ == "__main__":

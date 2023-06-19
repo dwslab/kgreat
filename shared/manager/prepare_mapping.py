@@ -3,7 +3,8 @@ import tempfile
 import pandas as pd
 import shutil
 from pathlib import Path
-from util import load_kg_config, get_image_name, trigger_container_action
+from container import _trigger_container_action
+from util import load_kg_config, get_image_name
 
 
 def collect_entities_to_map(kg_name: str, container_manager: str):
@@ -23,9 +24,9 @@ def _fetch_entity_files(container_manager: str, temp_dir: Path, dataset_ids: Set
     for dataset_id in dataset_ids:
         image_name = get_image_name('tasks', dataset_id)
         tmp_container_name = f'tmp_{dataset_id}'
-        trigger_container_action(container_manager, 'create', ['--name', tmp_container_name, image_name])
-        trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{dataset_id}.tsv'])
-        trigger_container_action(container_manager, 'rm', [tmp_container_name])
+        _trigger_container_action(container_manager, 'create', ['--name', tmp_container_name, image_name])
+        _trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{dataset_id}.tsv'])
+        _trigger_container_action(container_manager, 'rm', [tmp_container_name])
 
 
 def _merge_entity_files(kg_name: str, temp_dir: Path, dataset_ids: Set[str]):
