@@ -12,7 +12,7 @@ class Dataset(ABC):
         self.name = dataset_config['name']
         self.entity_keys = dataset_config['entity_keys']
         # create dict-like mapping from any possible URI in this dataset to the source
-        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embeddings']['models'][0]).index.values) if kg_config else None
+        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embedding']['models'][0]).index.values) if kg_config else None
         self.entity_mapping = {}
         for key in self.entity_keys:
             if key not in entity_mapping:
@@ -28,18 +28,22 @@ class Dataset(ABC):
 
     @abstractmethod
     def load(self):
+        """Load the data from files into memory."""
         pass
 
     @abstractmethod
     def apply_mapping(self):
+        """Map entities of the dataset to the entities of the knowledge graph using `entity_mapping`."""
         pass
 
     @abstractmethod
     def get_entities(self) -> pd.DataFrame:
+        """Return all entities of the dataset. Also used by `collect_task_entities.py` script to retrieve all entities of the dataset."""
         pass
 
     @abstractmethod
     def get_mapped_entities(self) -> set:
+        """Return all *mapped* entities of the dataset, i.e., those that have a correspondence in the knowledge graph."""
         pass
 
     def get_label_from_dbpedia_uri(self, dbpedia_uri: str) -> str:

@@ -12,8 +12,8 @@ class TaskType(Enum):
 
 
 class EntityEvalMode(Enum):
-    ALL_ENTITIES = 'ALL'
-    KNOWN_ENTITIES = 'KNOWN'
+    ALL_ENTITIES = 'ALL'  # compute evaluation metrics with respect to *all* entities in the dataset
+    KNOWN_ENTITIES = 'KNOWN'  # compute evaluation metrics only with respect to intersection of KG and dataset entities
 
 
 class DatasetFormat(Enum):

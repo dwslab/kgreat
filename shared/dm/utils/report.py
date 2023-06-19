@@ -9,6 +9,7 @@ TaskResult = namedtuple('TaskResult', ['eval_mode', 'estimator', 'estimator_conf
 
 
 class TaskReport:
+    """Collects evaluation results and serializes them into one TSV file per task in the `result` directory."""
     def __init__(self, task_id: str, task_type: TaskType, dataset: Dataset):
         self.task_id = task_id
         self.task_type = task_type
