@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class TaskMode(Enum):
+class TaskType(Enum):
     CLASSIFICATION = 'classification'
     REGRESSION = 'regression'
     CLUSTERING = 'clustering'
@@ -11,7 +11,7 @@ class TaskMode(Enum):
     RECOMMENDATION = 'recommendation'
 
 
-class EntityMode(Enum):
+class EntityEvalMode(Enum):
     ALL_ENTITIES = 'ALL'
     KNOWN_ENTITIES = 'KNOWN'
 

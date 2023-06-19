@@ -5,7 +5,7 @@ from scipy.spatial import distance
 from scipy.stats import kendalltau
 import random
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import EntityRelatednessDataset
 from base_task import BaseTask
 
@@ -14,8 +14,8 @@ class EntityRelatednessTask(BaseTask):
     dataset: EntityRelatednessDataset
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.ENTITY_RELATEDNESS
+    def get_type(cls) -> TaskType:
+        return TaskType.ENTITY_RELATEDNESS
 
     def run(self):
         # compute similarity of main entities to their related entities (if known)
@@ -30,12 +30,12 @@ class EntityRelatednessTask(BaseTask):
             all_ents_rankings = [np.append(known_ents, random.sample(unknown_ents, len(unknown_ents))) for known_ents, unknown_ents in zip(known_ents_rankings, unknown_ent_indices)]
             # evaluate similarities for all/known entities
             eval_scenarios = [
-                (EntityMode.ALL_ENTITIES, all_ents_rankings),
-                (EntityMode.KNOWN_ENTITIES, known_ents_rankings)
+                (EntityEvalMode.ALL_ENTITIES, all_ents_rankings),
+                (EntityEvalMode.KNOWN_ENTITIES, known_ents_rankings)
             ]
-            for entity_mode, entity_rankings in eval_scenarios:
+            for eval_mode, entity_rankings in eval_scenarios:
                 score = self._evaluate_entity_rankings(entity_rankings)
-                self.report.add_result(entity_mode, 'Cosine distance', {}, embedding_type, 'Kendall\'s tau', score)
+                self.report.add_result(eval_mode, 'Cosine distance', {}, embedding_type, 'Kendall\'s tau', score)
 
     def _compute_entity_similarities(self, entity_embeddings: pd.DataFrame, main_ent: Optional[str], related_entities: Dict[str, int]) -> List[int]:
         if main_ent is None or not related_entities:

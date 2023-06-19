@@ -5,7 +5,7 @@ from sklearn.base import BaseEstimator
 from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
 
@@ -14,8 +14,8 @@ class ClusteringTask(BaseTask):
     dataset: TsvDataset
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.CLUSTERING
+    def get_type(cls) -> TaskType:
+        return TaskType.CLUSTERING
 
     @staticmethod
     def _get_estimators(n_clusters: int) -> List[Tuple[Type[BaseEstimator], dict]]:
@@ -57,8 +57,8 @@ class ClusteringTask(BaseTask):
             for est, params in self._get_estimators(n_clusters):
                 get_logger().debug(f'Evaluating clustering {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params).fit(entity_features)
-                for entity_mode in [EntityMode.KNOWN_ENTITIES, EntityMode.ALL_ENTITIES]:
-                    if entity_mode == EntityMode.KNOWN_ENTITIES or len(unmapped_labels) == 0:
+                for eval_mode in [EntityEvalMode.KNOWN_ENTITIES, EntityEvalMode.ALL_ENTITIES]:
+                    if eval_mode == EntityEvalMode.KNOWN_ENTITIES or len(unmapped_labels) == 0:
                         predictions = model.labels_
                         true_labels = entity_labels.values
                     else:
@@ -73,4 +73,4 @@ class ClusteringTask(BaseTask):
                     # compute and report metrics
                     for metric, metric_scorer in self._get_metrics().items():
                         score = metric_scorer(true_labels, predictions)
-                        self.report.add_result(entity_mode, est.__name__, params, embedding_type, metric, score)
+                        self.report.add_result(eval_mode, est.__name__, params, embedding_type, metric, score)

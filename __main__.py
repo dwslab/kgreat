@@ -1,6 +1,6 @@
 from typing import List, Optional
 import argparse
-from shared.manager.util import get_image_name, load_kg_config, get_one_step_per_type, trigger_container_action
+from shared.manager.util import get_image_name, load_kg_config, get_one_step_per_attr, trigger_container_action
 from shared.manager.prepare_mapping import collect_entities_to_map
 
 
@@ -24,7 +24,7 @@ def _perform_mapping_action(kg_name: str, action: str, stage: str, steps: List[s
     mapping_config = load_kg_config(kg_name)['mapping']
     if not steps:
         # handling one of every step type (= image) is enough if we do not run them
-        steps = list(mapping_config) if action == 'run' else get_one_step_per_type(mapping_config)
+        steps = list(mapping_config) if action == 'run' else get_one_step_per_attr(mapping_config, 'type')
     for mapper_id in steps:
         mapper_type = mapping_config[mapper_id]['type']
         image_name = get_image_name(stage, mapper_type)
@@ -46,11 +46,11 @@ def _perform_task_action(kg_name: str, action: str, stage: str, steps: List[str]
     task_config = load_kg_config(kg_name)['tasks']
     if not steps:
         # handling one of every step type (= image) is enough if we do not run them
-        steps = list(task_config) if action == 'run' else get_one_step_per_type(task_config)
+        steps = list(task_config) if action == 'run' else get_one_step_per_attr(task_config, 'dataset')
     for task_id in steps:
-        task_type = task_config[task_id]['type']
-        image_name = get_image_name(stage, task_type)
-        path_to_dockerfile = f'./tasks/{task_type}/Dockerfile'
+        dataset_id = task_config[task_id]['dataset']
+        image_name = get_image_name(stage, dataset_id)
+        path_to_dockerfile = f'datasets/{dataset_id}/Dockerfile'
         _perform_action(container_manager, action, image_name, path_to_dockerfile, kg_name, task_id)
 
 

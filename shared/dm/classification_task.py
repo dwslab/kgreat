@@ -6,7 +6,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
 
@@ -15,8 +15,8 @@ class ClassificationTask(BaseTask):
     dataset: TsvDataset
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.CLASSIFICATION
+    def get_type(cls) -> TaskType:
+        return TaskType.CLASSIFICATION
 
     METRICS = ['accuracy']
     N_SPLITS = 10
@@ -49,6 +49,6 @@ class ClassificationTask(BaseTask):
                 results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS, n_jobs=self.N_SPLITS)
                 for metric in self.METRICS:
                     known_entity_score = float(np.mean(results[f'test_{metric}']))
-                    self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, known_entity_score)
+                    self.report.add_result(EntityEvalMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, known_entity_score)
                     all_entity_score = known_entity_score * fraction_of_known_entities
-                    self.report.add_result(EntityMode.ALL_ENTITIES, est.__name__, params, embedding_type, metric, all_entity_score)
+                    self.report.add_result(EntityEvalMode.ALL_ENTITIES, est.__name__, params, embedding_type, metric, all_entity_score)

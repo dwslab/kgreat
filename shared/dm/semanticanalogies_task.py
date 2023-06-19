@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import hnswlib
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import SemanticAnalogiesDataset
 from utils.io import get_kg_path
 from base_task import BaseTask
@@ -15,8 +15,8 @@ class SemanticAnalogiesTask(BaseTask):
     TOP_K = [2, 5]
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.SEMANTIC_ANALOGIES
+    def get_type(cls) -> TaskType:
+        return TaskType.SEMANTIC_ANALOGIES
 
     def run(self):
         mapped_analogy_sets = self.dataset.get_entity_analogy_sets(True)
@@ -33,13 +33,13 @@ class SemanticAnalogiesTask(BaseTask):
                         correct_predictions_by_k[k] += 1
             # report results for all/known entities
             eval_scenarios = [
-                (EntityMode.ALL_ENTITIES, len(self.dataset.get_entity_analogy_sets(False))),
-                (EntityMode.KNOWN_ENTITIES, len(mapped_analogy_sets))
+                (EntityEvalMode.ALL_ENTITIES, len(self.dataset.get_entity_analogy_sets(False))),
+                (EntityEvalMode.KNOWN_ENTITIES, len(mapped_analogy_sets))
             ]
-            for entity_mode, total_entity_count in eval_scenarios:
+            for eval_mode, total_entity_count in eval_scenarios:
                 for k in self.TOP_K:
                     score = correct_predictions_by_k[k] / total_entity_count if total_entity_count > 0 else 0
-                    self.report.add_result(entity_mode, 'Cosine similarity', {'top_k': k}, embedding_type, 'Accuracy', score)
+                    self.report.add_result(eval_mode, 'Cosine similarity', {'top_k': k}, embedding_type, 'Accuracy', score)
 
     @staticmethod
     def _load_entity_embedding_index(embedding_type: str) -> Optional[hnswlib.Index]:

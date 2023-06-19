@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import turicreate as tc
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import RecommendationDataset
 from base_task import BaseTask
 
@@ -13,8 +13,8 @@ class RecommendationTask(BaseTask):
     dataset: RecommendationDataset
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.RECOMMENDATION
+    def get_type(cls) -> TaskType:
+        return TaskType.RECOMMENDATION
 
     METRICS = ['F1']
     N_SPLITS = 3
@@ -24,8 +24,8 @@ class RecommendationTask(BaseTask):
         for embedding_type in self.embedding_models:
             get_logger().debug(f'Evaluating recommendation via item similarity for embedding type {embedding_type}')
             related_entities = tc.SFrame(self._get_top_50_related_entities(embedding_type))
-            for entity_mode in [EntityMode.KNOWN_ENTITIES, EntityMode.ALL_ENTITIES]:
-                use_only_mapped_items = entity_mode == EntityMode.KNOWN_ENTITIES
+            for eval_mode in [EntityEvalMode.KNOWN_ENTITIES, EntityEvalMode.ALL_ENTITIES]:
+                use_only_mapped_items = eval_mode == EntityEvalMode.KNOWN_ENTITIES
                 actions = tc.SFrame(self.dataset.get_actions(use_only_mapped_items))
                 cv_scores = defaultdict(list)
                 for i in range(self.N_SPLITS):
@@ -42,7 +42,7 @@ class RecommendationTask(BaseTask):
                         cv_scores[k].append(f1)
                 for k, vals in cv_scores.items():
                     score = float(np.mean(vals))
-                    self.report.add_result(entity_mode, 'item_similarity_recommender', {'k': k}, embedding_type, 'F1', score)
+                    self.report.add_result(eval_mode, 'item_similarity_recommender', {'k': k}, embedding_type, 'F1', score)
 
     def _train_recommender_model(self, training_data: tc.SFrame, top_k: int, nearest_items: tc.SFrame):
         return tc.item_similarity_recommender.create(training_data, similarity_type='cosine', user_id='user_id', item_id='item_id', target='rating', only_top_k=top_k, nearest_items=nearest_items, target_memory_usage=64*1024**3)

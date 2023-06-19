@@ -27,71 +27,71 @@ preprocessing:
 
 tasks:
   'dm-AAUP_classification':
-    type: dm-AAUP
-    mode: classification
+    dataset: dm-AAUP
+    type: classification
   'dm-AAUP_regression':
-    type: dm-AAUP
-    mode: regression
+    dataset: dm-AAUP
+    type: regression
   'dm-Cities_classification':
-    type: dm-Cities
-    mode: classification
+    dataset: dm-Cities
+    type: classification
   'dm-Cities_regression':
-    type: dm-Cities
-    mode: regression
+    dataset: dm-Cities
+    type: regression
   'dm-Forbes_classification':
-    type: dm-Forbes
-    mode: classification
+    dataset: dm-Forbes
+    type: classification
   'dm-Forbes_regression':
-    type: dm-Forbes
-    mode: regression
+    dataset: dm-Forbes
+    type: regression
   'dm-MetacriticAlbums_classification':
-    type: dm-MetacriticAlbums
-    mode: classification
+    dataset: dm-MetacriticAlbums
+    type: classification
   'dm-MetacriticAlbums_regression':
-    type: dm-MetacriticAlbums
-    mode: regression
+    dataset: dm-MetacriticAlbums
+    type: regression
   'dm-MetacriticMovies_classification':
-    type: dm-MetacriticMovies
-    mode: classification
+    dataset: dm-MetacriticMovies
+    type: classification
   'dm-MetacriticMovies_regression':
-    type: dm-MetacriticMovies
-    mode: regression
+    dataset: dm-MetacriticMovies
+    type: regression
   'dm-Cities2000AndCountries_clustering':
-    type: dm-Cities2000AndCountries
-    mode: clustering
+    dataset: dm-Cities2000AndCountries
+    type: clustering
   'dm-CitiesAndCountries_clustering':
-    type: dm-CitiesAndCountries
-    mode: clustering
+    dataset: dm-CitiesAndCountries
+    type: clustering
   'dm-CitiesMoviesAlbumsCompaniesUni_clustering':
-    type: dm-CitiesMoviesAlbumsCompaniesUni
-    mode: clustering
+    dataset: dm-CitiesMoviesAlbumsCompaniesUni
+    type: clustering
   'dm-Teams_clustering':
-    type: dm-Teams
-    mode: clustering
+    dataset: dm-Teams
+    type: clustering
   'dm-LP50_documentSimilarity':
-    type: dm-LP50
-    mode: documentSimilarity
+    dataset: dm-LP50
+    type: documentSimilarity
   'dm-KORE_entityRelatedness':
-    type: dm-KORE
-    mode: entityRelatedness
+    dataset: dm-KORE
+    type: entityRelatedness
   'dm-AllCapitalCountryEntities_semanticAnalogies':
-    type: dm-AllCapitalCountryEntities
-    mode: semanticAnalogies
+    dataset: dm-AllCapitalCountryEntities
+    type: semanticAnalogies
   'dm-CapitalCountryEntities_semanticAnalogies':
-    type: dm-CapitalCountryEntities
-    mode: semanticAnalogies
+    dataset: dm-CapitalCountryEntities
+    type: semanticAnalogies
   'dm-CityStateEntities_semanticAnalogies':
-    type: dm-CityStateEntities
-    mode: semanticAnalogies
+    dataset: dm-CityStateEntities
+    type: semanticAnalogies
   'dm-CurrencyEntities_semanticAnalogies':
-    type: dm-CurrencyEntities
-    mode: semanticAnalogies
+    dataset: dm-CurrencyEntities
+    type: semanticAnalogies
   'dm-MovieLens_recommendation':
-    type: dm-MovieLens
-    mode: recommendation
+    dataset: dm-MovieLens
+    type: recommendation
   'dm-LastFm_recommendation':
-    type: dm-LastFm
-    mode: recommendation
+    dataset: dm-LastFm
+    type: recommendation
   'dm-LibraryThing_recommendation':
-    type: dm-LibraryThing
-    mode: recommendation
+    dataset: dm-LibraryThing
+    type: recommendation

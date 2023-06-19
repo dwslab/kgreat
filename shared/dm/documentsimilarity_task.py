@@ -5,7 +5,7 @@ from sklearn.metrics import pairwise_distances
 from scipy.stats import spearmanr
 from scipy.stats import pearsonr
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import DocumentSimilarityDataset
 from base_task import BaseTask
 
@@ -14,8 +14,8 @@ class DocumentSimilarityTask(BaseTask):
     dataset: DocumentSimilarityDataset
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.DOCUMENT_SIMILARITY
+    def get_type(cls) -> TaskType:
+        return TaskType.DOCUMENT_SIMILARITY
 
     @staticmethod
     def _get_estimators() -> List[Tuple[Callable, dict]]:
@@ -58,16 +58,16 @@ class DocumentSimilarityTask(BaseTask):
                 get_logger().debug(f'Evaluating similarity with {sim_func.__name__} ({params}) for embedding type {embedding_type}')
                 docsim_pred = {docs: self._compute_document_similarity(entity_embeddings, docs, sim_func, params) for docs in docsim_gold}
                 for metric, metric_scorer in self._get_metrics().items():
-                    for entity_mode in [EntityMode.KNOWN_ENTITIES, EntityMode.ALL_ENTITIES]:
-                        if entity_mode == EntityMode.KNOWN_ENTITIES:
+                    for eval_mode in [EntityEvalMode.KNOWN_ENTITIES, EntityEvalMode.ALL_ENTITIES]:
+                        if eval_mode == EntityEvalMode.KNOWN_ENTITIES:
                             valid_preds = [val is not None for val in docsim_pred.values()]
                             predictions = [val for val, is_valid in zip(docsim_pred.values(), valid_preds) if is_valid]
                             true_labels = [val for val, is_valid in zip(docsim_gold.values(), valid_preds) if is_valid]
-                        else:  # entity_mode == EntityMode.ALL_ENTITIES
+                        else:  # eval_mode == EntityEvalMode.ALL_ENTITIES
                             predictions = [val or 0 for val in docsim_pred.values()]
                             true_labels = list(docsim_gold.values())
                         score = metric_scorer(true_labels, predictions)
-                        self.report.add_result(entity_mode, sim_func.__name__, params, embedding_type, metric, score)
+                        self.report.add_result(eval_mode, sim_func.__name__, params, embedding_type, metric, score)
 
     def _compute_document_similarity(self, entity_embeddings: pd.DataFrame, docs: Tuple[int, int], sim_func: Callable, params: dict) -> Optional[float]:
         doc1, doc2 = docs

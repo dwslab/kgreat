@@ -10,29 +10,29 @@ def collect_entities_to_map(kg_name: str, container_manager: str):
     temp_dir = Path(tempfile.mkdtemp())
     # find relevant tasks
     task_config = load_kg_config(kg_name)['tasks']
-    task_types = {task_entry['type'] for task_entry in task_config.values()}
+    dataset_ids = {task_entry['dataset'] for task_entry in task_config.values()}
     # retrieve entities to be mapped from task containers
-    _fetch_entity_files(container_manager, temp_dir, task_types)
+    _fetch_entity_files(container_manager, temp_dir, dataset_ids)
     # merge entity files of tasks into single entity file
-    _merge_entity_files(kg_name, temp_dir, task_types)
+    _merge_entity_files(kg_name, temp_dir, dataset_ids)
     # cleanup
     shutil.rmtree(temp_dir)
 
 
-def _fetch_entity_files(container_manager: str, temp_dir: Path, task_types: Set[str]):
-    for task_type in task_types:
-        image_name = get_image_name('tasks', task_type)
-        tmp_container_name = f'tmp_{task_type}'
+def _fetch_entity_files(container_manager: str, temp_dir: Path, dataset_ids: Set[str]):
+    for dataset_id in dataset_ids:
+        image_name = get_image_name('tasks', dataset_id)
+        tmp_container_name = f'tmp_{dataset_id}'
         trigger_container_action(container_manager, 'create', ['--name', tmp_container_name, image_name])
-        trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{task_type}.tsv'])
+        trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{dataset_id}.tsv'])
         trigger_container_action(container_manager, 'rm', [tmp_container_name])
 
 
-def _merge_entity_files(kg_name: str, temp_dir: Path, task_types: Set[str]):
+def _merge_entity_files(kg_name: str, temp_dir: Path, dataset_ids: Set[str]):
     mapped_ents = []
     mapping_dict = {}
-    for task_type in task_types:
-        ents = pd.read_csv(f'{temp_dir}/entities_{task_type}.tsv', header=0, sep='\t')
+    for dataset_id in dataset_ids:
+        ents = pd.read_csv(f'{temp_dir}/entities_{dataset_id}.tsv', header=0, sep='\t')
         _add_entities_to_mapping_dict(ents, mapped_ents, mapping_dict)
     df = pd.DataFrame(mapped_ents)
     df['source'] = ''

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 from utils.logging import get_logger
-from utils.enums import TaskMode
+from utils.enums import TaskType
 from utils.report import TaskReport
 from utils.dataset import Dataset
 from utils.io import load_entity_embeddings
@@ -17,7 +17,7 @@ class BaseTask(ABC):
 
     @classmethod
     @abstractmethod
-    def get_mode(cls) -> TaskMode:
+    def get_type(cls) -> TaskType:
         pass
 
     @abstractmethod

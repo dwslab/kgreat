@@ -2,7 +2,7 @@ import datetime
 import os
 import yaml
 from typing import Type
-from utils.enums import TaskMode
+from utils.enums import TaskType
 from utils.io import load_kg_config, load_entity_mapping
 from utils.logging import init_logger, get_logger
 from utils.report import TaskReport
@@ -29,7 +29,7 @@ class TaskManager:
         # prepare and run task
         get_logger().info('Running task')
         Task = self._get_task_class()
-        report = TaskReport(self.task_id, Task.get_mode(), dataset)
+        report = TaskReport(self.task_id, Task.get_type(), dataset)
         task = Task(self.kg_config, self.task_config, dataset, report)
         task.run()
         report.store(self.kg_config['run_id'])
@@ -37,30 +37,30 @@ class TaskManager:
         get_logger().info(f'Finished task after {runtime_in_seconds} seconds')
 
     def _get_task_class(self) -> Type[BaseTask]:
-        mode = TaskMode(self.task_config['mode'])
+        task_type = TaskType(self.task_config['type'])
         # import modules only on demand to keep dependencies separated
-        if mode == TaskMode.CLASSIFICATION:
+        if task_type == TaskType.CLASSIFICATION:
             from classification_task import ClassificationTask
             return ClassificationTask
-        if mode == TaskMode.REGRESSION:
+        if task_type == TaskType.REGRESSION:
             from regression_task import RegressionTask
             return RegressionTask
-        if mode == TaskMode.CLUSTERING:
+        if task_type == TaskType.CLUSTERING:
             from clustering_task import ClusteringTask
             return ClusteringTask
-        if mode == TaskMode.DOCUMENT_SIMILARITY:
+        if task_type == TaskType.DOCUMENT_SIMILARITY:
             from documentsimilarity_task import DocumentSimilarityTask
             return DocumentSimilarityTask
-        if mode == TaskMode.ENTITY_RELATEDNESS:
+        if task_type == TaskType.ENTITY_RELATEDNESS:
             from entityrelatedness_task import EntityRelatednessTask
             return EntityRelatednessTask
-        if mode == TaskMode.SEMANTIC_ANALOGIES:
+        if task_type == TaskType.SEMANTIC_ANALOGIES:
             from semanticanalogies_task import SemanticAnalogiesTask
             return SemanticAnalogiesTask
-        if mode == TaskMode.RECOMMENDATION:
+        if task_type == TaskType.RECOMMENDATION:
             from recommendation_task import RecommendationTask
             return RecommendationTask
-        raise NotImplementedError(f'No task implemented for mode "{mode.value}"')
+        raise NotImplementedError(f'No task implemented for type "{task_type.value}"')
 
 
 if __name__ == "__main__":

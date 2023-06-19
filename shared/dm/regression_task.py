@@ -8,7 +8,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import mean_squared_error
 from utils.logging import get_logger
-from utils.enums import TaskMode, EntityMode
+from utils.enums import TaskType, EntityEvalMode
 from utils.dataset import TsvDataset
 from base_task import BaseTask
 
@@ -17,8 +17,8 @@ class RegressionTask(BaseTask):
     dataset: TsvDataset
 
     @classmethod
-    def get_mode(cls) -> TaskMode:
-        return TaskMode.REGRESSION
+    def get_type(cls) -> TaskType:
+        return TaskType.REGRESSION
 
     METRICS = ['neg_root_mean_squared_error']
     N_SPLITS = 10
@@ -54,5 +54,5 @@ class RegressionTask(BaseTask):
                 results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS, n_jobs=self.N_SPLITS)
                 for metric in self.METRICS:
                     score = float(np.mean(results[f'test_{metric}']))
-                    self.report.add_result(EntityMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, score)
-                    self.report.add_result(EntityMode.ALL_ENTITIES, est.__name__, params, embedding_type, metric, score + unmapped_label_error)
+                    self.report.add_result(EntityEvalMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, score)
+                    self.report.add_result(EntityEvalMode.ALL_ENTITIES, est.__name__, params, embedding_type, metric, score + unmapped_label_error)
