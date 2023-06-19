@@ -49,7 +49,7 @@ Contributions to the framework are highly welcome and we would appreciate pull r
 for additional datasets, tasks, matchers, preprocessors, etc.! Here's how you can extend the framework:
 
 ### Add a Dataset
-To add a dataset for an existing task type, create a folder in the `tasks` directory with at least the following data:
+To add a dataset for an existing task type, create a folder in the `dataset` directory with at least the following data:
 - `Dockerfile` Setup of the docker container including all relevant preparations (import code, install dependencies, ..).
 - `dataset` Dataset in a format of your choice. Have a look at `shared/dm/utils/dataset.py` for already supported dataset formats
 - `entities.tsv` Labels and URIs of the dataset entities that have to be mapped to the input KG
