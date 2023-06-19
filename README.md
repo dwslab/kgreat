@@ -4,6 +4,20 @@ To that end, the framework implements various algorithms to solve tasks like cla
 The impact of a given KG is measured by using its information as background knowledge for solving the tasks.
 To compare the performance of different KGs on downstream tasks, a fixed experimental setup with the KG as the only variable is used.
 
+## Prerequisites
+### Hardware
+The hardware requirements of the framework are dominated by the embedding generation step (see [DGL-KE](https://github.com/awslabs/dgl-ke) framework for details).
+To compute embeddings for KGs with the size of DBpedia or YAGO, we recommend to use a CPU and have at least 100GB of RAM.
+As of now, the datasets are moderate in size and the implemented algorithms are quite efficient.
+Hence, the execution of tasks does not consume a large amount of resources.
+
+
+### Software
+This framework architecture is designed in such a way that all pipeline steps can be executed in isolation.
+We use [Docker](https://www.docker.com) containers to run the individual steps. If you want to run the framework,
+make sure to have Docker installed on your system. Additionally, you need Python>=3.8 to run the manager CLI for triggering the containers.
+
+
 ## Quickstart: How to Evaluate a KG
 ### KG Setup
 - Create a new folder under `kg` which will contain all data related to the graph (input files, configuration, intermediate representations, results, logs). Note that the name of the folder will serve as identifier for the graph throughout the framework.
