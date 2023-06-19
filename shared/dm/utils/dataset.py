@@ -12,13 +12,13 @@ class Dataset(ABC):
         self.name = dataset_config['name']
         self.entity_keys = dataset_config['entity_keys']
         # create dict-like mapping from any possible URI in this dataset to the source
-        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embeddings']['models'][0]).index.values)
+        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embeddings']['models'][0]).index.values) if kg_config else None
         self.entity_mapping = {}
         for key in self.entity_keys:
             if key not in entity_mapping:
                 continue
             for k, v in entity_mapping[[key, 'source']].itertuples(index=False, name=None):
-                if v in valid_entities:
+                if valid_entities is None or v in valid_entities:
                     self.entity_mapping[k] = v
 
     @classmethod

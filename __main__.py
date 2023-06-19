@@ -1,7 +1,7 @@
 from typing import List, Optional
 import argparse
-from util import get_image_name, load_kg_config, get_one_step_per_type, trigger_container_action
-from prepare_mapping import collect_entities_to_map
+from shared.manager.util import get_image_name, load_kg_config, get_one_step_per_type, trigger_container_action
+from shared.manager.prepare_mapping import collect_entities_to_map
 
 
 def process_action(kg_name: str, action: str, stage: str, steps: List[str], container_manager: str):
