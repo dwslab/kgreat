@@ -5,17 +5,23 @@ The impact of a given KG is measured by using its information as background know
 To compare the performance of different KGs on downstream tasks, a fixed experimental setup with the KG as the only variable is used.
 
 ## Prerequisites
-### Hardware
+### Hardware Requirements
 The hardware requirements of the framework are dominated by the embedding generation step (see [DGL-KE](https://github.com/awslabs/dgl-ke) framework for details).
 To compute embeddings for KGs with the size of DBpedia or YAGO, we recommend to use a CPU and have at least 100GB of RAM.
 As of now, the datasets are moderate in size and the implemented algorithms are quite efficient.
 Hence, the execution of tasks does not consume a large amount of resources.
 
 
-### Software
-This framework architecture is designed in such a way that all pipeline steps can be executed in isolation.
-We use [Docker](https://www.docker.com) containers to run the individual steps. If you want to run the framework,
-make sure to have Docker installed on your system. Additionally, you need Python>=3.8 to run the manager CLI for triggering the containers.
+### Software Requirements
+- Environment manager: [conda](https://docs.continuum.io/anaconda/install/)
+- Dependency manager: [poetry](https://python-poetry.org/docs/#installation)
+- Container manager: [Docker](https://www.docker.com)
+
+### Setup
+- In the project root, create a conda environment with: `conda env create -f environment.yaml`
+- Activate the new environment with `conda activate kgreat`
+- Install dependencies with `poetry install`
+- Make sure that the `kgreat` environment is activated when using the framework!
 
 
 ## Quickstart: How to Evaluate a KG
@@ -30,9 +36,9 @@ In the following you will run steps of the three stages `Preprocessing`, `Mappin
 
 First, pull the docker images of the stages. Make sure that your `config.yaml` is already configured correctly, as the manager only pulls images of the steps defined in the config. In the root directory of the project, run the following commands:
 ```shell
+python . <your-kg-identifier> pull mapping
 python . <your-kg-identifier> pull preprocessing/embedding
 python . <your-kg-identifier> pull preprocessing/ann
-python . <your-kg-identifier> pull mapping
 python . <your-kg-identifier> pull tasks
 ```
 
@@ -73,10 +79,17 @@ To run a task using the new dataset you have to add an entry in your `config.yam
 
 ### Add a Task Type
 To define a new task type, add the code to a subfolder below `shared`. If your task type uses Python, you can put it below `shared/dm` and reuse the utility functions in `shared/dm/util`.
+The only information a task retrieves is the environment variable `KGREAT_STEP` which it can use to identify its configuration in the `config.yaml` of the KG.
+Results should be written in the `result/run_<run_id>` folder of the KG using the existing format. 
 
 ### Add a Mapper
-To define a new mapper, add the code to a subfolder below `shared/mapping`. The mapper should be self-contained and should define its own `Dockerfile` (see existing mappers for examples). To use the mapper, add a respective entry to the mapping section of your `config.yaml`.
+To define a new mapper, add the code to a subfolder below `shared/mapping`. The mapper should be self-contained and should define its own `Dockerfile` (see existing mappers for examples).
+A mapper should fill gaps in the `source` column of the `entity_mapping.tsv` file in the KG folder (i.e., load the file, fill gaps, update the file).
+
+To use the mapper, add a respective entry to the mapping section of your `config.yaml`.
 
 ### Add a Preprocessing Method
-To define a new preprocessing method, add the code to a subfolder below `shared/preprocessing`. The preprocessing method should be self-contained and should define its own `Dockerfile` (see existing preprocessors for examples). To use the preprocessing method, add a respective entry to the preprocessing section of your `config.yaml`.
+To define a new preprocessing method, add the code to a subfolder below `shared/preprocessing`. The preprocessing method should be self-contained and should define its own `Dockerfile` (see existing preprocessors for examples).
+A preprocessing step can use any data contained in the KG folder and persist artifacts in the same folder. These artifacts may then be used by subsequent preprocessing steps or by tasks.
 
+To use the preprocessing method, add a respective entry to the preprocessing section of your `config.yaml`.

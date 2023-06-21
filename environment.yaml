@@ -1,0 +1,7 @@
+# Configuration file for the conda environment
+name: kgreat
+channels:
+  - default
+  - conda-forge
+dependencies:
+  - python=3.9
