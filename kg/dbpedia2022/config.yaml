@@ -23,6 +23,9 @@ preprocessing:
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
     batch_size: 30000
+  embedding-speedup:
+    ann_index: True
+    small_embeddings: True
 
 tasks:
   'dm-AAUP_classification':

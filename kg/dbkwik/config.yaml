@@ -23,6 +23,9 @@ preprocessing:
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1  # number of epochs to train the embedding model for
     batch_size: 30000  # batch size to use on GPU
+  embedding-speedup:
+    ann_index: True
+    small_embeddings: True
 
 tasks:  # list of all tasks to be run; check the documentation in the respective task folder (./tasks/*) for details
   'dm-AAUP_classification':

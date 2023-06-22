@@ -47,7 +47,7 @@ class RegressionTask(BaseTask):
             unmapped_label_error = 0
         # train models and evaluate
         for embedding_type in self.embedding_models:
-            entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
+            entity_features = self.load_entity_embeddings(embedding_type, True).loc[entity_labels.index, :]
             for est, params in self._get_estimators():
                 get_logger().debug(f'Evaluating classifier {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params)

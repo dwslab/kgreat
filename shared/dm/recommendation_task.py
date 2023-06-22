@@ -1,5 +1,4 @@
 from collections import defaultdict
-from sklearn.metrics import pairwise_distances
 import numpy as np
 import pandas as pd
 import turicreate as tc
@@ -52,9 +51,8 @@ class RecommendationTask(BaseTask):
         mapped_entities = list(self.dataset.get_mapped_entities())
         mapped_entity_uris = [e[0] for e in mapped_entities]
         mapped_entity_ids = [e[1] for e in mapped_entities]
-        entity_features = self.load_entity_embeddings(embedding_type).loc[mapped_entity_uris, :]
-        use_cosine = 'use_cosine' in self.task_config and self.task_config['use_cosine']
-        entity_similarities = (1-pairwise_distances(entity_features, metric='cosine')) if use_cosine else np.dot(entity_features, entity_features.T)
+        entity_features = self.load_entity_embeddings(embedding_type, False).loc[mapped_entity_uris, :]
+        entity_similarities = np.dot(entity_features, entity_features.T)
         top50_related_entities = []
         for entity_id, cosine_scores in zip(mapped_entity_ids, entity_similarities):
             related_ents = np.argsort(-cosine_scores)[:50]

@@ -42,7 +42,7 @@ class ClassificationTask(BaseTask):
             get_logger().info(f'Skipping classification because there are less examples ({least_label_freq}) of a class than splits ({self.N_SPLITS}).')
             return
         for embedding_type in self.embedding_models:
-            entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
+            entity_features = self.load_entity_embeddings(embedding_type, True).loc[entity_labels.index, :]
             for est, params in self._get_estimators():
                 get_logger().debug(f'Evaluating classifier {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params)

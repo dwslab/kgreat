@@ -22,7 +22,7 @@ class SemanticAnalogiesTask(BaseTask):
         mapped_analogy_sets = self.dataset.get_entity_analogy_sets(True)
         for embedding_type in self.embedding_models:
             correct_predictions_by_k = defaultdict(int)
-            entity_embeddings = self.load_entity_embeddings(embedding_type)
+            entity_embeddings = self.load_entity_embeddings(embedding_type, False)
             entity_embedding_index = self._load_entity_embedding_index(embedding_type)
             get_logger().debug(f'Evaluating semantic analogies via cosine distance for embedding type {embedding_type}')
             for analogy_set in mapped_analogy_sets.itertuples(index=False):

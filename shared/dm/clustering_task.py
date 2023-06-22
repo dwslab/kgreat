@@ -53,7 +53,7 @@ class ClusteringTask(BaseTask):
             get_logger().debug(f'Skipping clustering task due to low number of clusters ({n_clusters})')
             return
         for embedding_type in self.embedding_models:
-            entity_features = self.load_entity_embeddings(embedding_type).loc[entity_labels.index, :]
+            entity_features = self.load_entity_embeddings(embedding_type, True).loc[entity_labels.index, :]
             for est, params in self._get_estimators(n_clusters):
                 get_logger().debug(f'Evaluating clustering {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params).fit(entity_features)

@@ -25,6 +25,6 @@ class BaseTask(ABC):
         pass
 
     @staticmethod
-    def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
+    def load_entity_embeddings(embedding_type: str, load_dataset_entities_only: bool) -> pd.DataFrame:
         get_logger().info(f'Loading entity embeddings of type {embedding_type}')
-        return load_entity_embeddings(embedding_type)
+        return load_entity_embeddings(embedding_type, load_dataset_entities_only)

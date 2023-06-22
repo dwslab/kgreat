@@ -32,13 +32,13 @@ Hence, the execution of tasks does not consume a large amount of resources.
   - Create a file `config.yaml` with the evaluation configuration of your KG. You can find explanations for all configuration parameters in the `example_config.yaml` file of the root directory.
   
 ### Evaluation Pipeline
-In the following you will run steps of the three stages `Preprocessing`, `Mapping`, and `Tasks`. The first two stages have no dependencies among each other and can be run in parallel.
+In the following you will run steps of the three stages `Mapping`, `Preprocessing`, and `Tasks`. As the later stages are dependent on the earlier ones, they must be run in this order.
 
 First, pull the docker images of the stages. Make sure that your `config.yaml` is already configured correctly, as the manager only pulls images of the steps defined in the config. In the root directory of the project, run the following commands:
 ```shell
 python . <your-kg-identifier> pull mapping
 python . <your-kg-identifier> pull preprocessing/embedding
-python . <your-kg-identifier> pull preprocessing/ann
+python . <your-kg-identifier> pull preprocessing/embedding-speedup
 python . <your-kg-identifier> pull tasks
 ```
 
@@ -51,7 +51,7 @@ python . <your-kg-identifier> run mapping
 The preprocessing can be run with the following commands:
 ```shell
 python . <your-kg-identifier> run preprocessing/embedding
-python . <your-kg-identifier> run preprocessing/ann  # optional step for speed-up
+python . <your-kg-identifier> run preprocessing/embedding-speedup  # optional step for speeding up embedding-based tasks
 ```
 
 When the mapping and preprocessing stages are completed, the actual tasks can be run.

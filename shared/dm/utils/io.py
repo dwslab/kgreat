@@ -3,9 +3,14 @@ import yaml
 from pathlib import Path
 
 
-def load_entity_embeddings(embedding_type: str) -> pd.DataFrame:
-    filepath = get_embedding_path() / f'{embedding_type}.tsv'
-    return pd.read_csv(filepath, sep='\t', header=None, index_col=0)
+def load_entity_embeddings(embedding_type: str, load_dataset_entities_only: bool) -> pd.DataFrame:
+    full_embedding_path = get_embedding_path() / f'{embedding_type}.tsv'
+    small_embedding_path = get_embedding_path() / f'{embedding_type}_small.tsv'
+    use_small = load_dataset_entities_only and small_embedding_path.is_file()
+    path_to_embeddings = small_embedding_path if use_small else full_embedding_path
+    if not path_to_embeddings.is_file():
+        raise FileNotFoundError(f'Trying to run task with {embedding_type} embeddings, but file is not existing.')
+    return pd.read_csv(path_to_embeddings, sep='\t', header=None, index_col=0)
 
 
 def load_entity_mapping() -> pd.DataFrame:

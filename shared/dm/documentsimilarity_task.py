@@ -53,7 +53,7 @@ class DocumentSimilarityTask(BaseTask):
     def run(self):
         docsim_gold = self.dataset.get_document_similarities()
         for embedding_type in self.embedding_models:
-            entity_embeddings = self.load_entity_embeddings(embedding_type)
+            entity_embeddings = self.load_entity_embeddings(embedding_type, True)
             for sim_func, params in self._get_estimators():
                 get_logger().debug(f'Evaluating similarity with {sim_func.__name__} ({params}) for embedding type {embedding_type}')
                 docsim_pred = {docs: self._compute_document_similarity(entity_embeddings, docs, sim_func, params) for docs in docsim_gold}

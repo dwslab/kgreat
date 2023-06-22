@@ -12,7 +12,7 @@ class Dataset(ABC):
         self.name = dataset_config['name']
         self.entity_keys = dataset_config['entity_keys']
         # create dict-like mapping from any possible URI in this dataset to the source
-        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embedding']['models'][0]).index.values) if kg_config else None
+        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embedding']['models'][0], True).index.values) if kg_config else None
         self.entity_mapping = {}
         for key in self.entity_keys:
             if key not in entity_mapping:
