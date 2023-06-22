@@ -115,7 +115,9 @@ def _serialize_embeddings_and_indices(embedding_models: List[str]):
         embedding_file = embedding_folder / '_'.join(['kg', model_name, 'entity.npy'])
         embedding_vecs = pd.DataFrame(data=np.load(str(embedding_file)), columns=range(200))
         entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True).set_index('entity')
-        entity_vecs = entity_vecs.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1)  # normalize to unit vectors
+        get_logger().debug(f'Normalizing embeddings to unit vectors')
+        entity_vecs = entity_vecs.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1).round(6)
+        get_logger().debug(f'Writing embedding file')
         entity_vecs.to_csv(EMBEDDING_DIR / f'{model_name}.tsv', sep='\t', header=False)
 
 
