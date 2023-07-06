@@ -5,7 +5,7 @@ from pathlib import Path
 
 def load_entity_embeddings(embedding_type: str, load_dataset_entities_only: bool) -> pd.DataFrame:
     full_embedding_path = get_embedding_path() / f'{embedding_type}.tsv'
-    small_embedding_path = get_embedding_path() / f'{embedding_type}_small.tsv'
+    small_embedding_path = get_embedding_path(small=True) / f'{embedding_type}_small.tsv'
     use_small = load_dataset_entities_only and small_embedding_path.is_file()
     path_to_embeddings = small_embedding_path if use_small else full_embedding_path
     if not path_to_embeddings.is_file():
@@ -31,8 +31,15 @@ def load_kg_config() -> dict:
         return yaml.safe_load(f)
 
 
-def get_embedding_path() -> Path:
-    return get_kg_path() / 'embedding'
+def get_embedding_path(small: bool = False, ann: bool = False) -> Path:
+    if small and ann:
+        raise ValueError('Can only return folder for small embeddings OR ann indices.')
+    postfix = ''
+    if small:
+        postfix = '-small'
+    elif ann:
+        postfix = '-ann'
+    return get_kg_path() / f'embedding{postfix}'
 
 
 def get_kg_path() -> Path:

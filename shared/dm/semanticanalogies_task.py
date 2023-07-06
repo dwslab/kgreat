@@ -43,7 +43,7 @@ class SemanticAnalogiesTask(BaseTask):
 
     @staticmethod
     def _load_entity_embedding_index(embedding_type: str) -> Optional[hnswlib.Index]:
-        filepath = get_embedding_path() / f'{embedding_type}_index.p'
+        filepath = get_embedding_path(ann=True) / f'{embedding_type}_index.p'
         if not filepath.is_file():
             return None
         return hnswlib.Index(space='ip', dim=200).load_index(str(filepath))

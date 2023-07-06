@@ -9,15 +9,17 @@ import hnswlib
 
 KG_DIR = Path('./kg')
 EMBEDDING_DIR = KG_DIR / 'embedding'
+EMBEDDING_SMALL_DIR = KG_DIR / 'embedding-small'
+EMBEDDING_ANN_DIR = KG_DIR / 'embedding-ann'
 
 
 def process_embeddings(kg_config: dict):
-    embedding_config = kg_config['preprocessing']['embedding']
     speedup_config = kg_config['preprocessing']['embedding-speedup']
     create_ann_index = 'ann_index' not in speedup_config or speedup_config['ann_index']
     create_small_embeddings = 'small_embeddings' not in speedup_config or speedup_config['small_embeddings']
     dataset_entities = _load_dataset_entities() if create_small_embeddings else None
-    for model_name in embedding_config['models']:
+    for embedding_file in EMBEDDING_DIR.glob('*.tsv'):
+        model_name = embedding_file[:-4]
         get_logger().info(f'Making speed optimizations for embedding of type {model_name}')
         path_to_embedding_file = EMBEDDING_DIR / f'{model_name}.tsv'
         if not path_to_embedding_file.is_file():
@@ -28,11 +30,13 @@ def process_embeddings(kg_config: dict):
             get_logger().debug(f'Building ANN index for embedding {model_name}')
             index = _build_ann_index(kg_config, entity_vecs.values, 300, 32, 20)
             get_logger().debug(f'Persisting ANN index for embedding {model_name}')
-            index.save_index(str(EMBEDDING_DIR / f'{model_name}_index.p'))
+            EMBEDDING_ANN_DIR.mkdir(exist_ok=True)
+            index.save_index(str(EMBEDDING_ANN_DIR / f'{model_name}_index.p'))
         if dataset_entities:
             get_logger().debug(f'Persisting small embedding file for {model_name}')
             entity_vecs = entity_vecs[entity_vecs.index.isin(dataset_entities)]
-            entity_vecs.to_csv(EMBEDDING_DIR / f'{model_name}_small.tsv', sep='\t', header=False)
+            EMBEDDING_SMALL_DIR.mkdir(exist_ok=True)
+            entity_vecs.to_csv(EMBEDDING_SMALL_DIR / f'{model_name}_small.tsv', sep='\t', header=False)
 
 
 def _build_ann_index(kg_config: dict, embeddings: np.ndarray, ef_construction: int, M: int, ef: int) -> hnswlib.Index:
