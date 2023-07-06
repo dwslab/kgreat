@@ -1,39 +1,24 @@
-from typing import Optional
+from typing import List
 import datetime
 import subprocess
+from util import get_path_to_dockerfile, Stage, StageAction
 
 
-def perform_action(container_manager: str, action: str, image_name: str, path_to_dockerfile: str, kg_name: str, step_id: Optional[str] = None):
-    if action == 'build':
-        _action_build(container_manager, image_name, path_to_dockerfile)
-    elif action == 'push':
-        _action_push(container_manager, image_name)
-    elif action == 'pull':
-        _action_pull(container_manager, image_name)
-    elif action == 'prepare':
-        pass  # only implemented for mapping, handled separately there.
-    elif action == 'run':
-        _action_run(container_manager, image_name, kg_name, step_id)
+def perform_image_action(container_manager: str, action: StageAction, stage: Stage, image_name: str):
+    if action == StageAction.BUILD:
+        params = ['-t', image_name, '-f', get_path_to_dockerfile(stage, image_name), '.']
+    elif action in [StageAction.PUSH, StageAction.PULL]:
+        params = [image_name]
+    else:
+        raise NotImplementedError(f'Image action not implemented: {action.value}')
+    _trigger_container_action(container_manager, action.value, params)
 
 
-def _action_build(container_manager: str, image_name: str, path_to_dockerfile: str, ):
-    _trigger_container_action(container_manager, 'build', ['-t', image_name, '-f', path_to_dockerfile, '.'])
-
-
-def _action_push(container_manager: str, image_name: str):
-    _trigger_container_action(container_manager, 'push', [image_name])
-
-
-def _action_pull(container_manager: str, image_name: str):
-    _trigger_container_action(container_manager, 'pull', [image_name])
-
-
-def _action_run(container_manager: str, image_name: str, kg_name: str, step_id: Optional[str]):
-    params = ['--mount', f'type=bind,src=./kg/{kg_name},target=/app/kg']
-    if step_id is not None:
-        params += ['-e', f'KGREAT_STEP={step_id}']
-    params += [image_name]
-    _trigger_container_action(container_manager, 'run', params)
+def perform_container_action(container_manager: str, action: StageAction, image_name: str, kg_name: str, step_id: str):
+    if action != StageAction.RUN:
+        raise NotImplementedError(f'Container action not implemented: {action.value}')
+    params = ['--mount', f'type=bind,src=./kg/{kg_name},target=/app/kg', '-e', f'KGREAT_STEP={step_id}', image_name]
+    _trigger_container_action(container_manager, action.value, params)
 
 
 def _trigger_container_action(container_manager: str, action: str, params: List[str]) -> str:

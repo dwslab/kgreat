@@ -15,7 +15,7 @@ class TaskManager:
         self.task_id = task_id
         self.dataset_config = dataset_config
         self.kg_config = load_kg_config()
-        self.task_config = self.kg_config['tasks'][task_id]
+        self.task_config = self.kg_config['task'][task_id]
 
     def run_task(self):
         start_time = datetime.datetime.now()

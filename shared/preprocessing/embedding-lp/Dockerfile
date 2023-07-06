@@ -8,7 +8,7 @@ RUN pip3 install dgl==0.4.3
 RUN pip3 install dglke
 # add code
 WORKDIR /app
-ADD shared/preprocessing/embedding .
+ADD shared/preprocessing/embedding-lp .
 # make configurations for dgl-ke
 ENV DGLBACKEND=pytorch
 CMD ["python3", "."]

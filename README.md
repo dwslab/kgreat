@@ -39,7 +39,7 @@ First, pull the docker images of the stages. Make sure that your `config.yaml` i
 python . <your-kg-identifier> pull mapping
 python . <your-kg-identifier> pull preprocessing/embedding
 python . <your-kg-identifier> pull preprocessing/embedding-speedup
-python . <your-kg-identifier> pull tasks
+python . <your-kg-identifier> pull task
 ```
 
 To run the mapping, we first prepare a `entity_mapping.tsv` file which contains all the URIs and labels of entities to be mapped. Then, we run the actual mapping to find the corresponding entities in your KG. For the prepare step, it is important that the images of the tasks have already been pulled as the entities are collected directly from the images. 
@@ -56,7 +56,7 @@ python . <your-kg-identifier> run preprocessing/embedding-speedup  # optional st
 
 When the mapping and preprocessing stages are completed, the actual tasks can be run.
 ```shell
-python . <your-kg-identifier> run tasks
+python . <your-kg-identifier> run task
 ```
 
 ### Results & Analysis

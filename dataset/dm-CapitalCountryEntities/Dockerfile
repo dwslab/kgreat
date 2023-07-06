@@ -3,5 +3,5 @@ FROM python:3.9
 RUN pip3 install pyyaml pandas scikit-learn hnswlib
 WORKDIR /app
 ADD shared/dm .
-ADD tasks/dm-CapitalCountryEntities .
+ADD dataset/dm-CapitalCountryEntities .
 CMD ["python3", "."]

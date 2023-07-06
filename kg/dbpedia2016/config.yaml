@@ -6,11 +6,11 @@ format: nt
 
 mapping:
   'identity':
-    type: identity
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/identity
     target: 'DBpedia16_URI'
     known_entity_files: ['instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
   'label':
-    type: label
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/label
     input_files: ['labels_en.ttl.bz2']
     label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']
     definitive_matches_only:  False
@@ -18,82 +18,84 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embedding:
+  'embedding-lp':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-lp
     input_files: ['dbpedia_2016-10.nt', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
     batch_size: 30000
-  embedding-speedup:
+  'embedding-speedup':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-speedup
     ann_index: True
     small_embeddings: True
 
-tasks:
+task:
   'dm-AAUP_classification':
-    dataset: dm-AAUP
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-AAUP
     type: classification
   'dm-AAUP_regression':
-    dataset: dm-AAUP
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-AAUP
     type: regression
   'dm-Cities_classification':
-    dataset: dm-Cities
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-Cities
     type: classification
   'dm-Cities_regression':
-    dataset: dm-Cities
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-Cities
     type: regression
   'dm-Forbes_classification':
-    dataset: dm-Forbes
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-Forbes
     type: classification
   'dm-Forbes_regression':
-    dataset: dm-Forbes
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-Forbes
     type: regression
   'dm-MetacriticAlbums_classification':
-    dataset: dm-MetacriticAlbums
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-MetacriticAlbums
     type: classification
   'dm-MetacriticAlbums_regression':
-    dataset: dm-MetacriticAlbums
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-MetacriticAlbums
     type: regression
   'dm-MetacriticMovies_classification':
-    dataset: dm-MetacriticMovies
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-MetacriticMovies
     type: classification
   'dm-MetacriticMovies_regression':
-    dataset: dm-MetacriticMovies
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-MetacriticMovies
     type: regression
   'dm-Cities2000AndCountries_clustering':
-    dataset: dm-Cities2000AndCountries
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-Cities2000AndCountries
     type: clustering
   'dm-CitiesAndCountries_clustering':
-    dataset: dm-CitiesAndCountries
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-CitiesAndCountries
     type: clustering
   'dm-CitiesMoviesAlbumsCompaniesUni_clustering':
-    dataset: dm-CitiesMoviesAlbumsCompaniesUni
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-CitiesMoviesAlbumsCompaniesUni
     type: clustering
   'dm-Teams_clustering':
-    dataset: dm-Teams
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-Teams
     type: clustering
   'dm-LP50_documentSimilarity':
-    dataset: dm-LP50
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-LP50
     type: documentSimilarity
   'dm-KORE_entityRelatedness':
-    dataset: dm-KORE
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-KORE
     type: entityRelatedness
   'dm-AllCapitalCountryEntities_semanticAnalogies':
-    dataset: dm-AllCapitalCountryEntities
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-AllCapitalCountryEntities
     type: semanticAnalogies
   'dm-CapitalCountryEntities_semanticAnalogies':
-    dataset: dm-CapitalCountryEntities
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-CapitalCountryEntities
     type: semanticAnalogies
   'dm-CityStateEntities_semanticAnalogies':
-    dataset: dm-CityStateEntities
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-CityStateEntities
     type: semanticAnalogies
   'dm-CurrencyEntities_semanticAnalogies':
-    dataset: dm-CurrencyEntities
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-CurrencyEntities
     type: semanticAnalogies
   'dm-MovieLens_recommendation':
-    dataset: dm-MovieLens
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-MovieLens
     type: recommendation
   'dm-LastFm_recommendation':
-    dataset: dm-LastFm
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-LastFm
     type: recommendation
   'dm-LibraryThing_recommendation':
-    dataset: dm-LibraryThing
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-LibraryThing
     type: recommendation

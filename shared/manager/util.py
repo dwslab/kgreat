@@ -1,26 +1,38 @@
-from typing import Optional, List
 import yaml
+from enum import Enum
 
 
 IMAGE_PREFIX = 'gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat'
 
 
-def get_image_name(step_id: str, suffix: Optional[str] = None) -> str:
-    image_name = f'{IMAGE_PREFIX}/{step_id}'
-    return image_name if suffix is None else image_name + f'/{suffix.lower()}'
+class Stage(Enum):
+    MAPPING = 'mapping'
+    PREPROCESSING = 'preprocessing'
+    TASK = 'task'
+
+
+class StageAction(Enum):
+    PREPARE = 'prepare'
+    BUILD = 'build'
+    PUSH = 'push'
+    PULL = 'pull'
+    RUN = 'run'
+
+
+def is_local_image(image: str) -> bool:
+    return image.startswith(IMAGE_PREFIX)
+
+
+def get_path_to_dockerfile(stage: Stage, image_name: str):
+    image_step = image_name[image_name.rfind('/') + 1:]
+    if stage in [Stage.MAPPING, Stage.PREPROCESSING]:
+        return f'shared/{stage.value}/{image_step}/Dockerfile'
+    elif stage == Stage.TASK:
+        return f'dataset/{image_step}/Dockerfile'
+    else:
+        raise NotImplementedError(f'Dockerfile retrieval for stage not implemented: {stage.value}')
 
 
 def load_kg_config(kg_name: str) -> dict:
     with open(f'./kg/{kg_name}/config.yaml') as f:
         return yaml.safe_load(f)
-
-
-def get_one_step_per_attr(config: dict, attr_name: str) -> List[str]:
-    step_ids = []
-    known_step_attrs = set()
-    for step_id, step_entry in config.items():
-        step_attr = step_entry[attr_name]
-        if step_attr not in known_step_attrs:
-            step_ids.append(step_id)
-            known_step_attrs.add(step_attr)
-    return step_ids

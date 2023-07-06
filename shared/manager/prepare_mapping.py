@@ -4,36 +4,35 @@ import pandas as pd
 import shutil
 from pathlib import Path
 from container import _trigger_container_action
-from util import load_kg_config, get_image_name
+from util import load_kg_config
 
 
 def collect_entities_to_map(kg_name: str, container_manager: str):
     temp_dir = Path(tempfile.mkdtemp())
     # find relevant tasks
-    task_config = load_kg_config(kg_name)['tasks']
-    dataset_ids = {task_entry['dataset'] for task_entry in task_config.values()}
+    task_config = load_kg_config(kg_name)['task']
+    image_names = {task_entry['image'] for task_entry in task_config.values()}
     # retrieve entities to be mapped from task containers
-    _fetch_entity_files(container_manager, temp_dir, dataset_ids)
+    _fetch_entity_files(container_manager, temp_dir, image_names)
     # merge entity files of tasks into single entity file
-    _merge_entity_files(kg_name, temp_dir, dataset_ids)
+    _merge_entity_files(kg_name, temp_dir, image_names)
     # cleanup
     shutil.rmtree(temp_dir)
 
 
-def _fetch_entity_files(container_manager: str, temp_dir: Path, dataset_ids: Set[str]):
-    for dataset_id in dataset_ids:
-        image_name = get_image_name('tasks', dataset_id)
-        tmp_container_name = f'tmp_{dataset_id}'
+def _fetch_entity_files(container_manager: str, temp_dir: Path, image_names: Set[str]):
+    for image_name in image_names:
+        tmp_container_name = f'tmp_{image_name}'
         _trigger_container_action(container_manager, 'create', ['--name', tmp_container_name, image_name])
-        _trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{dataset_id}.tsv'])
+        _trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{image_name}.tsv'])
         _trigger_container_action(container_manager, 'rm', [tmp_container_name])
 
 
-def _merge_entity_files(kg_name: str, temp_dir: Path, dataset_ids: Set[str]):
+def _merge_entity_files(kg_name: str, temp_dir: Path, image_names: Set[str]):
     mapped_ents = []
     mapping_dict = {}
-    for dataset_id in dataset_ids:
-        ents = pd.read_csv(f'{temp_dir}/entities_{dataset_id}.tsv', header=0, sep='\t')
+    for image_name in image_names:
+        ents = pd.read_csv(f'{temp_dir}/entities_{image_name}.tsv', header=0, sep='\t')
         _add_entities_to_mapping_dict(ents, mapped_ents, mapping_dict)
     df = pd.DataFrame(mapped_ents)
     df['source'] = ''
