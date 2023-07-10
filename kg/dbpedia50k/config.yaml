@@ -1,6 +1,6 @@
 run_id: 0
 log_level: 'DEBUG'
-max_cpus: 20
+max_cpus: 1
 gpu: None
 format: tsv
 
@@ -18,6 +18,11 @@ preprocessing:
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
     batch_size: 30000
+  'embedding-rdf2vec':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-rdf2vec
+    input_files: ['dbpedia50k_train.tsv']
+    models: ['RDF2vec']
+    epochs: 5
 
 task:
   'dm-AAUP_classification':

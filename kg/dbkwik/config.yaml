@@ -20,10 +20,15 @@ mapping:
 preprocessing:
   'embedding-lp':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-lp
-    input_files: ['infobox-properties.ttl', 'infobox-template-type.ttl', 'template-type.ttl', 'article-categories.ttl', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2', 'dbpedia_2016-10.nt']  # list files within the `data` folder that should be used to create embeddings
+    input_files: ['infobox-properties.ttl', 'infobox-template-type.ttl', 'template-type.ttl', 'article-categories.ttl', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2', 'dbpedia_2016-10.nt']
     models: ['TransE_l1', 'DistMult', 'ComplEx']
-    epochs: 1  # number of epochs to train the embedding model for
-    batch_size: 30000  # batch size to use on GPU
+    epochs: 1
+    batch_size: 30000
+  'embedding-rdf2vec':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-rdf2vec
+    input_files: ['infobox-properties.ttl', 'infobox-template-type.ttl', 'template-type.ttl', 'article-categories.ttl', 'instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2', 'dbpedia_2016-10.nt']
+    models: ['RDF2vec']
+    epochs: 5
   'embedding-speedup':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-speedup
     ann_index: True

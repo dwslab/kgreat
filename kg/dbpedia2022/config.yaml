@@ -24,6 +24,11 @@ preprocessing:
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
     batch_size: 30000
+  'embedding-rdf2vec':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-rdf2vec
+    input_files: ['dbpedia-ontology.nt', 'dbpedia-instance-types.nt.bz2', 'dbpedia-mappingbased-objects.nt.bz2']
+    models: ['RDF2vec']
+    epochs: 5
   'embedding-speedup':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-speedup
     ann_index: True

@@ -19,11 +19,21 @@ mapping:
     chunk_size: 1000
 
 preprocessing:
-  embedding:
+  'embedding-lp':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-lp
     input_files: ['yagoTaxonomy.ttl', 'yagoFacts.ttl', 'yagoTypes.ttl']
     models: ['TransE_l1', 'DistMult', 'ComplEx']
     epochs: 1
     batch_size: 30000
+  'embedding-rdf2vec':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-rdf2vec
+    input_files: ['yagoTaxonomy.ttl', 'yagoFacts.ttl', 'yagoTypes.ttl']
+    models: ['RDF2vec']
+    epochs: 5
+  'embedding-speedup':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-speedup
+    ann_index: True
+    small_embeddings: True
 
 task:
   'dm-AAUP_classification':
