@@ -1,7 +1,7 @@
 from typing import List
 import datetime
 import subprocess
-from util import get_path_to_dockerfile, Stage, StageAction
+from shared.manager.util import get_path_to_dockerfile, Stage, StageAction
 
 
 def perform_image_action(container_manager: str, action: StageAction, stage: Stage, image_name: str):

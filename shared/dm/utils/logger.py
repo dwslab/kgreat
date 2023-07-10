@@ -23,7 +23,7 @@ def init_logger(run_id: str, task_id: str, log_level: str):
     LOGGER_NAME = f'task-{task_id}'
     log_filepath = get_kg_result_path(run_id) / f'{task_id}.log'
     log_handler = logging.FileHandler(log_filepath, 'a', 'utf-8')
-    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(hostname)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
+    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
     log_handler.setLevel(log_level)
     logger = get_logger()
     logger.addHandler(log_handler)

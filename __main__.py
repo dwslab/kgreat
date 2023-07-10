@@ -11,7 +11,7 @@ def process_action(kg_name: str, action: StageAction, stage: Stage, steps: List[
     all_steps = list(stage_config)
     invalid_steps = [s for s in steps if s not in all_steps]
     if invalid_steps:
-        raise ValueError(f'Found steps that are not defined in the config of the KG: "{invalid_steps}". Aborting.')
+        raise ValueError(f'Found steps that are not defined in the config of the KG: {", ".join(invalid_steps)}. Aborting.')
     steps = steps or all_steps  # use all steps if no explicit ones are provided
 
     if action == StageAction.PREPARE:

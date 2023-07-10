@@ -3,8 +3,8 @@ import tempfile
 import pandas as pd
 import shutil
 from pathlib import Path
-from container import _trigger_container_action
-from util import load_kg_config
+from shared.manager.container import _trigger_container_action
+from shared.manager.util import load_kg_config
 
 
 def collect_entities_to_map(kg_name: str, container_manager: str):

@@ -19,7 +19,7 @@ def init_logger(logger_name: str, log_level: str):
     LOGGER_NAME = logger_name
     log_filepath = 'kg/{}_{}.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'), logger_name)
     log_handler = logging.FileHandler(log_filepath, 'a', 'utf-8')
-    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(hostname)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
+    log_handler.setFormatter(logging.Formatter('%(asctime)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
     log_handler.setLevel(log_level)
     logger = get_logger()
     logger.addHandler(log_handler)
