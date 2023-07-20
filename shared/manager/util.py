@@ -23,8 +23,12 @@ def is_local_image(image: str) -> bool:
     return image.startswith(IMAGE_PREFIX)
 
 
+def get_image_step(image: str) -> str:
+    return image[image.rfind('/') + 1:]
+
+
 def get_path_to_dockerfile(stage: Stage, image_name: str):
-    image_step = image_name[image_name.rfind('/') + 1:]
+    image_step = get_image_step(image_name)
     if stage in [Stage.MAPPING, Stage.PREPROCESSING]:
         return f'shared/{stage.value}/{image_step}/Dockerfile'
     elif stage == Stage.TASK:
