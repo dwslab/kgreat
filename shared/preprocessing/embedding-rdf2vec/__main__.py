@@ -49,7 +49,7 @@ def _serialize_embeddings(embedding_models: List[str], embedding_input_dir: Path
     for model_name in embedding_models:
         get_logger().info(f'Serializing embeddings of type {model_name}')
         embedding_file = embedding_input_dir / model_name / 'vectors.txt'
-        embedding_vecs = pd.read_csv(embedding_file, sep=' ', index_col=0, header=None)
+        embedding_vecs = pd.read_csv(embedding_file, sep=' ', index_col=0, header=None).dropna(how='all', axis='columns')
         entity_vecs = pd.merge(entity_dict, embedding_vecs, left_index=True, right_index=True).set_index('entity')
         get_logger().debug(f'Normalizing embeddings to unit vectors')
         entity_vecs = entity_vecs.apply(lambda x: x / np.linalg.norm(x, ord=1), axis=1).round(6)
