@@ -4,7 +4,7 @@ from collections import defaultdict
 import json
 import pandas as pd
 from .enums import DatasetFormat
-from utils.io import load_entity_embeddings
+from .io import load_entity_embeddings
 
 
 class Dataset(ABC):
