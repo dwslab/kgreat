@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser.add_argument('kg_name', type=str, help='Name of the knowledge graph to use')
     parser.add_argument('action', type=str, help='Action to perform', choices=[a.value for a in StageAction])
     parser.add_argument('stage', type=str, help='Apply action to this stage', choices=[s.value for s in Stage])
-    parser.add_argument('-s', '--step', type=str, nargs='*', help='ID of step(s) to perform action on (default is: all steps of stage)')
+    parser.add_argument('-s', '--step', type=str, nargs='*', default=[], help='ID of step(s) to perform action on (default is: all steps of stage)')
     parser.add_argument('-c', '--container_manager', type=str, help='Name of container manager', choices=['docker', 'podman'], default='docker')
     args = parser.parse_args()
     process_action(args.kg_name, StageAction(args.action), Stage(args.stage), args.step, args.container_manager)
