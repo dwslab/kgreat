@@ -3,5 +3,5 @@ FROM python:3.9
 RUN pip3 install pyyaml pandas scikit-learn
 WORKDIR /app
 ADD shared/dm .
-ADD dataset/dm-citiesAndCountries .
+ADD dataset/dm-citiesandcountries .
 CMD ["python3", "."]

@@ -75,8 +75,8 @@ task:  # list of all tasks to be run
   'dm-cities2000andcountries_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities2000andcountries
     type: clustering
-  'dm-citiesAndCountries_clustering':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-citiesAndCountries
+  'dm-citiesandcountries_clustering':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-citiesandcountries
     type: clustering
   'dm-citiesmoviesalbumscompaniesuni_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-citiesmoviesalbumscompaniesuni
