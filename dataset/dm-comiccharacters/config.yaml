@@ -1,0 +1,6 @@
+name: "ComicCharacters"
+format: tsv
+data_file: "examples.tsv"
+entity_keys: ["ComicCharacters_URI"]
+entity_label: "name"
+label: "ALIGN"

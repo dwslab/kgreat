@@ -39,33 +39,39 @@ task:
   'dm-aaup_classification':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-aaup
     type: classification
-  'dm-aaup_regression':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-aaup
-    type: regression
   'dm-cities_classification':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities
     type: classification
-  'dm-cities_regression':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities
-    type: regression
   'dm-forbes_classification':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-forbes
     type: classification
-  'dm-forbes_regression':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-forbes
-    type: regression
   'dm-metacriticalbums_classification':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-metacriticalbums
     type: classification
-  'dm-metacriticalbums_regression':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-metacriticalbums
-    type: regression
   'dm-metacriticmovies_classification':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-metacriticmovies
     type: classification
+  'dm-comiccharacters_classification':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-comiccharacters
+    type: classification
+  'dm-aaup_regression':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-aaup
+    type: regression
+  'dm-cities_regression':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities
+    type: regression
+  'dm-forbes_regression':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-forbes
+    type: regression
+  'dm-metacriticalbums_regression':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-metacriticalbums
+    type: regression
   'dm-metacriticmovies_regression':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-metacriticmovies
     type: regression
+  'dm-comiccharacters_clustering':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-comiccharacters
+    type: clustering
   'dm-cities2000andcountries_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities2000andcountries
     type: clustering
