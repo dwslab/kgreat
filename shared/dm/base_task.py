@@ -4,16 +4,16 @@ from utils.logger import get_logger
 from utils.enums import TaskType
 from utils.report import TaskReport
 from utils.dataset import Dataset
-from utils.io import load_entity_embeddings
+from utils.io import get_embedding_models, load_entity_embeddings
 
 
 class BaseTask(ABC):
     def __init__(self, kg_config: dict, task_config: dict, dataset: Dataset, report: TaskReport):
         self.kg_config = kg_config
-        self.embedding_models = self.kg_config['preprocessing']['embedding']['models']
         self.task_config = task_config
         self.dataset = dataset
         self.report = report
+        self.embedding_models = get_embedding_models()
 
     @classmethod
     @abstractmethod

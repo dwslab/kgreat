@@ -1,6 +1,11 @@
+from typing import List
 import pandas as pd
 import yaml
 from pathlib import Path
+
+
+def get_embedding_models() -> List[str]:
+    return [embedding_file.stem for embedding_file in get_embedding_path().glob('*.tsv')]
 
 
 def load_entity_embeddings(embedding_type: str, load_dataset_entities_only: bool) -> pd.DataFrame:

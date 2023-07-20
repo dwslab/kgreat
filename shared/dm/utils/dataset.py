@@ -4,7 +4,7 @@ from collections import defaultdict
 import json
 import pandas as pd
 from .enums import DatasetFormat
-from .io import load_entity_embeddings
+from .io import load_entity_embeddings, get_embedding_models
 
 
 class Dataset(ABC):
@@ -12,7 +12,10 @@ class Dataset(ABC):
         self.name = dataset_config['name']
         self.entity_keys = dataset_config['entity_keys']
         # create dict-like mapping from any possible URI in this dataset to the source
-        valid_entities = set(load_entity_embeddings(kg_config['preprocessing']['embedding']['models'][0], True).index.values) if kg_config else None
+        embedding_models = get_embedding_models()
+        if not embedding_models:
+            raise ValueError('No embedding models available. Did you forget to train the embeddings?')
+        valid_entities = set(load_entity_embeddings(embedding_models[0], True).index.values) if kg_config else None
         self.entity_mapping = {}
         for key in self.entity_keys:
             if key not in entity_mapping:
