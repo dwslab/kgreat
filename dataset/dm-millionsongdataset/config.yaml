@@ -1,0 +1,6 @@
+name: "MillionSongDataset"
+format: tsv
+data_file: "examples.tsv"
+entity_keys: ["msd_URI"]
+entity_label: "title"
+label: "genre"
