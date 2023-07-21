@@ -1,6 +1,9 @@
+.DS_Store
+__pycache__
 /.idea
+poetry.lock
+
 /kg/*/entity_mapping.tsv
 /kg/*/data/
 /kg/*/embedding/
 /kg/*/result/
-poetry.lock
