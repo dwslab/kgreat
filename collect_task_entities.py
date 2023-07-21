@@ -16,7 +16,7 @@ def write_entities_files():
         for filepath in filepaths:
             dataset_config[filepath] = str(path_to_dataset / dataset_config[filepath])
         try:
-            dataset = load_dataset(dataset_config, {}, pd.DataFrame())
+            dataset = load_dataset(dataset_config, None, pd.DataFrame())
             dataset.get_entities().to_csv(path_to_dataset / 'entities.tsv', sep='\t', index=False)
         except Exception as e:
             print(f'Failed to create entities.tsv for {path_to_dataset}: {e}')

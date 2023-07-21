@@ -8,20 +8,22 @@ from .io import load_entity_embeddings, get_embedding_models
 
 
 class Dataset(ABC):
-    def __init__(self, dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame):
+    def __init__(self, dataset_config: dict, kg_config: Optional[dict], entity_mapping: pd.DataFrame):
         self.name = dataset_config['name']
         self.entity_keys = dataset_config['entity_keys']
+        if kg_config is None:
+            return  # early return if no kg_config is provided as we only create the dataset to retrieve all entities
         # create dict-like mapping from any possible URI in this dataset to the source
         embedding_models = get_embedding_models()
         if not embedding_models:
             raise ValueError('No embedding models available. Did you forget to train the embeddings?')
-        valid_entities = set(load_entity_embeddings(embedding_models[0], True).index.values) if kg_config else None
+        valid_entities = set(load_entity_embeddings(embedding_models[0], True).index.values)
         self.entity_mapping = {}
         for key in self.entity_keys:
             if key not in entity_mapping:
                 continue
             for k, v in entity_mapping[[key, 'source']].itertuples(index=False, name=None):
-                if valid_entities is None or v in valid_entities:
+                if v in valid_entities:
                     self.entity_mapping[k] = v
 
     @classmethod
@@ -338,7 +340,7 @@ class LibraryThingRecommendationDataset(RecommendationDataset):
         self.postprocess_data()
 
 
-def load_dataset(dataset_config: dict, kg_config: dict, entity_mapping: pd.DataFrame) -> Dataset:
+def load_dataset(dataset_config: dict, kg_config: Optional[dict], entity_mapping: pd.DataFrame) -> Dataset:
     dataset_by_format = {ds.get_format(): ds for ds in _get_transitive_subclasses(Dataset)}
     dataset_format = DatasetFormat(dataset_config['format'])
     dataset = dataset_by_format[dataset_format](dataset_config, kg_config, entity_mapping)
