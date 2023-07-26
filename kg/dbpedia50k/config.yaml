@@ -12,12 +12,12 @@ mapping:
     known_entity_files: ['dbpedia50k_train.tsv']
 
 preprocessing:
-#  'embedding-lp':
-#    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-lp
-#    input_files: ['dbpedia50k_train.tsv']
-#    models: ['TransE_l1', 'DistMult', 'ComplEx']
-#    epochs: 1
-#    batch_size: 30000
+  'embedding-lp':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-lp
+    input_files: ['dbpedia50k_train.tsv']
+    models: ['TransE_l1', 'DistMult', 'ComplEx']
+    epochs: 1
+    batch_size: 30000
   'embedding-rdf2vec':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/preprocessing/embedding-rdf2vec
     input_files: ['dbpedia50k_train.tsv']

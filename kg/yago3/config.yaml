@@ -15,7 +15,7 @@ mapping:
     input_files: ['yagoLabels.ttl']
     label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label', 'rdfs:label']
     definitive_matches_only:  False
-    similarity_threshold: 0.7
+    similarity_threshold: 1.0
     chunk_size: 1000
 
 preprocessing:
