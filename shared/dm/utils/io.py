@@ -36,6 +36,11 @@ def load_kg_config() -> dict:
         return yaml.safe_load(f)
 
 
+def load_dataset_config() -> dict:
+    with open('config.yaml') as f:
+        return yaml.safe_load(f)
+
+
 def get_embedding_path(small: bool = False, ann: bool = False) -> Path:
     if small and ann:
         raise ValueError('Can only return folder for small embeddings OR ann indices.')

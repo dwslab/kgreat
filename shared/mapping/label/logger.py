@@ -1,23 +1,15 @@
 import logging
-import platform
 import datetime
 
 
 LOGGER_NAME = None
 
 
-class HostnameFilter(logging.Filter):
-    hostname = platform.node()
-
-    def filter(self, record):
-        record.hostname = HostnameFilter.hostname
-        return True
-
-
-def init_logger(logger_name: str, log_level: str):
+def init_logger(logger_name: str, log_level: str, run_id: str):
     global LOGGER_NAME
     LOGGER_NAME = logger_name
-    log_filepath = 'kg/{}_{}.log'.format(datetime.datetime.now().strftime('%Y%m%d-%H%M%S'), logger_name)
+    log_time = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+    log_filepath = f'kg/log/{run_id}/{log_time}_{logger_name}.log'
     log_handler = logging.FileHandler(log_filepath, 'a', 'utf-8')
     log_handler.setFormatter(logging.Formatter('%(asctime)s|%(levelname)s|%(module)s->%(funcName)s: %(message)s'))
     log_handler.setLevel(log_level)

@@ -1,4 +1,5 @@
 from typing import Optional
+import os
 from pathlib import Path
 from logger import init_logger, get_logger
 import yaml
@@ -13,8 +14,7 @@ EMBEDDING_SMALL_DIR = KG_DIR / 'embedding-small'
 EMBEDDING_ANN_DIR = KG_DIR / 'embedding-ann'
 
 
-def process_embeddings(kg_config: dict):
-    speedup_config = kg_config['preprocessing']['embedding-speedup']
+def process_embeddings(kg_config: dict, speedup_config: dict):
     create_ann_index = 'ann_index' not in speedup_config or speedup_config['ann_index']
     create_small_embeddings = 'small_embeddings' not in speedup_config or speedup_config['small_embeddings']
     dataset_entities = _load_dataset_entities() if create_small_embeddings else None
@@ -61,7 +61,9 @@ def _load_dataset_entities() -> Optional[set]:
 
 
 if __name__ == "__main__":
+    preprocessor_id = os.environ['KGREAT_STEP']
     with open(KG_DIR / 'config.yaml') as f:
         kg_config = yaml.safe_load(f)
-    init_logger('preprocessing-embedding-speedup', kg_config['log_level'])
-    process_embeddings(kg_config)
+    preprocessor_config = kg_config['preprocessing'][preprocessor_id]
+    init_logger(f'preprocessing-{preprocessor_id}', kg_config['log_level'], kg_config['run_id'])
+    process_embeddings(kg_config, preprocessor_config)

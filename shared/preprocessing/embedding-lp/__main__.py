@@ -1,4 +1,5 @@
 from typing import List
+import os
 import tempfile
 from pathlib import Path
 import yaml
@@ -22,10 +23,9 @@ EMBEDDING_BASE_CONFIGS = {
 }
 
 
-def make_embeddings(kg_config: dict):
+def make_embeddings(kg_config: dict, embedding_config: dict):
     get_logger().info('Starting link-prediction embedding generation.')
     # check if all specified embedding models are supported
-    embedding_config = kg_config['preprocessing']['embedding-lp']
     unsupported_models = set(embedding_config['models']).difference(set(EMBEDDING_BASE_CONFIGS))
     if unsupported_models:
         get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
@@ -86,8 +86,10 @@ def _serialize_embeddings(embedding_models: List[str], embedding_input_dir: Path
 
 
 if __name__ == "__main__":
+    preprocessor_id = os.environ['KGREAT_STEP']
     with open(KG_DIR / 'config.yaml') as f:
         kg_config = yaml.safe_load(f)
+    preprocessor_config = kg_config['preprocessing'][preprocessor_id]
     EMBEDDING_DIR.mkdir(exist_ok=True)
-    init_logger('preprocessing-embedding-lp', kg_config['log_level'])
-    make_embeddings(kg_config)
+    init_logger(f'preprocessing-{preprocessor_id}', kg_config['log_level'], kg_config['run_id'])
+    make_embeddings(kg_config, preprocessor_config)

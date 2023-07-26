@@ -1,9 +1,8 @@
 import datetime
 import os
-import yaml
 from typing import Type
 from utils.enums import TaskType
-from utils.io import load_kg_config, load_entity_mapping
+from utils.io import load_dataset_config, load_kg_config, load_entity_mapping
 from utils.logger import init_logger, get_logger
 from utils.report import TaskReport
 from utils.dataset import load_dataset
@@ -11,15 +10,14 @@ from base_task import BaseTask
 
 
 class TaskManager:
-    def __init__(self, task_id: str, dataset_config: dict):
+    def __init__(self, task_id: str, dataset_config: dict, kg_config: dict):
         self.task_id = task_id
         self.dataset_config = dataset_config
-        self.kg_config = load_kg_config()
+        self.kg_config = kg_config
         self.task_config = self.kg_config['task'][task_id]
 
     def run_task(self):
         start_time = datetime.datetime.now()
-        init_logger(self.kg_config['run_id'], self.task_id, self.kg_config['log_level'])
         get_logger().info(f'Starting to run task {self.task_id}')
         # prepare mapping & dataset
         get_logger().info('Loading entity mapping')
@@ -65,7 +63,9 @@ class TaskManager:
 
 if __name__ == "__main__":
     task_id = os.environ['KGREAT_STEP']
-    with open('config.yaml', mode='r') as f:
-        dataset_config = yaml.safe_load(f)
-    tm = TaskManager(task_id, dataset_config)
+    dataset_config = load_dataset_config()
+    kg_config = load_kg_config()
+    init_logger(kg_config['log_level'], kg_config['run_id'], task_id)
+
+    tm = TaskManager(task_id, dataset_config, kg_config)
     tm.run_task()

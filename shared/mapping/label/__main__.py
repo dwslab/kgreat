@@ -90,6 +90,6 @@ if __name__ == "__main__":
     mapper_id = os.environ['KGREAT_STEP']
     with open(KG_DIR / 'config.yaml') as f:
         kg_config = yaml.safe_load(f)
-    init_logger(f'mapping-{mapper_id}', kg_config['log_level'])
+    init_logger(f'mapping-{mapper_id}', kg_config['log_level'], kg_config['run_id'])
     mapper_config = kg_config['mapping'][mapper_id]
     perform_label_mapping(kg_config, mapper_config)

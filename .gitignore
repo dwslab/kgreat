@@ -1,4 +1,5 @@
 .DS_Store
+.ipynb_checkpoints
 __pycache__
 /.idea
 poetry.lock
@@ -7,3 +8,4 @@ poetry.lock
 /kg/*/data/
 /kg/*/embedding/
 /kg/*/result/
+/kg/*/log/
