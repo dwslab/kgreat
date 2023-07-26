@@ -19,7 +19,7 @@ def perform_sameas_mapping(kg_config: dict, mapper_config: dict):
     # parse sameas links and apply to entities
     get_logger().info('Parsing sameAs links from files..')
     sameas_mapping = _parse_sameas_links_from_files(kg_config, mapper_config)
-    get_logger().info(f'Found {len(sameas_mapping)} sameAs links.')
+    get_logger().info(f'Found {len(sameas_mapping)} same-as links.')
     uri_columns = [col for col in entities_to_map.columns if col.endswith('_URI')]
     mapped_ents = 0
     for idx, row in entities_to_map.iterrows():
@@ -30,7 +30,7 @@ def perform_sameas_mapping(kg_config: dict, mapper_config: dict):
                 entities_to_map.loc[idx, 'source'] = sameas_mapping[row[col]]
                 mapped_ents += 1
                 continue
-    get_logger().info(f'Found {mapped_ents} entities to map via sameAs links.')
+    get_logger().info(f'Found {mapped_ents} entities to map via same-as links.')
     # write updated entity mapping
     if mapped_ents > 0:
         get_logger().info('Writing updated entity mapping file..')

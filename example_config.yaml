@@ -10,8 +10,8 @@ mapping:
     target: 'DBpedia16_URI'  # target column to map against
     known_entity_files: ['file1', 'file2', 'file3']  # use subjects of the files' triples as sum of entities of KG
     remove_prefix: 'target-prefix-to-be-removed'  # a prefix of the target column that should be removed before mapping
-  'sameAs':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/sameAs  # mapper type: sameAs
+  'same-as':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/same-as  # mapper type: same-as
     kg_prefix: 'http://example.org/resource/'  # prefix of the source KG to be mapped against
     input_files: ['file1', 'file2']  # files containing the same-as links
     additional_predicates: ['pred1', 'pred2']  # additional predicates (other than owl:sameAs) to use

@@ -5,8 +5,8 @@ gpu: None
 format: nt
 
 mapping:
-  'sameAs-DBpedia':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/sameAs
+  'same-as-DBpedia':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/same-as
     kg_prefix: 'http://caligraph.org/resource/'
     input_files: ['caligraph-instances_dbpedia-mapping.nt.bz2']
   'label':

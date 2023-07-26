@@ -5,8 +5,8 @@ gpu: None
 format: nt
 
 mapping:
-  'sameAs-DBpedia':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/sameAs
+  'same-as-DBpedia':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/same-as
     kg_prefix: 'http://www.wikidata.org/entity/'
     input_files: ['wikidata_sameas.nt', 'wikidata_sameas_dbpedia.nt']
     additional_predicates: ['http://www.wikidata.org/prop/direct/P2888']
