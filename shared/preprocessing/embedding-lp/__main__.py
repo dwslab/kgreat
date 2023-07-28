@@ -72,7 +72,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int,
 
 def _serialize_embeddings(embedding_models: List[str], embedding_input_dir: Path):
     # load vectors of the respective models and merge indices with actual entity names
-    entity_dict = pd.read_csv(embedding_input_dir / 'entities.dict', index_col=0, sep='\t', header=None, names=['entity'])
+    entity_dict = pd.read_csv(embedding_input_dir / 'entities.dict', index_col=1, sep='\t', header=None, names=['entity'])
     for model_name in embedding_models:
         get_logger().info(f'Serializing embeddings of type {model_name}')
         embedding_folder = embedding_input_dir / '_'.join([model_name, 'kg', '0'])
