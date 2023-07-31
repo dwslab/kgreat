@@ -18,13 +18,9 @@ def process_embeddings(kg_config: dict, speedup_config: dict):
     create_ann_index = 'ann_index' not in speedup_config or speedup_config['ann_index']
     create_small_embeddings = 'small_embeddings' not in speedup_config or speedup_config['small_embeddings']
     dataset_entities = _load_dataset_entities() if create_small_embeddings else None
-    for embedding_file in EMBEDDING_DIR.glob('*.tsv'):
-        model_name = embedding_file[:-4]
+    for path_to_embedding_file in EMBEDDING_DIR.glob('*.tsv'):
+        model_name = path_to_embedding_file.stem
         get_logger().info(f'Making speed optimizations for embedding of type {model_name}')
-        path_to_embedding_file = EMBEDDING_DIR / f'{model_name}.tsv'
-        if not path_to_embedding_file.is_file():
-            get_logger().info(f'Skipping optimizations as embedding vectors are not existing.')
-            continue
         entity_vecs = pd.read_csv(path_to_embedding_file, sep='\t', header=None, index_col=0)
         if create_ann_index:
             get_logger().debug(f'Building ANN index for embedding {model_name}')
