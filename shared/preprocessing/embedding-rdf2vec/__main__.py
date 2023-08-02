@@ -32,6 +32,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, embedding_input_d
             'conda', 'run', '--no-capture-output', '-n', 'jrdf2vec_env',
             'java', '-jar', '/app/jrdf2vec.jar',
             '-graph', str(embedding_input_dir / 'train.nt'),
+            '-walkGenerationMode', 'MID_WALKS_DUPLICATE_FREE',
             '-walkDirectory', str(embedding_input_dir / model_name),
             '-newFile', str(embedding_input_dir / f'{model_name}.txt'),
             '-threads', str(kg_config['max_cpus']),
