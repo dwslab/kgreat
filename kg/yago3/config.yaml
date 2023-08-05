@@ -54,6 +54,9 @@ task:
   'dm-comiccharacters_classification':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-comiccharacters
     type: classification
+  'dm-millionsongdataset_classification':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-millionsongdataset
+    type: classification
   'dm-aaup_regression':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-aaup
     type: regression
@@ -71,6 +74,9 @@ task:
     type: regression
   'dm-comiccharacters_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-comiccharacters
+    type: clustering
+  'dm-millionsongdataset_clustering':
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-millionsongdataset
     type: clustering
   'dm-cities2000andcountries_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities2000andcountries
