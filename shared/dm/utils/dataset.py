@@ -73,7 +73,7 @@ class TsvDataset(Dataset):
         valid_columns = self.entity_keys + [self.label_column]
         if self.entity_label:
             valid_columns.append(self.entity_label)
-        self.data = pd.read_csv(self.data_file, sep='\t', header=0, index_col=None, usecols=valid_columns)
+        self.data = pd.read_csv(self.data_file, sep='\t', header=0, index_col=None, usecols=valid_columns).dropna()
 
     def apply_mapping(self):
         mapped_data = {}
