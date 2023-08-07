@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 import json
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 from .enums import DatasetFormat
 from .io import load_entity_embeddings, get_embedding_models
 
@@ -74,6 +75,7 @@ class TsvDataset(Dataset):
         if self.entity_label:
             valid_columns.append(self.entity_label)
         self.data = pd.read_csv(self.data_file, sep='\t', header=0, index_col=None, usecols=valid_columns).dropna()
+        self.data[self.label_column] = LabelEncoder().fit_transform(self.data[self.label_column])
 
     def apply_mapping(self):
         mapped_data = {}
