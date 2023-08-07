@@ -23,7 +23,7 @@ def collect_entities_to_map(kg_name: str, container_manager: str):
 def _fetch_entity_files(container_manager: str, temp_dir: Path, image_names: Set[str]):
     for image_name in image_names:
         image_step = get_image_step(image_name)
-        tmp_container_name = f'tmp_{image_step}'
+        tmp_container_name = f'{temp_dir.stem}_{image_step}'
         _trigger_container_action(container_manager, 'create', ['--name', tmp_container_name, image_name])
         _trigger_container_action(container_manager, 'cp', [f'{tmp_container_name}:/app/entities.tsv', f'{temp_dir}/entities_{image_step}.tsv'])
         _trigger_container_action(container_manager, 'rm', [tmp_container_name])
