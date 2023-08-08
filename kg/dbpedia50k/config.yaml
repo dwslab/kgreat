@@ -64,9 +64,6 @@ task:
   'dm-comiccharacters_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-comiccharacters
     type: clustering
-  'dm-millionsongdataset_clustering':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-millionsongdataset
-    type: clustering
   'dm-cities2000andcountries_clustering':
     image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/dataset/dm-cities2000andcountries
     type: clustering
