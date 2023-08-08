@@ -46,7 +46,7 @@ class ClassificationTask(BaseTask):
             for est, params in self._get_estimators():
                 get_logger().debug(f'Evaluating classifier {est.__name__} ({params}) for embedding type {embedding_type}')
                 model = est(**params)
-                results = cross_validate(model, entity_features, entity_labels, scoring=self.METRICS, cv=self.N_SPLITS, n_jobs=self.N_SPLITS)
+                results = cross_validate(model, entity_features.values, entity_labels.values, scoring=self.METRICS, cv=self.N_SPLITS, n_jobs=self.N_SPLITS)
                 for metric in self.METRICS:
                     known_entity_score = float(np.mean(results[f'test_{metric}']))
                     self.report.add_result(EntityEvalMode.KNOWN_ENTITIES, est.__name__, params, embedding_type, metric, known_entity_score)
