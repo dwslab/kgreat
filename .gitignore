@@ -7,5 +7,7 @@ poetry.lock
 /kg/*/entity_mapping.tsv
 /kg/*/data/
 /kg/*/embedding/
+/kg/*/embedding-ann/
+/kg/*/embedding-small/
 /kg/*/result/
 /kg/*/log/
