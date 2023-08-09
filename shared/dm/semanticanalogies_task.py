@@ -26,7 +26,7 @@ class SemanticAnalogiesTask(BaseTask):
             entity_embedding_index = self._load_entity_embedding_index(embedding_type)
             get_logger().debug(f'Evaluating semantic analogies via cosine distance for embedding type {embedding_type}')
             analogy_sets_vecs = np.array([[entity_embeddings.index.get_loc(ent) for ent in analogy_set] for analogy_set in mapped_analogy_sets.itertuples(index=False)])
-            analogy_sets_pred = analogy_sets_vecs[:, 1] - analogy_sets_vecs[:, 0] + analogy_sets_vecs[:, 2]
+            analogy_sets_pred = analogy_sets_vecs[:, 1, :] - analogy_sets_vecs[:, 0, :] + analogy_sets_vecs[:, 2, :]
             for d_preds, d_true in self._predict_analogies(entity_embeddings, entity_embedding_index, max(self.TOP_K), analogy_sets_vecs, analogy_sets_pred):
                 for k in self.TOP_K:
                     if d_true in d_preds[:k]:
@@ -45,6 +45,7 @@ class SemanticAnalogiesTask(BaseTask):
     def _load_entity_embedding_index(embedding_type: str) -> Optional[hnswlib.Index]:
         filepath = get_embedding_path(ann=True) / f'{embedding_type}_index.p'
         if not filepath.is_file():
+            get_logger().debug(f'No ANN indices available at path "{filepath}". Computation will be slow.')
             return None
         return hnswlib.Index(space='ip', dim=200).load_index(str(filepath))
 
