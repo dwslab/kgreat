@@ -35,8 +35,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Manage and run images for preprocessing or tasks.')
     parser.add_argument('kg_name', type=str, help='Name of the knowledge graph to use')
     parser.add_argument('action', type=str, help='Action to perform', choices=[a.value for a in StageAction])
-    parser.add_argument('stage', type=str, help='Apply action to this stage', choices=[s.value for s in Stage])
-    parser.add_argument('-s', '--step', type=str, nargs='*', default=[], help='ID of step(s) to perform action on (default is: all steps of stage)')
+    parser.add_argument('--stage', type=str, choices=[s.value for s in Stage], default=None, help='Apply action to this stage (default: all stages)')
+    parser.add_argument('--step', type=str, nargs='*', default=[], help='ID of step(s) to perform action on (default: all steps of stage)')
     parser.add_argument('-c', '--container_manager', type=str, help='Name of container manager', choices=['docker', 'podman'], default='docker')
     args = parser.parse_args()
-    process_action(args.kg_name, StageAction(args.action), Stage(args.stage), args.step, args.container_manager)
+    if args.stage is None and args.step:
+        raise ValueError('Invalid input: provided steps without specifying a stage.')
+
+    stages = [Stage(args.stage)] if args.stage is not None else [Stage.MAPPING, Stage.PREPROCESSING, Stage.TASK]
+    for stage in stages:
+        print(f'Triggering action {args.action} for stage {stage.value}..')
+        process_action(args.kg_name, StageAction(args.action), stage, args.step, args.container_manager)
