@@ -41,7 +41,7 @@ class ClassificationTask(BaseTask):
         valid_labels = set(label_freq[label_freq >= self.N_SPLITS].index)
         entity_labels = entity_labels[entity_labels.isin(valid_labels)]
         if entity_labels.nunique() <= 1:
-            get_logger().info(f'Skipping classification because there are is at most one valid class.')
+            get_logger().info(f'Skipping classification because there is at most one valid class.')
             return
         for embedding_type in self.embedding_models:
             entity_features = self.load_entity_embeddings(embedding_type, True).loc[entity_labels.index, :]
