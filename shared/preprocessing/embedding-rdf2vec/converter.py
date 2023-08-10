@@ -55,12 +55,16 @@ def _write_relation_dict_file(data: dict, target_folder: Path, output_format: st
 def _write_dict_file(data: dict, filepath: Path, prefix: str):
     with open(filepath, mode='w') as f:
         for item, idx in data.items():
-            f.write(f'{prefix}{idx}\t{item}\n')
+            item = item.replace('\t', '')  # make sure no tabs are contained
+            f.write(f'{item}\t{prefix}{idx}\n')
 
 
 def _write_train_file(triples: list, target_folder: Path, output_format: str):
     with open(target_folder / f'train.{output_format}', mode='w') as f:
         for s, p, o in triples:
+            s = s.replace('\t', '')
+            p = p.replace('\t', '')
+            o = o.replace('\t', '')
             if output_format == 'tsv':
                 f.write(f'{s}\t{p}\t{o}\n')
             elif output_format == 'nt':
