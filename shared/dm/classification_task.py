@@ -37,9 +37,11 @@ class ClassificationTask(BaseTask):
     def run(self):
         entity_labels = self.dataset.get_entity_labels(mapped=True)
         fraction_of_known_entities = len(entity_labels) / (len(entity_labels) + len(self.dataset.get_entity_labels(mapped=False)))
-        least_label_freq = entity_labels.value_counts().min()
-        if least_label_freq < self.N_SPLITS:
-            get_logger().info(f'Skipping classification because there are less examples ({least_label_freq}) of a class than splits ({self.N_SPLITS}).')
+        label_freq = entity_labels.value_counts()
+        valid_labels = set(label_freq[label_freq >= self.N_SPLITS].index)
+        entity_labels = entity_labels[entity_labels.isin(valid_labels)]
+        if entity_labels.nunique() <= 1:
+            get_logger().info(f'Skipping classification because there are is at most one valid class.')
             return
         for embedding_type in self.embedding_models:
             entity_features = self.load_entity_embeddings(embedding_type, True).loc[entity_labels.index, :]
