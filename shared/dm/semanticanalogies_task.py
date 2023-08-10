@@ -25,9 +25,10 @@ class SemanticAnalogiesTask(BaseTask):
             entity_embeddings = self.load_entity_embeddings(embedding_type, False)
             entity_embedding_index = self._load_entity_embedding_index(embedding_type)
             get_logger().debug(f'Evaluating semantic analogies via cosine distance for embedding type {embedding_type}')
-            analogy_sets_vecs = np.array([[entity_embeddings.index.get_loc(ent) for ent in analogy_set] for analogy_set in mapped_analogy_sets.itertuples(index=False)])
+            analogy_sets = np.array([[entity_embeddings.index.get_loc(ent) for ent in analogy_set] for analogy_set in mapped_analogy_sets.itertuples(index=False)])
+            analogy_sets_vecs = np.array([[entity_embeddings.loc[ent].values for ent in analogy_set] for analogy_set in mapped_analogy_sets.itertuples(index=False)])
             analogy_sets_pred = analogy_sets_vecs[:, 1, :] - analogy_sets_vecs[:, 0, :] + analogy_sets_vecs[:, 2, :]
-            for d_preds, d_true in self._predict_analogies(entity_embeddings, entity_embedding_index, max(self.TOP_K), analogy_sets_vecs, analogy_sets_pred):
+            for d_preds, d_true in self._predict_analogies(entity_embeddings, entity_embedding_index, max(self.TOP_K), analogy_sets, analogy_sets_pred):
                 for k in self.TOP_K:
                     if d_true in d_preds[:k]:
                         correct_predictions_by_k[k] += 1
@@ -49,12 +50,12 @@ class SemanticAnalogiesTask(BaseTask):
             return None
         return hnswlib.Index(space='ip', dim=200).load_index(str(filepath))
 
-    def _predict_analogies(self, entity_embeddings: pd.DataFrame, index: Optional[hnswlib.Index], top_k: int, analogy_sets_vecs: np.array, analogy_sets_preds: np.array) -> Iterable:
+    def _predict_analogies(self, entity_embeddings: pd.DataFrame, index: Optional[hnswlib.Index], top_k: int, analogy_sets: np.array, analogy_sets_preds: np.array) -> Iterable:
         if index is None:
-            for (a, b, c, d), d_similarities in zip([analogy_sets_vecs, np.dot(entity_embeddings, analogy_sets_preds)]):
+            for (a, b, c, d), d_similarities in zip([analogy_sets, np.dot(entity_embeddings, analogy_sets_preds)]):
                 d_preds = np.argsort(-d_similarities)
                 yield [ent_idx for ent_idx in d_preds if ent_idx not in {a, b, c}], d
         else:
             for analogy_idx, (entity_indices, _) in enumerate(zip(*index.knn_query(analogy_sets_preds, k=top_k, num_threads=self.kg_config['max_cpus']))):
-                a, b, c, d = analogy_sets_vecs[analogy_idx]
+                a, b, c, d = analogy_sets[analogy_idx]
                 yield [ent_idx for ent_idx in entity_indices if ent_idx not in {a, b, c}], d
