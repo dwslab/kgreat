@@ -32,31 +32,39 @@ Hence, the execution of tasks does not consume a large amount of resources.
   - Create a file `config.yaml` with the evaluation configuration of your KG. You can find explanations for all configuration parameters in the `example_config.yaml` file of the root directory.
   
 ### Evaluation Pipeline
-In the following you will run steps of the three stages `Mapping`, `Preprocessing`, and `Tasks`. As the later stages are dependent on the earlier ones, they must be run in this order.
+In the following you will prepare and run the three stages `Mapping`, `Preprocessing`, and `Task`. As the later stages are dependent on the earlier ones, they must be run in this order.
 
-First, pull the docker images of the stages. Make sure that your `config.yaml` is already configured correctly, as the manager only pulls images of the steps defined in the config. In the root directory of the project, run the following commands:
+First, pull the docker images of all stages. Make sure that your `config.yaml` is already configured correctly, as the manager only pulls images of the steps defined in the config. In the root directory of the project, run the following commands:
 ```shell
-python . <your-kg-identifier> pull mapping
-python . <your-kg-identifier> pull preprocessing/embedding
-python . <your-kg-identifier> pull preprocessing/embedding-speedup
-python . <your-kg-identifier> pull task
+python . <your-kg-identifier> pull
 ```
 
-To run the mapping, we first prepare a `entity_mapping.tsv` file which contains all the URIs and labels of entities to be mapped. Then, we run the actual mapping to find the corresponding entities in your KG. For the prepare step, it is important that the images of the tasks have already been pulled as the entities are collected directly from the images. 
+We then run the `prepare` action which initializes required files for the actual stages. In particular, we create a `entity_mapping.tsv` file which contains all the URIs and labels of entities to be mapped. 
 ```shell
-python . <your-kg-identifier> prepare mapping
-python . <your-kg-identifier> run mapping
+python . <your-kg-identifier> prepare
 ```
 
-The preprocessing can be run with the following commands:
+Then we run the actual stages:
 ```shell
-python . <your-kg-identifier> run preprocessing/embedding
-python . <your-kg-identifier> run preprocessing/embedding-speedup  # optional step for speeding up embedding-based tasks
+python . <your-kg-identifier> run
 ```
 
-When the mapping and preprocessing stages are completed, the actual tasks can be run.
+### Running Individual Stages or Steps
+If you want to trigger individual stages or steps, you can do so by supplying them as optional arguments. You can trigger steps by supplying the ID of the step as defined in the `config.yaml`. Here are some examples:
+
+Running only the preprocessing stage:
 ```shell
-python . <your-kg-identifier> run task
+python . <your-kg-identifier> run --stage preprocessing
+```
+
+Running the RDF2vec embedding generation step of the preprocessing stage:
+```shell
+python . <your-kg-identifier> run --stage preprocessing --step embedding-rdf2vec
+```
+
+Running two specific classification tasks (i.e., steps of the `Task` stage):
+```shell
+python . <your-kg-identifier> run --stage task --step dm-aaup_classification dm-cities_classification
 ```
 
 ### Results & Analysis
@@ -65,7 +73,7 @@ You can use the `result_analysis.ipynb` notebook to explore and compare the resu
 
 
 ## How to Extend the Framework
-Contributions to the framework are highly welcome and we would appreciate pull requests
+Contributions to the framework are highly welcome, and we appreciate pull requests
 for additional datasets, tasks, matchers, preprocessors, etc.! Here's how you can extend the framework:
 
 ### Add a Dataset
