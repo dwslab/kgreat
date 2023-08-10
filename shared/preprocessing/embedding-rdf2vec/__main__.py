@@ -30,7 +30,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, embedding_input_d
         get_logger().info(f'Training embeddings of type {model_name}')
         command = [
             'conda', 'run', '--no-capture-output', '-n', 'jrdf2vec_env',
-            'java', '-jar', '/app/jrdf2vec.jar',
+            'java', '-jar', '-Xmx300G', '/app/jrdf2vec.jar',
             '-graph', str(embedding_input_dir / 'train.nt'),
             '-walkGenerationMode', 'MID_WALKS_DUPLICATE_FREE',
             '-walkDirectory', str(embedding_input_dir / model_name),
