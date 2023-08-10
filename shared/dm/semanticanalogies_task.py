@@ -48,13 +48,15 @@ class SemanticAnalogiesTask(BaseTask):
         if not filepath.is_file():
             get_logger().debug(f'No ANN indices available at path "{filepath}". Computation will be slow.')
             return None
-        return hnswlib.Index(space='ip', dim=200).load_index(str(filepath))
+        index = hnswlib.Index(space='ip', dim=200)
+        index.load_index(str(filepath))
+        return index
 
     def _predict_analogies(self, entity_embeddings: pd.DataFrame, index: Optional[hnswlib.Index], top_k: int, analogy_sets: np.array, analogy_sets_preds: np.array) -> Iterable:
         if index is None:
-            for (a, b, c, d), d_similarities in zip([analogy_sets, np.dot(entity_embeddings, analogy_sets_preds)]):
+            for (a, b, c, d), d_similarities in zip([analogy_sets, np.dot(entity_embeddings, analogy_sets_preds.T)]):
                 d_preds = np.argsort(-d_similarities)
-                yield [ent_idx for ent_idx in d_preds if ent_idx not in {a, b, c}], d
+                yield [ent_idx for ent_idx in d_preds[:top_k] if ent_idx not in {a, b, c}], d
         else:
             for analogy_idx, (entity_indices, _) in enumerate(zip(*index.knn_query(analogy_sets_preds, k=top_k, num_threads=self.kg_config['max_cpus']))):
                 a, b, c, d = analogy_sets[analogy_idx]
