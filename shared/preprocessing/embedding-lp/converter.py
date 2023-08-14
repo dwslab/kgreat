@@ -2,6 +2,7 @@ from typing import List
 from logger import get_logger
 from importer import get_reader_for_format
 from pathlib import Path
+import csv
 
 
 KG_DIR = Path('./kg')
@@ -53,19 +54,17 @@ def _write_relation_dict_file(data: dict, target_folder: Path, output_format: st
 
 
 def _write_dict_file(data: dict, filepath: Path, prefix: str):
-    with open(filepath, mode='w') as f:
+    with open(filepath, mode='w', newline='') as f:
+        csvwriter = csv.writer(f, delimiter='\t', quoting=csv.QUOTE_MINIMAL)
         for item, idx in data.items():
-            item = item.replace('\t', '')  # make sure no tabs are contained
-            f.write(f'{item}\t{prefix}{idx}\n')
+            csvwriter.writerow([item, prefix + str(idx)])
 
 
 def _write_train_file(triples: list, target_folder: Path, output_format: str):
-    with open(target_folder / f'train.{output_format}', mode='w') as f:
+    with open(target_folder / f'train.{output_format}', mode='w', newline='') as f:
+        csvwriter = csv.writer(f, delimiter='\t', quoting=csv.QUOTE_MINIMAL)
         for s, p, o in triples:
-            s = s.replace('\t', '')
-            p = p.replace('\t', '')
-            o = o.replace('\t', '')
             if output_format == 'tsv':
-                f.write(f'{s}\t{p}\t{o}\n')
+                csvwriter.writerow([s, p, o])
             elif output_format == 'nt':
                 f.write(f'<{NT_PREFIX_ENTITY}{s}> <{NT_PREFIX_RELATION}{p}> <{NT_PREFIX_ENTITY}{o}> .\n')
