@@ -1,8 +1,8 @@
-run_id: 0  # ID used for the collective run of all tasks; is used as name for the result folder
-log_level: 'DEBUG'  # log level (one of 'INFO', 'DEBUG', ..)
-max_cpus: 10  # maximum number of CPUs to be used
-gpu: '3'  # index of GPU to use or 'None' if no GPU should be used
-format: nt  # file input format (one of: "tsv", "nt", "yago")
+run_id: 0
+log_level: 'DEBUG'
+max_cpus: 20
+gpu: None
+format: nt
 
 mapping:
   'identity':
@@ -10,11 +10,11 @@ mapping:
     target: 'DBpedia16_URI'
     known_entity_files: ['instance_types_en.ttl.bz2', 'mappingbased_objects_en.ttl.bz2']
   'label':
-    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/label  # mapper type: label
-    input_files: ['labels.ttl', 'labels_en.ttl.bz2']  # files containing labels
-    label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']  # predicates used to retrieve labels
-    definitive_matches_only:  False  # set to true if an entity should only be mapped if there is a single exact match to its label
-    similarity_threshold: 1.0  # lower threshold of acceptable similarity between labels (set to 1 for exact matches only)
+    image: gitlab.dws.informatik.uni-mannheim.de:5050/nheist/kgreat/mapping/label
+    input_files: ['labels.ttl', 'labels_en.ttl.bz2']
+    label_predicates: ['http://www.w3.org/2000/01/rdf-schema#label']
+    definitive_matches_only:  False
+    similarity_threshold: 1.0
     chunk_size: 1000
 
 preprocessing:
