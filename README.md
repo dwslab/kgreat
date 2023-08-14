@@ -49,7 +49,12 @@ Then we run the actual stages:
 python . <your-kg-identifier> run
 ```
 
-### Running Individual Stages or Steps
+### Results & Analysis
+The results of the evaluation runs are put in a `result` folder within your KG directory. The framework creates one TSV result file and one log file per task.
+You can use the `result_analysis.ipynb` notebook to explore and compare the results of one or more KGs.
+
+
+## Running Individual Stages or Steps
 If you want to trigger individual stages or steps, you can do so by supplying them as optional arguments. You can trigger steps by supplying the ID of the step as defined in the `config.yaml`. Here are some examples:
 
 Running only the preprocessing stage:
@@ -66,10 +71,6 @@ Running two specific classification tasks (i.e., steps of the `Task` stage):
 ```shell
 python . <your-kg-identifier> run --stage task --step dm-aaup_classification dm-cities_classification
 ```
-
-### Results & Analysis
-The results of the evaluation runs are put in a `result` folder within your KG directory. The framework creates one TSV result file and one log file per task.
-You can use the `result_analysis.ipynb` notebook to explore and compare the results of one or more KGs.
 
 
 ## How to Extend the Framework
