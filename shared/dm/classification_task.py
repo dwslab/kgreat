@@ -28,8 +28,6 @@ class ClassificationTask(BaseTask):
             (KNeighborsClassifier, {'n_neighbors': 1}),
             (KNeighborsClassifier, {'n_neighbors': 3}),
             (KNeighborsClassifier, {'n_neighbors': 5}),
-            (SVC, {'kernel': 'rbf', 'C': 1}),
-            (SVC, {'kernel': 'rbf', 'C': 0.1}),
             (SVC, {'kernel': 'linear', 'C': 1}),
             (SVC, {'kernel': 'linear', 'C': 0.1}),
         ]
