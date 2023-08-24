@@ -16,17 +16,27 @@ EMBEDDING_DIR = KG_DIR / 'embedding'
 
 def make_embeddings(kg_config: dict, embedding_config: dict):
     get_logger().info('Starting rdf2vec embedding generation.')
+    embedding_models = embedding_config['models']
+    # check for existing embedding models
+    existing_models = {m for m in embedding_models if (EMBEDDING_DIR / f'{m}.tsv').is_file()}
+    if existing_models:
+        get_logger().info(f'Skipping the following existing embedding models: {", ".join(existing_models)}')
+        embedding_models = embedding_models.difference(existing_models)
+    # finish early if no models to compute
+    if not embedding_models:
+        get_logger().info(f'No embeddings to compute. Finished.')
+        return
     # create data in mapped-entity input format
     embedding_input_dir = Path(tempfile.mkdtemp())
     convert_graph_data(kg_config['format'], embedding_config['input_files'], embedding_input_dir, output_format='nt')
     # train embedding
-    _train_embeddings(embedding_config, kg_config, embedding_input_dir)
+    _train_embeddings(embedding_config, kg_config, embedding_models, embedding_input_dir)
     # serialize embedding
-    _serialize_embeddings(embedding_config['models'], embedding_input_dir)
+    _serialize_embeddings(embedding_models, embedding_input_dir)
 
 
-def _train_embeddings(embedding_config: dict, kg_config: dict, embedding_input_dir: Path):
-    for model_name in embedding_config['models']:
+def _train_embeddings(embedding_config: dict, kg_config: dict, embedding_models: set, embedding_input_dir: Path):
+    for model_name in embedding_models:
         get_logger().info(f'Training embeddings of type {model_name}')
         command = [
             'conda', 'run', '--no-capture-output', '-n', 'jrdf2vec_env',

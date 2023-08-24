@@ -25,28 +25,37 @@ EMBEDDING_BASE_CONFIGS = {
 
 def make_embeddings(kg_config: dict, embedding_config: dict):
     get_logger().info('Starting link-prediction embedding generation.')
+    embedding_models = set(embedding_config['models'])
     # check if all specified embedding models are supported
-    unsupported_models = set(embedding_config['models']).difference(set(EMBEDDING_BASE_CONFIGS))
+    unsupported_models = embedding_models.difference(set(EMBEDDING_BASE_CONFIGS))
     if unsupported_models:
         get_logger().info(f'Skipping the following unsupported embedding models: {", ".join(unsupported_models)}')
-        embedding_config['models'] = [m for m in embedding_config['models'] if m not in unsupported_models]
+        embedding_models = embedding_models.difference(unsupported_models)
+    # check for existing embedding models
+    existing_models = {m for m in embedding_models if (EMBEDDING_DIR / f'{m}.tsv').is_file()}
+    if existing_models:
+        get_logger().info(f'Skipping the following existing embedding models: {", ".join(existing_models)}')
+        embedding_models = embedding_models.difference(existing_models)
+    # finish early if no models to compute
+    if not embedding_models:
+        get_logger().info(f'No embeddings to compute. Finished.')
+        return
     # create data in mapped-entity input format
     embedding_input_dir = Path(tempfile.mkdtemp())
     num_triples = convert_graph_data(kg_config['format'], embedding_config['input_files'], embedding_input_dir)
     # train embeddings
-    embedding_models = embedding_config['models']
-    _train_embeddings(embedding_config, kg_config, num_triples, embedding_input_dir)
+    _train_embeddings(embedding_config, kg_config, embedding_models, num_triples, embedding_input_dir)
     # serialize embeddings
     _serialize_embeddings(embedding_models, embedding_input_dir)
 
 
-def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int, embedding_input_dir: Path):
+def _train_embeddings(embedding_config: dict, kg_config: dict, embedding_models: set, num_triples: int, embedding_input_dir: Path):
     get_logger().info(f'Training embeddings and storing at {embedding_input_dir}')
     batch_size = embedding_config['batch_size']
     neg_sample_size = 200
     max_steps = int(embedding_config['epochs']) * min(500000, num_triples * neg_sample_size // batch_size)
 
-    for model_name in embedding_config['models']:
+    for model_name in embedding_models:
         get_logger().info(f'Training embeddings of type {model_name}')
         command = [
             'dglke_train',
@@ -70,7 +79,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, num_triples: int,
         get_logger().debug(process.communicate()[1].decode())
 
 
-def _serialize_embeddings(embedding_models: List[str], embedding_input_dir: Path):
+def _serialize_embeddings(embedding_models: set, embedding_input_dir: Path):
     # load vectors of the respective models and merge indices with actual entity names
     entity_dict = pd.read_csv(embedding_input_dir / 'entities.dict', index_col=1, sep='\t', header=None, names=['entity'])
     for model_name in embedding_models:
