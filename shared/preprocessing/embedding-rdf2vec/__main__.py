@@ -1,4 +1,4 @@
-from typing import List
+from typing import Set
 import os
 import tempfile
 from pathlib import Path
@@ -16,7 +16,7 @@ EMBEDDING_DIR = KG_DIR / 'embedding'
 
 def make_embeddings(kg_config: dict, embedding_config: dict):
     get_logger().info('Starting rdf2vec embedding generation.')
-    embedding_models = embedding_config['models']
+    embedding_models = set(embedding_config['models'])
     # check for existing embedding models
     existing_models = {m for m in embedding_models if (EMBEDDING_DIR / f'{m}.tsv').is_file()}
     if existing_models:
@@ -53,7 +53,7 @@ def _train_embeddings(embedding_config: dict, kg_config: dict, embedding_models:
         get_logger().debug(process.communicate()[1].decode())
 
 
-def _serialize_embeddings(embedding_models: List[str], embedding_input_dir: Path):
+def _serialize_embeddings(embedding_models: Set[str], embedding_input_dir: Path):
     # load vectors of the respective models and merge indices with actual entity names
     entity_dict = pd.read_csv(embedding_input_dir / 'entities.dict', index_col=1, sep='\t', header=None, names=['entity'])
     for model_name in embedding_models:
